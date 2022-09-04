@@ -39,16 +39,9 @@
 
       var popup = L.popup();
       function onMapClick(e) {
-            /// p = map.project(e.latlng, map.getZoom()).toString()
-            var lat = e.latlng.lat
-            var land = e.latlng.lng
-          
-            window.open('closest/image' + window.location.pathname.split('/')[-1] + '/' + lat + '/' + land)
-            //// this only gives true pixel coords when the current zoom level is 5
-            //// for other zoom levels you must do some math
 
       }
-      map.on('click', onMapClick);
+
 
     </script>
   </body>
