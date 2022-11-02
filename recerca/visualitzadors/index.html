@@ -8,10 +8,11 @@
           margin: 0 auto;
         }
         
-        .zoom:hover {
+        .zoom:hover, .zoom:active {
           transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
           color: white;
         }
+        
         .catrow {
             width: 224px;
             text-align: left;
@@ -46,7 +47,7 @@
             opacity: 0.5;
             transition: 0.2s
         }
-        table:hover, .container:hover{
+        table:hover, table:active, .container:hover, .container:active{
             opacity: 1;
         }
         
