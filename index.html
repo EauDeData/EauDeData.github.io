@@ -1,130 +1,172 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-<title> A. Molina CVC Page</title>
-<h2> A. Molina CVC Page </h2>
+    <title>A. Molina CVC Page</title>
+    <link rel="stylesheet" href="./static/index.css">
 </head>
-<script src="./static/index.js"></script>
-<link  rel="stylesheet" href = "./static/index.css">
-<body  onload="currentSlide(1); showSlides(1); getCurrentSlide()">
-
-<h2>Demos DAG - XAC</h2>
-
-<ol>
-
-<li> <a href = "">Word Spotting</a> </li>
-
-Cerca de paraules - A partir d'un volum de paraules manuscrites podem trobar totes aquelles paraules similaras a la col·lecció.
-
-
-<li> <a>Date Estimation</a> </li>
-Estimació de dates (premsa, fotografia, documents...) donada una imatge podem trobar imatges d'époques similars i per tant estimar la seva data.
-
-<li> <a>HIST4XAC</a> </li>
-Serveis diversos basats en la visualització de col·leccions. <a href = '/recerca/visualitzadors/'> Visualitzador 2D de col·leccions<a>, cercador...
-
-<li> <a href = "https://twitter.com/DEWEstimator">Twitter Bot</a> </li>
-
-Es pot utilitzar un "bot" de twitter amb els següents objectius:
-
-<ol> 
-    <li> <a>Divulgació: Donar a conèixer les tasques del XAC a través de promocionar l'interactivitat amb la ciutadania.</a> </li>
-    <li> <a>Recopilació: Aconseguir dades de la ciutadania a travès de crowdsourcing amb medis als quals estan familiaritzat com són les XXSS.</a> </li>
-    <li> <a>Servei: Servei de datació d'imagtes per a qualsevol amb curiositat.</a> </li>
-</ol>
-<div>
-
-
-    <blockquote class="twitter-tweet" data-align = "center" ><p lang="en" dir="ltr">
-        @eau_de_gespa - From similar images, I estimate this one was taken around 1957 with an uncertanty of 9.4 years. 
-        <a href="https://t.co/ENl4m6on2U">pic.twitter.com/ENl4m6on2U</a></p>&mdash; DEW-Estimator (@DEWEstimator) 
-        <a href="https://twitter.com/DEWEstimator/status/1407377043927584771?ref_src=twsrc%5Etfw">June 22, 2021</a></blockquote> 
-        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
-
-
+<body>
+    <div id="header">
+        <h2>A. Molina CVC Page</h2>
+        <nav>
+            <a href="#heritage-management">Heritage Management</a>
+            <a href="#document-understanding">Document Understanding</a>
+            <a href="#teaching-resources">Teaching Resources</a>
+            <a href="#recommended-lectures">Recommended Lectures</a>
+        </nav>
     </div>
 
+    <div id="content">
+        <div class="section" id="heritage-management">
+            <h3>Heritage Management</h3>
+            <div class="subsection" id="tinder-historic">
+                <h4>Tinder Historic</h4>
+                <p>Web under development...</p>
+            </div>
 
-<li> <a>Tinder Históric</a> </li>
+            <div class="subsection" id="twitter-bot">
+                <h4>Twitter Bot</h4>
+                <p>
+                  A Twitter bot can be used with the following objectives:
+                </p>
+                <ol>
+                  <li>
+                    <a>Outreach: Increase awareness of XAC tasks by promoting interactivity with the public.</a>
+                  </li>
+                  <li>
+                    <a>Collection: Gather data from the public through crowdsourcing using familiar social media channels.</a>
+                  </li>
+                  <li>
+                    <a>Service: Provide image dating service for anyone with curiosity.</a>
+                  </li>
+                </ol>
+                <div>
+                  <blockquote class="twitter-tweet" data-align="center">
+                    <p lang="en" dir="ltr">
+                      @eau_de_gespa - From similar images, I estimate this one was taken around 1957 with an uncertainty of 9.4 years.
+                      <a href="https://t.co/ENl4m6on2U">pic.twitter.com/ENl4m6on2U</a>
+                    </p>&mdash; DEW-Estimator (@DEWEstimator)
+                    <a href="https://twitter.com/DEWEstimator/status/1407377043927584771?ref_src=twsrc%5Etfw">June 22, 2021</a>
+                  </blockquote>
+                  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                </div>
+              </div>
+              
 
-<div class="container" style="background-color:rgb(255, 255, 255)">
+            <div class="subsection" id="hits4xac">
+                <h4>HIST4XAC</h4>
+                <p class="abstract">
+                  The Heritage Intelligent Support Tool for the Comarcal Archives Network (HIST4XAC) is a web visualization tool and data profiler designed to provide archivists and social scientists with a collection of services and utilities based on deep learning and computer vision. The tool incorporates information search tools for large volumes of data and enables the estimation of dates for the analyzed documents and images.
+                </p>
+                <a href="https://ddd.uab.cat/record/264631">
+                  <button class="paper-button">Read TFG</button>
+                </a>
+              </div>
+              
+            <div class="subsection" id="automatic-heritage-annotation">
+                <h4>Automatic Heritage Annotation</h4>
+                <p>Web under development...</p>
+            </div>
+            <div class="subsection" id="image-collection-projectors">
+                <h4>Image Collection Projectors</h4>
+                <p>
+                    Explore the distribution of a given set of data and model using the Heritage Projector. The Heritage Projector is a visualization tool that allows you to analyze and interact with image collections. It provides features like captioning and retrieval using a Flask service.
+                </p>
+                <div id="heritage-projector-widget"></div>
+                <script>
+                    // Embed the Heritage Projector widget
+                    const widgetContainer = document.getElementById("heritage-projector-widget");
+                    const iframe = document.createElement("iframe");
+                    iframe.src = "./master/projectors/www.heritage.projector/map.html";
+                    iframe.width = "50%";
+                    iframe.height = "300px";
+                    iframe.style.border = "none";
+                    iframe.style.display = "block";
+                    iframe.style.margin = "0 auto"; // Center the widget horizontally
+                    widgetContainer.appendChild(iframe);
+                  </script>
+                  
+                <p>
+                    Explore the Heritage Projector repository on GitHub:
+                    <a href="https://github.com/EauDeData/cvc-dataset-projector">https://github.com/EauDeData/cvc-dataset-projector</a>
+                </p>
+            </div>
+            
+        </div>
 
-    <div class="mySlides">
-        <div class="numbertext">1 / 3</div>
-          <img onclick="plusSlides(1)" alt = "./static/images/segmentation_premsa.png" src="./static/images/segmentation_premsa.png" style="width: 50%; height: 50%; ">
+        <div class="section" id="document-understanding">
+            <h3>Document Understanding</h3>
+            <div class="subsection" id="document-understanding">
+                <h4>Bridging Cross-Modal Alignment for OCR-Free
+                    Content Retrieval in Scanned Documents (Under Review)</h4>
+                <p>
+                  In this work, we address the limitations of current approaches to document retrieval by incorporating vision-based topic extraction. While previous methods have primarily focused on visual elements or relied on optical character recognition (OCR) for text extraction, we propose a paradigm shift by directly incorporating vision into the topic space. We demonstrate that recognizing all visual elements within a document is unnecessary for identifying its underlying topic, and visual cues such as icons, writing style, and font can serve as sufficient indicators. By leveraging ranking loss functions and convolutional neural networks (CNNs), we learn complex topological representations that mimic the behavior of text representations. Our approach eliminates the need for OCR and its associated challenges, including efficiency, performance, data-hunger, and expensive annotation. We evaluate the performance of our vision encoder for document retrieval in various scenarios, including OCR-based and OCR-free modalities, and demonstrate its accuracy and rank correlation. Furthermore, we highlight the significance of incorporating vision in historical documentation, where visually antiquated documents contain valuable cues. Our research contributes to the understanding of topic extraction from a vision perspective and offers insights into annotation-cheap document retrieval systems.
+                </p>
+              </div>
+              
+            <div class="subsection" id="date-estimation-paper">
+                <h4>Date Estimation in the Wild of Scanned Historical Photos: An Image Retrieval Approach (ICDAR 2021)</h4>
+                <p class="abstract">
+                    Date estimation of historical document images is a challenging problem, with several contributions in the literature that lack the ability to generalize from one dataset to others. This paper presents a robust date estimation system based on a retrieval approach that generalizes well in front of heterogeneous collections. We use a ranking loss function named smooth-nDCG to train a Convolutional Neural Network that learns an ordination of documents for each problem. One of the main usages of the presented approach is as a tool for historical contextual retrieval. It means that scholars could perform comparative analysis of historical images from big datasets in terms of the period where they were produced. We provide experimental evaluation on different types of documents from real datasets of manuscript and newspaper images.
+                </p>
+                <a href="https://link.springer.com/chapter/10.1007/978-3-030-86331-9_20">
+                    <button class="paper-button">Read Paper</button>
+                </a>
+            </div>
+            <div class="subsection" id="learning-to-rank-words-paper">
+                <h4>Learning to Rank Words: Optimizing Ranking Metrics for Word Spotting (ICDAR 2021) (co-author)</h4>
+                <p class="abstract">
+                    In this paper, we explore and evaluate the use of ranking-based objective functions for learning simultaneously a word string and a word image encoder. We consider retrieval frameworks in which the user expects a retrieval list ranked according to a defined relevance score. In the context of a word spotting problem, the relevance score has been set according to the string edit distance from the query string. We experimentally demonstrate the competitive performance of the proposed model on query-by-string word spotting for both handwritten and real scene word images. We also provide the results for query-by-example word spotting, although it is not the main focus of this work.
+                </p>
+                <a href="https://link.springer.com/chapter/10.1007/978-3-030-86331-9_25">
+                    <button class="paper-button">Read Paper</button>
+                </a>
+            </div>
+            <div class="subsection" id="generic-image-retrieval-paper">
+                <h4>A Generic Image Retrieval Method for Date Estimation of Historical Document Collections (DAS 2022)</h4>
+                <p class="abstract">
+                    Date estimation of historical document images is a challenging problem, with several contributions in the literature that lack the ability to generalize from one dataset to others. This paper presents a robust date estimation system based on a retrieval approach that generalizes well in front of heterogeneous collections. We use a ranking loss function named smooth-nDCG to train a Convolutional Neural Network that learns an ordination of documents for each problem. One of the main usages of the presented approach is as a tool for historical contextual retrieval. It means that scholars could perform comparative analysis of historical images from big datasets in terms of the period where they were produced. We provide experimental evaluation on different types of documents from real datasets of manuscript and newspaper images.
+                </p>
+                <a href="https://link.springer.com/chapter/10.1007/978-3-031-06555-2_39">
+                    <button class="paper-button">Read Paper</button>
+                </a>
+            </div>
+        </div>
+
+        <div class="section" id="teaching-resources">
+            <h3>Teaching Resources</h3>
+            <div class="subsection" id="docencia">
+                <h3>Master PiHD</h3>
+                <p>
+                  Master's Degree in Digital Heritage and Humanities - Applied Technology II. Digitization and Computer Vision.
+                </p>
+                <p class="center">
+                  <a href="./docencia/MPiHD/index.html">[Link to the contents page]</a>
+                </p>
+              </div>
+              
+        </div>
+
+        <div class="section" id="recommended-lectures">
+            <h3>Recommended Lectures</h3>
+            <div class="subsection" id="task-arithmetic-paper">
+                <h4>Task Arithmetic in the Tangent Space: Improved Editing of Pre-Trained Models</h4>
+                <p class="abstract">
+                    Task arithmetic has recently emerged as a cost-effective and scalable approach to edit pre-trained models directly in weight space: By adding the fine-tuned weights of different tasks, the model's performance can be improved on these tasks, while negating them leads to task forgetting. Yet, our understanding of the effectiveness of task arithmetic and its underlying principles remains limited. We present a comprehensive study of task arithmetic in vision-language models and show that weight disentanglement is the crucial factor that makes it effective. This property arises during pre-training and manifests when distinct directions in weight space govern separate, localized regions in function space associated with the tasks. Notably, we show that fine-tuning models in their tangent space by linearizing them amplifies weight disentanglement. This leads to substantial performance improvements across multiple task arithmetic benchmarks and diverse models. Building on these findings, we provide theoretical and empirical analyses of the neural tangent kernel (NTK) of these models and establish a compelling link between task arithmetic and the spatial localization of the NTK eigenfunctions. Overall, our work uncovers novel insights into the fundamental mechanisms of task arithmetic and offers a more reliable and effective approach to edit pre-trained models through the NTK linearization.
+                </p>
+                <a href="https://arxiv.org/abs/2305.12827">
+                    <button class="paper-button">Read Paper</button>
+                </a>
+            </div>
+        </div>
     </div>
 
-    <div class="mySlides">
-        <div class="numbertext">2 / 3</div>
-          <img  onclick="plusSlides(1)" alt = "./static/images/segmentation_jialuo.png" src="./static/images/segmentation_jialuo.png" style="width:30%; height: 30%; ">
+    <div id="contact">
+        <h2>Contact</h2>
+        <ul>
+            <li><a href="mailto:amolina@cvc.uab.cat?Subject=[ASIGNATURA]+ASUMPTE">Mail: amolina@cvc.uab.cat</a></li>
+            <li><a href="https://www.linkedin.com/in/adri%C3%A0-molina-927865174/">Linked-In: Adrià Molina Rodríguez</a></li>
+            <li><a href="https://orcid.org/0000-0003-0167-8756">Orcid: 0000-0003-0167-8756 (perfil de recerca)</a></li>
+        </ul>
     </div>
-
-    <div class="mySlides">
-        <div class="numbertext">3 / 3</div>
-          <img onclick="plusSlides(1)" alt = "./static/images/anunci.png" src="./static/images/anunci.png" style="width:30%; height: 30%; ">
-    </div>
-
-
-    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-    <a class="next" onclick="plusSlides(1)">&#10095;</a>
-
-    <div class="caption-container">
-        <p id="caption"></p>
-    </div>
-    <div class="row" style="display: none">
-        <img class="demo cursor" src="./static/images/segmentation_premsa.png"  style="width:10%" onclick="currentSlide(0)" alt="Detecció d'anuncis (layout analisi) a premsa histórica.">
-        <img class="demo cursor" src="./static/images/segmentation_jialuo.png"  style="width:10%" onclick="currentSlide(1)" alt="Segmentació de continguts.">
-        <img class="demo cursor" src="./static/images/anunci.png"  style="width:10%" onclick="currentSlide(2)" alt="Reconeixement de paraules clau.">
-
-        
-    </div>
-
-</div>
-
-
-<li> <a>Comics (proposal)</a> </li>
-
-<ol>
-
-<li> Segmentació d'Escenes </li>
-<li>Reconeixement d'Entitats (Visual): Quines entitats estan participant a cada escena
-</li>
-<li>Asociació de "speech": A quina entitat (visual) correspon cada seqüencia de text
-</li>
-<li>Reconeixement de text
-</li>
-<li>Reconeixement d'Entitats (textuals): De qui està parlant el texte
-</li>
-<li>Asociació d'entitats (textuals) a entitats (visuals): S'està parlant d'algú de l'escena?
-</li>
-<li>Descripció d'escenaris: Que hi ha a l'escena (image captioning).
-</li>
-<li>Estudi d'identificació d'entitats a partir de les seves relacions.</li>
-
-</ol>
-
-<img src = './static/images/comic_sample.jpeg' style="scale: 50%;">
-
-
-</ol>
-
-<h2>Contingut Docència</h2>
-<h3>Master PiHD</h3>
-<p></p>
-Master en Patrimoni i Humanitats Digitals - Tecnología Aplicada II. Digitalización y Visión por Computadora.
-
-<p class = "center" ><a href = "./docencia/MPiHD/index.html"> [Enllaç a la pàgina de continguts] </a></p>
-
-<h2>Contacte</h2>
-
-
-<ul>
-    <li><a href="mailto:amolina@cvc.uab.cat?Subject=[ASIGNATURA]+ASUMPTE">Mail: amolina@cvc.uab.cat</a></li>
-    <li><a href="https://www.linkedin.com/in/adri%C3%A0-molina-927865174/">Linked-In: Adrià Molina Rodríguez</a></li>
-    <li><a href="https://orcid.org/0000-0003-0167-8756">Orcid: 0000-0003-0167-8756 (perfil de recerca) </a></li>
-    
-</ul> 
-
 </body>
-</html> 
+</html>
