@@ -116,7 +116,14 @@
                 <h4>Bridging Cross-Modal Alignment for OCR-Free
                     Content Retrieval in Scanned Documents (Under Review)</h4>
                 <p>
-                  In this work, we address the limitations of current approaches to document retrieval by incorporating vision-based topic extraction. While previous methods have primarily focused on visual elements or relied on optical character recognition (OCR) for text extraction, we propose a paradigm shift by directly incorporating vision into the topic space. We demonstrate that recognizing all visual elements within a document is unnecessary for identifying its underlying topic, and visual cues such as icons, writing style, and font can serve as sufficient indicators. By leveraging ranking loss functions and convolutional neural networks (CNNs), we learn complex topological representations that mimic the behavior of text representations. Our approach eliminates the need for OCR and its associated challenges, including efficiency, performance, data-hunger, and expensive annotation. We evaluate the performance of our vision encoder for document retrieval in various scenarios, including OCR-based and OCR-free modalities, and demonstrate its accuracy and rank correlation. Furthermore, we highlight the significance of incorporating vision in historical documentation, where visually antiquated documents contain valuable cues. Our research contributes to the understanding of topic extraction from a vision perspective and offers insights into annotation-cheap document retrieval systems.
+This work focuses on understanding the behaviors of historical document understanding methods from a retrieval perspective. We address the challenge of image retrieval falling short of text-based models’
+performance, akin to the case in word spotting where text representations are unnecessary. We propose an approach emphasizing visual-based
+understanding to bridge this gap. By scrutinizing the model’s inference process, we aim to uncover whether it prioritizes efficient keyword spot-
+ting, similar to the cognitive human visual system, or employs opaque
+shortcuts. Our research provides valuable insights into these model behaviors and capabilities. We explore the model’s responses under various conditions, including named entity awareness, keyword presence, and
+topics related to document degradation, layout and other visual features.
+This study advances our understanding of these models and their potential for efficient document understanding in situations where recognition
+is not a suitable solution.
                 </p>
               </div>
               
@@ -150,16 +157,6 @@
         </div>
 
         <div class="section" id="teaching-resources">
-            <h3>Teaching Resources</h3>
-            <div class="subsection" id="docencia">
-                <h3>Master PiHD</h3>
-                <p>
-                  Master's Degree in Digital Heritage and Humanities - Applied Technology II. Digitization and Computer Vision.
-                </p>
-                <p class="center">
-                  <a href="./docencia/MPiHD/index.html">[Link to the contents page]</a>
-                </p>
-              </div>
               
         </div>
 
@@ -174,6 +171,16 @@
                     <button class="paper-button">Read Paper</button>
                 </a>
             </div>
+
+            <div class="subsection" id="probabilistic-circuit-paper">
+                <h4>How to Turn Your Knowledge Graph Embeddings into Generative Models</h4>
+                <p class="abstract">
+Some of the most successful knowledge graph embedding (KGE) models for link prediction -- CP, RESCAL, TuckER, ComplEx -- can be interpreted as energy-based models. Under this perspective they are not amenable for exact maximum-likelihood estimation (MLE), sampling and struggle to integrate logical constraints. This work re-interprets the score functions of these KGEs as circuits -- constrained computational graphs allowing efficient marginalisation. Then, we design two recipes to obtain efficient generative circuit models by either restricting their activations to be non-negative or squaring their outputs. Our interpretation comes with little or no loss of performance for link prediction, while the circuits framework unlocks exact learning by MLE, efficient sampling of new triples, and guarantee that logical constraints are satisfied by design. Furthermore, our models scale more gracefully than the original KGEs on graphs with millions of entities.                 </p>
+                <a href="https://arxiv.org/abs/2305.15944">
+                    <button class="paper-button">Read Paper</button>
+                </a>
+            </div>
+            
         </div>
     </div>
 
