@@ -1,95 +1,323 @@
+/* Color Palette */
+:root {
+    --background: #000000; /* Dark background for that deep web feel */
+    --light-green: #00FF00; /* Bright green for text */
+    --dark-green: #004400; /* Dark green for headers */
+    --crimson: #DC143C; /* Crimson red for accents */
+    --yellow: #FFFF00; /* Bright yellow for highlights */
+    --gray: #CCCCCC; /* Light gray for softer elements */
+}
+
+/* General Styling */
 body {
-  background-color: #f5f5f5;
-  color: #53565a;
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
+    font-family: 'Courier New', Courier, monospace; /* Monospace font for that retro tech feel */
+    margin: 0;
+    padding: 0;
+    background-color: var(--background);
+    color: var(--light-green);
+    line-height: 1.6; /* More readable line height */
+    overflow: hidden; /* Prevent scrollbars from appearing */
+    position: relative; /* For positioning explosions */
 }
 
-h2 {
-  color: #9e292b;
+/* Header */
+header {
+    background-color: var(--dark-green);
+    padding: 20px;
+    text-align: center;
+    color: var(--yellow);
+    font-size: 2em; /* Larger font for emphasis */
+    text-transform: uppercase; /* Make it feel more dramatic */
+    border-bottom: 3px solid var(--crimson); /* Bold underline */
+    animation: bounce 1.5s infinite; /* Bouncing animation */
 }
 
-#header {
-  text-align: center;
-  margin-top: 20px;
+/* Bouncing Animation */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
 }
 
+/* Navigation Bar */
 nav {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    background-color: var(--dark-green);
+    padding: 10px;
+    animation: slideIn 1s; /* Slide in animation */
+    position: relative;
+}
+
+/* Slide In Animation */
+@keyframes slideIn {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
 }
 
 nav a {
-  color: #9e292b;
-  text-decoration: none;
-  padding: 8px 16px;
-  margin: 0 10px;
-  border: 1px solid #9e292b;
-  border-radius: 4px;
+    margin: 0 15px;
+    text-decoration: none;
+    color: var(--yellow);
+    font-weight: bold;
+    font-size: 1.2em; /* Slightly larger for visibility */
+    border: 2px solid var(--light-green);
+    padding: 5px 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    position: relative; /* For explosions */
 }
 
 nav a:hover {
-  background-color: #9e292b;
-  color: #f5f5f5;
+    background-color: var(--light-green);
+    color: var(--background);
+    transform: scale(1.1); /* Scale effect on hover */
 }
 
-#content {
-  max-width: 800px;
-  margin: 20px auto;
+/* Section Styling */
+section {
+    padding: 20px;
+    margin: 20px;
+    background-color: var(--dark-green);
+    border: 1px solid var(--light-green);
+    box-shadow: 0px 0px 10px var(--crimson);
+    border-radius: 8px;
+    color: var(--yellow);
+    animation: fadeIn 0.5s forwards; /* Fade-in effect */
 }
 
-.section {
-  margin-bottom: 30px;
+/* Fade-In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.section h3 {
-  margin-top: 0;
+/* Footer */
+footer {
+    background-color: var(--dark-green);
+    text-align: center;
+    padding: 10px;
+    color: var(--yellow);
+    margin-top: 20px;
+    animation: pulse 1s infinite; /* Pulsing effect */
 }
 
-.subsection {
-  margin-top: 20px;
-  padding: 10px;
-  border: 1px solid #9e292b;
-  border-radius: 4px;
+/* Pulsing Animation */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
 }
 
-.subsection h4 {
-  margin: 0;
-  color: #9e292b;
+/* Container */
+.container {
+    max-width: 800px; /* Narrower for that retro site feel */
+    margin: 0 auto;
 }
 
-#contact {
-  text-align: center;
-  margin-bottom: 30px;
+/* Button */
+.button {
+    background-color: var(--light-green);
+    color: var(--background);
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    font-weight: bold;
+    font-size: 1.1em;
+    border: 2px solid var(--crimson);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    position: relative; /* Positioning for explosion */
 }
 
-#contact ul {
-  list-style-type: none;
-  padding: 0;
+.button:hover {
+    background-color: var(--crimson);
+    transform: rotate(5deg) scale(1.1); /* Rotate and scale on hover */
 }
 
-#contact ul li {
-  margin-bottom: 10px;
+/* Table for Programme */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    animation: shake 0.5s infinite; /* Shaking effect */
 }
 
-#contact ul li a {
-  color: #53565a;
-  text-decoration: none;
-}
-.paper-button {
-  background-color: #9e292b;
-  color: #f5f5f5;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  text-decoration: none;
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
 }
 
-.paper-button:hover {
-  background-color: #f5f5f5;
-  color: #9e292b;
+table, th, td {
+    border: 1px solid var(--light-green);
 }
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    background-color: var(--dark-green);
+}
+
+th {
+    background-color: var(--crimson);
+    color: var(--yellow);
+}
+
+/* Dropdown Menu */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--dark-green);
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0 rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border: 2px solid var(--light-green);
+    animation: slideDown 0.3s; /* Slide down effect */
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-content a {
+    color: var(--yellow);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--light-green);
+}
+
+/* Show the dropdown on hover */
+.dropdown:hover .dropdown-content {
+    display: block; /* Show dropdown */
+}
+
+/* Additional styling for accessibility */
+.dropdown-content a:focus {
+    outline: none;
+    background-color: #e7e7e7; /* Background on focus */
+}
+
+/* Explosion Effects */
+.explosion {
+    position: absolute;
+    pointer-events: none; /* Prevent interference with mouse events */
+    animation: explode 0.5s forwards;
+}
+
+/* Keyframes for Explosions */
+@keyframes explode {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(5);
+        opacity: 0;
+    }
+}
+
+/* Sparkle Effect */
+.sparkle {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    pointer-events: none; /* Prevent interference with mouse events */
+    animation: sparkle 1.5s forwards;
+}
+
+/* Keyframes for Sparkles */
+@keyframes sparkle {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* Trigger Explosions on Hover */
+nav a:hover::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: explode 0.5s forwards;
+}
+
+.button:hover::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: explode 0.5s forwards;
+}
+
+/* Create Random Sparkles */
+@keyframes sparkleAnimation {
+    0% {
+        top: 0;
+        left: 0;
+    }
+    100% {
+        top: 100%;
+        left: 100%;
+    }
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('https://cdn.pixabay.com/photo/2021/02/19/18/57/sparkles-5801452_1280.png') repeat; /* Add a sparkle background */
+    opacity: 0.3;
+    animation: sparkleAnimation 10s infinite; /* Infinite sparkle animation */
+}
+
