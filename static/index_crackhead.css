@@ -1,0 +1,168 @@
+/* Base styling */
+body {
+    background: #111 url('https://www.toptal.com/designers/subtlepatterns/patterns/noise.png') repeat;
+    color: #00FF41;
+    font-family: monospace;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h2, h3, h4 {
+    color: #FF3D00;
+    text-shadow: 3px 3px 10px #000, -3px -3px 10px #FF3D00;
+}
+
+a {
+    color: #FF9900;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+/* Hover Animations */
+a::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: #FF9900;
+    transition: width 0.2s ease-in-out, left 0.2s ease-in-out;
+}
+
+a:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+button:hover {
+    color: #111;
+    background-color: #FF9900;
+    box-shadow: 0 0 15px #FF9900, 0 0 5px #FF3D00;
+    transform: rotate(-5deg);
+    cursor: pointer;
+}
+
+/* Section Headers */
+#header h2 {
+    animation: flicker 1.5s infinite alternate;
+}
+
+.section h3, .section h4 {
+    animation: slowPulse 3s infinite alternate;
+    transform-origin: center;
+}
+
+/* Keyframes */
+@keyframes slowPulse {
+    0% { opacity: 0.9; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 0.9; transform: scale(1); }
+}
+
+@keyframes flicker {
+    0%, 20%, 22%, 24%, 55%, 57%, 100% {
+        opacity: 1;
+    }
+    21%, 23%, 56% {
+        opacity: 0;
+    }
+}
+
+@keyframes slowRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Particle Background */
+#content {
+    position: relative;
+}
+
+@keyframes particleMovement {
+    0% { transform: translateY(0px); opacity: 1; }
+    100% { transform: translateY(-600px); opacity: 0; }
+}
+
+.particle {
+    position: absolute;
+    bottom: 0;
+    width: 3px;
+    height: 3px;
+    background-color: #FF9900;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: particleMovement 9s linear infinite;
+}
+
+/* Particle Generation */
+@keyframes generateParticles {
+    0% { opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0; }
+}
+
+#content:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/noise.png');
+    opacity: 0.15;
+    animation: generateParticles 8s linear infinite;
+}
+
+/* Borders and Shadows */
+.section {
+    border: 2px dotted #FF9900;
+    padding: 25px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 15px #FF9900, inset 0 0 15px #FF3D00;
+    transform: rotate(-1deg);
+    transition: transform 0.4s ease-in-out;
+}
+
+.section:hover {
+    transform: scale(1.04) rotate(1deg);
+}
+
+/* Buttons */
+button {
+    font-family: monospace;
+    padding: 10px 20px;
+    border: 2px solid #FF9900;
+    background: #111;
+    color: #FF9900;
+    box-shadow: 0 0 8px #FF3D00;
+    transition: 0.2s ease-in-out;
+    outline: none;
+}
+
+button:active {
+    transform: scale(0.95) rotate(-2deg);
+}
+
+button:hover {
+    background: #FF3D00;
+    color: #000;
+}
+
+/* Subtle Neon Glow */
+#header, #contact {
+    background: rgba(0, 0, 0, 0.85);
+    padding: 20px;
+    margin-top: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 20px #FF9900, inset 0 0 10px #FF3D00;
+}
+
+/* Media Query for Mobile */
+@media (max-width: 768px) {
+    #header, #content, #contact {
+        padding: 12px;
+    }
+}

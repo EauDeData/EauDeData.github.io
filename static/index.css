@@ -1,323 +1,128 @@
-/* Color Palette */
-:root {
-    --background: #000000; /* Dark background for that deep web feel */
-    --light-green: #00FF00; /* Bright green for text */
-    --dark-green: #004400; /* Dark green for headers */
-    --crimson: #DC143C; /* Crimson red for accents */
-    --yellow: #FFFF00; /* Bright yellow for highlights */
-    --gray: #CCCCCC; /* Light gray for softer elements */
-}
+/* CSS: A Dance of Spirit and Code, Inspired by the Cosmos */
 
-/* General Styling */
 body {
-    font-family: 'Courier New', Courier, monospace; /* Monospace font for that retro tech feel */
+    font-family: 'Georgia', serif; /* Classical typographic weight, like an existential whisper */
+    color: #333; /* Balanced between light and dark, a chiaroscuro of content */
+    background: #FAF9F6; /* A parchment canvas, hinting at the wisdom of ages */
+    line-height: 1.6; /* Breathing space, like an invocation echoing across a cathedral */
     margin: 0;
     padding: 0;
-    background-color: var(--background);
-    color: var(--light-green);
-    line-height: 1.6; /* More readable line height */
-    overflow: hidden; /* Prevent scrollbars from appearing */
-    position: relative; /* For positioning explosions */
 }
 
-/* Header */
-header {
-    background-color: var(--dark-green);
+#header {
+    background-color: #FFC0CB; /* Renaissance fresco meets '80s Miami mystique */
     padding: 20px;
     text-align: center;
-    color: var(--yellow);
-    font-size: 2em; /* Larger font for emphasis */
-    text-transform: uppercase; /* Make it feel more dramatic */
-    border-bottom: 3px solid var(--crimson); /* Bold underline */
-    animation: bounce 1.5s infinite; /* Bouncing animation */
-}
-
-/* Bouncing Animation */
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-10px);
-    }
-    60% {
-        transform: translateY(-5px);
-    }
-}
-
-/* Navigation Bar */
-nav {
-    display: flex;
-    justify-content: center;
-    background-color: var(--dark-green);
-    padding: 10px;
-    animation: slideIn 1s; /* Slide in animation */
-    position: relative;
-}
-
-/* Slide In Animation */
-@keyframes slideIn {
-    from {
-        transform: translateY(-100%);
-    }
-    to {
-        transform: translateY(0);
-    }
+    font-weight: bold; /* A typographic salute to Greek tragedy */
+    font-size: 1.5em; /* Monumental, but approachable */
 }
 
 nav a {
-    margin: 0 15px;
+    color: #00274D; /* Midnight blue, vast and contemplative */
     text-decoration: none;
-    color: var(--yellow);
-    font-weight: bold;
-    font-size: 1.2em; /* Slightly larger for visibility */
-    border: 2px solid var(--light-green);
-    padding: 5px 10px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    position: relative; /* For explosions */
+    font-weight: 600;
+    padding: 0 15px;
+    font-family: 'Arial', sans-serif;
 }
 
 nav a:hover {
-    background-color: var(--light-green);
-    color: var(--background);
-    transform: scale(1.1); /* Scale effect on hover */
+    color: #DAA520; /* A gilded glow, evoking Byzantine iconography */
 }
 
-/* Section Styling */
-section {
-    padding: 20px;
-    margin: 20px;
-    background-color: var(--dark-green);
-    border: 1px solid var(--light-green);
-    box-shadow: 0px 0px 10px var(--crimson);
-    border-radius: 8px;
-    color: var(--yellow);
-    animation: fadeIn 0.5s forwards; /* Fade-in effect */
+.section {
+    padding: 40px;
+    margin: 20px auto;
+    max-width: 800px;
+    background: #FFF8E7; /* Hints of illuminated manuscripts */
+    border-radius: 8px; /* Soft, as if cradling ancient knowledge */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* A whisper of dimensionality */
 }
 
-/* Fade-In Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Footer */
-footer {
-    background-color: var(--dark-green);
-    text-align: center;
-    padding: 10px;
-    color: var(--yellow);
-    margin-top: 20px;
-    animation: pulse 1s infinite; /* Pulsing effect */
-}
-
-/* Pulsing Animation */
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
-/* Container */
-.container {
-    max-width: 800px; /* Narrower for that retro site feel */
-    margin: 0 auto;
-}
-
-/* Button */
-.button {
-    background-color: var(--light-green);
-    color: var(--background);
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    display: inline-block;
+.subsection h4 {
+    font-size: 1.4em;
+    color: #00274D;
+    margin-bottom: 10px;
     font-weight: bold;
-    font-size: 1.1em;
-    border: 2px solid var(--crimson);
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    position: relative; /* Positioning for explosion */
 }
 
-.button:hover {
-    background-color: var(--crimson);
-    transform: rotate(5deg) scale(1.1); /* Rotate and scale on hover */
+.subsection p, .subsection a {
+    color: #444;
+    font-size: 1em;
 }
 
-/* Table for Programme */
-table {
+.subsection .abstract {
+    color: #555;
+    font-style: italic;
+    background: #FFF8E7;
+    padding: 10px;
+    border-left: 4px solid #FFC0CB;
+    margin-bottom: 20px;
+}
+
+.paper-button {
+    background-color: #DAA520;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.paper-button:hover {
+    transform: scale(1.05);
+    background-color: #B8860B; /* Like dusk settling on the horizon */
+}
+
+blockquote.twitter-tweet {
+    border-left: 3px solid #FFC0CB;
+    margin-left: 0;
+    padding-left: 15px;
+    color: #333;
+    font-style: italic;
+    background: #FAFAFA;
+}
+
+#heritage-projector-widget iframe,
+#interests-widget iframe {
+    border: none;
     width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    animation: shake 0.5s infinite; /* Shaking effect */
-}
-
-@keyframes shake {
-    0%, 100% {
-        transform: translateX(0);
-    }
-    25% {
-        transform: translateX(-5px);
-    }
-    75% {
-        transform: translateX(5px);
-    }
-}
-
-table, th, td {
-    border: 1px solid var(--light-green);
-}
-
-th, td {
-    padding: 12px;
-    text-align: left;
-    background-color: var(--dark-green);
-}
-
-th {
-    background-color: var(--crimson);
-    color: var(--yellow);
-}
-
-/* Dropdown Menu */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: var(--dark-green);
-    min-width: 200px;
-    box-shadow: 0px 8px 16px 0 rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border: 2px solid var(--light-green);
-    animation: slideDown 0.3s; /* Slide down effect */
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.dropdown-content a {
-    color: var(--yellow);
-    padding: 12px 16px;
-    text-decoration: none;
+    height: 300px;
     display: block;
+    margin: 20px auto;
 }
 
-.dropdown-content a:hover {
-    background-color: var(--light-green);
+a {
+    color: #DAA520;
 }
 
-/* Show the dropdown on hover */
-.dropdown:hover .dropdown-content {
-    display: block; /* Show dropdown */
+a:hover {
+    color: #B8860B; /* A sun-kissed transformation */
 }
 
-/* Additional styling for accessibility */
-.dropdown-content a:focus {
-    outline: none;
-    background-color: #e7e7e7; /* Background on focus */
+#contact {
+    background-color: #00274D;
+    color: white;
+    padding: 40px;
+    text-align: center;
 }
 
-/* Explosion Effects */
-.explosion {
-    position: absolute;
-    pointer-events: none; /* Prevent interference with mouse events */
-    animation: explode 0.5s forwards;
+#contact ul {
+    list-style: none;
+    padding: 0;
 }
 
-/* Keyframes for Explosions */
-@keyframes explode {
-    0% {
-        transform: scale(0);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(5);
-        opacity: 0;
-    }
+#contact ul li {
+    margin: 10px 0;
 }
 
-/* Sparkle Effect */
-.sparkle {
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    pointer-events: none; /* Prevent interference with mouse events */
-    animation: sparkle 1.5s forwards;
+#contact ul a {
+    color: #DAA520;
+    font-size: 1em;
+    text-decoration: none;
 }
 
-/* Keyframes for Sparkles */
-@keyframes sparkle {
-    0% {
-        transform: scale(0);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(2);
-        opacity: 0;
-    }
+#contact ul a:hover {
+    color: #B8860B;
 }
-
-/* Trigger Explosions on Hover */
-nav a:hover::after {
-    content: '';
-    width: 20px;
-    height: 20px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: explode 0.5s forwards;
-}
-
-.button:hover::after {
-    content: '';
-    width: 20px;
-    height: 20px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: explode 0.5s forwards;
-}
-
-/* Create Random Sparkles */
-@keyframes sparkleAnimation {
-    0% {
-        top: 0;
-        left: 0;
-    }
-    100% {
-        top: 100%;
-        left: 100%;
-    }
-}
-
-body::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: url('https://cdn.pixabay.com/photo/2021/02/19/18/57/sparkles-5801452_1280.png') repeat; /* Add a sparkle background */
-    opacity: 0.3;
-    animation: sparkleAnimation 10s infinite; /* Infinite sparkle animation */
-}
-
