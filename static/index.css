@@ -1,7 +1,9 @@
 /* General Style */
+@import url('https://fonts.cdnfonts.com/css/holly-bale');
+
 body {
-    font-family: 'Press Start 2P', sans-serif; /* 8-bit game font style */
-    background: radial-gradient(circle, #111, #000);
+    font-family: 'Holly Bale', sans-serif;
+        background: radial-gradient(circle, #111, #000);
     color: #f7f7f7;
     margin: 0;
     padding: 0;
