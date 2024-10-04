@@ -1,0 +1,128 @@
+/* CSS: A Dance of Spirit and Code, Inspired by the Cosmos */
+
+body {
+    font-family: 'Georgia', serif; /* Classical typographic weight, like an existential whisper */
+    color: #333; /* Balanced between light and dark, a chiaroscuro of content */
+    background: #FAF9F6; /* A parchment canvas, hinting at the wisdom of ages */
+    line-height: 1.6; /* Breathing space, like an invocation echoing across a cathedral */
+    margin: 0;
+    padding: 0;
+}
+
+#header {
+    background-color: #FFC0CB; /* Renaissance fresco meets '80s Miami mystique */
+    padding: 20px;
+    text-align: center;
+    font-weight: bold; /* A typographic salute to Greek tragedy */
+    font-size: 1.5em; /* Monumental, but approachable */
+}
+
+nav a {
+    color: #00274D; /* Midnight blue, vast and contemplative */
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0 15px;
+    font-family: 'Arial', sans-serif;
+}
+
+nav a:hover {
+    color: #DAA520; /* A gilded glow, evoking Byzantine iconography */
+}
+
+.section {
+    padding: 40px;
+    margin: 20px auto;
+    max-width: 800px;
+    background: #FFF8E7; /* Hints of illuminated manuscripts */
+    border-radius: 8px; /* Soft, as if cradling ancient knowledge */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* A whisper of dimensionality */
+}
+
+.subsection h4 {
+    font-size: 1.4em;
+    color: #00274D;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.subsection p, .subsection a {
+    color: #444;
+    font-size: 1em;
+}
+
+.subsection .abstract {
+    color: #555;
+    font-style: italic;
+    background: #FFF8E7;
+    padding: 10px;
+    border-left: 4px solid #FFC0CB;
+    margin-bottom: 20px;
+}
+
+.paper-button {
+    background-color: #DAA520;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.paper-button:hover {
+    transform: scale(1.05);
+    background-color: #B8860B; /* Like dusk settling on the horizon */
+}
+
+blockquote.twitter-tweet {
+    border-left: 3px solid #FFC0CB;
+    margin-left: 0;
+    padding-left: 15px;
+    color: #333;
+    font-style: italic;
+    background: #FAFAFA;
+}
+
+#heritage-projector-widget iframe,
+#interests-widget iframe {
+    border: none;
+    width: 100%;
+    height: 300px;
+    display: block;
+    margin: 20px auto;
+}
+
+a {
+    color: #DAA520;
+}
+
+a:hover {
+    color: #B8860B; /* A sun-kissed transformation */
+}
+
+#contact {
+    background-color: #00274D;
+    color: white;
+    padding: 40px;
+    text-align: center;
+}
+
+#contact ul {
+    list-style: none;
+    padding: 0;
+}
+
+#contact ul li {
+    margin: 10px 0;
+}
+
+#contact ul a {
+    color: #DAA520;
+    font-size: 1em;
+    text-decoration: none;
+}
+
+#contact ul a:hover {
+    color: #B8860B;
+}

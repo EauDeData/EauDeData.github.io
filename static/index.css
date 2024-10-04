@@ -1,128 +1,187 @@
-/* CSS: A Dance of Spirit and Code, Inspired by the Cosmos */
-
+/* General Style */
 body {
-    font-family: 'Georgia', serif; /* Classical typographic weight, like an existential whisper */
-    color: #333; /* Balanced between light and dark, a chiaroscuro of content */
-    background: #FAF9F6; /* A parchment canvas, hinting at the wisdom of ages */
-    line-height: 1.6; /* Breathing space, like an invocation echoing across a cathedral */
+    font-family: 'Press Start 2P', sans-serif; /* 8-bit game font style */
+    background: radial-gradient(circle, #111, #000);
+    color: #f7f7f7;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
 }
 
+/* Header */
 #header {
-    background-color: #FFC0CB; /* Renaissance fresco meets '80s Miami mystique */
-    padding: 20px;
     text-align: center;
-    font-weight: bold; /* A typographic salute to Greek tragedy */
-    font-size: 1.5em; /* Monumental, but approachable */
+    padding: 30px;
+    background-color: #2d2d2d;
+    border-bottom: 6px solid #aa0000;
+    box-shadow: 0 8px 20px rgba(255, 0, 0, 0.7);
+    animation: slamDown 1s ease-in-out;
 }
 
+#header h2 {
+    color: #ff1e1e;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Nav Links */
 nav a {
-    color: #00274D; /* Midnight blue, vast and contemplative */
+    color: #ff6666;
     text-decoration: none;
-    font-weight: 600;
-    padding: 0 15px;
-    font-family: 'Arial', sans-serif;
+    margin: 0 20px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+    position: relative;
 }
 
 nav a:hover {
-    color: #DAA520; /* A gilded glow, evoking Byzantine iconography */
+    color: #fff;
 }
 
+nav a::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    bottom: -5px;
+    left: 0;
+    background-color: #ff1e1e;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+}
+
+nav a:hover::after {
+    transform: scaleX(1);
+}
+
+/* Sections */
 .section {
     padding: 40px;
-    margin: 20px auto;
-    max-width: 800px;
-    background: #FFF8E7; /* Hints of illuminated manuscripts */
-    border-radius: 8px; /* Soft, as if cradling ancient knowledge */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* A whisper of dimensionality */
+    margin: 50px auto;
+    width: 95%;
+    max-width: 850px;
+    background: #222;
+    border: 4px solid #aa0000;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+    animation: flamePulse 4s ease-in-out infinite;
+    transition: transform 0.4s ease-in-out;
+}
+
+.section:hover {
+    transform: scale(1.1) rotate(-2deg);
+}
+
+/* Subsections */
+.subsection {
+    margin-bottom: 50px;
 }
 
 .subsection h4 {
-    font-size: 1.4em;
-    color: #00274D;
-    margin-bottom: 10px;
-    font-weight: bold;
+    font-size: 1.8rem;
+    color: #ff3333;
+    text-align: center;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    animation: shakeText 1s infinite;
 }
 
-.subsection p, .subsection a {
-    color: #444;
-    font-size: 1em;
+.subsection p {
+    font-size: 1.1rem;
+    color: #ddd;
+    line-height: 1.8;
 }
 
-.subsection .abstract {
-    color: #555;
-    font-style: italic;
-    background: #FFF8E7;
-    padding: 10px;
-    border-left: 4px solid #FFC0CB;
-    margin-bottom: 20px;
-}
-
+/* Buttons */
 .paper-button {
-    background-color: #DAA520;
-    color: white;
-    font-weight: bold;
-    padding: 10px 20px;
-    border: none;
+    background-color: #ff0000;
+    border: 2px solid #aa0000;
+    color: #fff;
+    padding: 12px 25px;
+    font-size: 1rem;
     border-radius: 5px;
-    cursor: pointer;
-    transition: transform 0.3s;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    animation: shakeButton 0.5s ease-in-out infinite alternate;
+    box-shadow: 0px 8px 16px rgba(255, 0, 0, 0.3);
 }
 
 .paper-button:hover {
-    transform: scale(1.05);
-    background-color: #B8860B; /* Like dusk settling on the horizon */
+    transform: scale(1.2) rotate(5deg);
+    box-shadow: 0px 12px 24px rgba(255, 0, 0, 0.7);
+    background: #8b0000;
 }
 
-blockquote.twitter-tweet {
-    border-left: 3px solid #FFC0CB;
-    margin-left: 0;
-    padding-left: 15px;
-    color: #333;
-    font-style: italic;
-    background: #FAFAFA;
+/* Animations */
+@keyframes flamePulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5), 0 0 20px rgba(255, 0, 0, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 69, 0, 0.7), 0 0 40px rgba(255, 69, 0, 1);
+    }
 }
 
-#heritage-projector-widget iframe,
-#interests-widget iframe {
-    border: none;
-    width: 100%;
-    height: 300px;
-    display: block;
-    margin: 20px auto;
+@keyframes slamDown {
+    0% {
+        transform: translateY(-100px);
+    }
+    100% {
+        transform: translateY(0);
+    }
 }
 
-a {
-    color: #DAA520;
+@keyframes shakeText {
+    0% { transform: rotate(0); }
+    25% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+    75% { transform: rotate(-1deg); }
+    100% { transform: rotate(0); }
 }
 
-a:hover {
-    color: #B8860B; /* A sun-kissed transformation */
+@keyframes shakeButton {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(-3px); }
+    100% { transform: translateX(3px); }
 }
 
+/* Contact Info */
 #contact {
-    background-color: #00274D;
-    color: white;
-    padding: 40px;
+    padding: 30px;
     text-align: center;
+    background-color: #333;
+    border-top: 4px solid #aa0000;
 }
 
-#contact ul {
-    list-style: none;
-    padding: 0;
+#contact h2 {
+    color: #ff1e1e;
+    font-size: 2rem;
+    animation: shakeText 1s infinite;
 }
 
-#contact ul li {
-    margin: 10px 0;
-}
-
-#contact ul a {
-    color: #DAA520;
-    font-size: 1em;
+#contact a {
+    color: #ff6666;
     text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
 }
 
-#contact ul a:hover {
-    color: #B8860B;
+#contact a:hover {
+    color: #ff1e1e;
+}
+
+/* Footer */
+footer {
+    background-color: #1a1a1a;
+    color: #888;
+    font-size: 0.8rem;
+    padding: 20px;
+    text-align: center;
+    border-top: 2px solid #555;
 }
