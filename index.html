@@ -2,14 +2,14 @@
 <html>
 <head>
     <title>A. Molina CVC Page</title>
-    <link rel="stylesheet" href="./static/index.css">
+    <link rel="stylesheet" href="./static/index_whimsical.css">
 </head>
 <body>
     <div id="header">
         <h2>A. Molina CVC Page</h2>
         <nav>
             <a href="#heritage-management">Heritage Management</a>
-            <a href="#document-understanding">Document Understanding</a>
+            <a href="#document-understanding">Research</a>
             <a href="#teaching-resources">Teaching Resources</a>
             <a href="#recommended-lectures">Recommended Lectures</a>
         </nav>
@@ -18,65 +18,23 @@
     <div id="content">
         <div class="section" id="heritage-management">
             <h3>Heritage Management</h3>
-            <div class="subsection" id="tinder-historic">
-                <h4>Tinder Historic</h4>
-                <p>Web under development...</p>
-            </div>
+            I have a thing for heritage anagement and digital humanities...
+            <br>
+            If you want to further read about it...
+            <br>
+            <br>
+            <a href="./heritage.html">
 
-            <div class="subsection" id="twitter-bot">
-                <h4>Twitter Bot</h4>
-                <p>
-                  A Twitter bot can be used with the following objectives:
-                </p>
-                <ol>
-                  <li>
-                    <a>Outreach: Increase awareness of XAC tasks by promoting interactivity with the public.</a>
-                  </li>
-                  <li>
-                    <a>Collection: Gather data from the public through crowdsourcing using familiar social media channels.</a>
-                  </li>
-                  <li>
-                    <a>Service: Provide image dating service for anyone with curiosity.</a>
-                  </li>
-                </ol>
-                <div>
-                  <blockquote class="twitter-tweet" data-align="center">
-                    <p lang="en" dir="ltr">
-                      @eau_de_gespa - From similar images, I estimate this one was taken around 1957 with an uncertainty of 9.4 years.
-                      <a href="https://t.co/ENl4m6on2U">pic.twitter.com/ENl4m6on2U</a>
-                    </p>&mdash; DEW-Estimator (@DEWEstimator)
-                    <a href="https://twitter.com/DEWEstimator/status/1407377043927584771?ref_src=twsrc%5Etfw">June 22, 2021</a>
-                  </blockquote>
-                  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                </div>
-            </div>
-              
-
-            <div class="subsection" id="hits4xac">
-                <h4>HIST4XAC</h4>
-                <p class="abstract">
-                  The Heritage Intelligent Support Tool for the Comarcal Archives Network (HIST4XAC) is a web visualization tool and data profiler designed to provide archivists and social scientists with a collection of services and utilities based on deep learning and computer vision. The tool incorporates information search tools for large volumes of data and enables the estimation of dates for the analyzed documents and images.
-                </p>
-                <a href="https://ddd.uab.cat/record/264631">
-                  <button class="paper-button">Read TFG</button>
-                </a>
-              </div>
-              
-            <div class="subsection" id="automatic-heritage-annotation">
-                <h4>Automatic Heritage Annotation</h4>
-                <p>Web under development...</p>
-            </div>
-            <div class="subsection" id="image-collection-projectors">
-                <h4>Image Collection Projectors</h4>
-                <p>
-                    Explore the distribution of a given set of data and model using the Heritage Projector. The Heritage Projector is a visualization tool that allows you to analyze and interact with image collections. It provides features like captioning and retrieval using a Flask service.
-                </p>
+                <button class="paper-button">Read More!</button>
+            </a> 
+            <br>
+            <p><div class="subsection" id="image-collection-projectors">
                 <div id="heritage-projector-widget"></div>
                 <script>
                     // Embed the Heritage Projector widget
                     const widgetContainer = document.getElementById("heritage-projector-widget");
                     const iframe = document.createElement("iframe");
-                    iframe.src = "./master/projectors/www.heritage.projector/map.html";
+                    iframe.src = "http://dagapp.cvc.uab.es/sports_web/mapa_xpp_global/web/map.html#2/-69.3/84.0";
                     iframe.width = "50%";
                     iframe.height = "300px";
                     iframe.style.border = "none";
@@ -87,77 +45,43 @@
                   
                 <p>
                     Explore the Heritage Projector repository on GitHub:
-                    <a href="https://github.com/EauDeData/cvc-dataset-projector">https://github.com/EauDeData/cvc-dataset-projector</a>
+                    <a href="https://github.com/EauDeData/cvc-dataset-projector">EauDeData/cvc-dataset-projector</a>
                 </p>
-            </div>
-            <div class="subsection" id="outreach">
-              <h4>Outreach</h4>
-              <div>
-                <blockquote class="twitter-tweet" data-align="center" data-conversation="none" data-theme="dark">
-                  <p lang="ca" dir="ltr">Com ensenyem els ordinadors a llegir documents demogràfics? I a relacionar una mateixa persona en documents diferents?<br><br>👉 Ho explica <a href="https://twitter.com/adreau_?ref_src=twsrc%5Etfw">@adreau_</a> <a href="https://twitter.com/hashtag/CVC?src=hash&amp;ref_src=twsrc%5Etfw">#CVC</a> a través del projecte <a href="https://twitter.com/XarxaRecerCaixa?ref_src=twsrc%5Etfw">@XarxaRecerCaixa</a>! <a href="https://twitter.com/hashtag/ExperimentAI?src=hash&amp;ref_src=twsrc%5Etfw">#ExperimentAI</a>
-                    <a href="https://t.co/HNiUfdJJLR">pic.twitter.com/HNiUfdJJLR</a></p>&mdash; CVC_UAB (@CVC_UAB)
-                  <a href="https://twitter.com/CVC_UAB/status/1658844895640006656?ref_src=twsrc%5Etfw">May 17, 2023</a>
-                </blockquote>
-              </div>
-            </div>
-            
-            <div class="subsection" id="xxss">
-                <h4>Xarxes</h4>
-                <p>Involved in "Xarxes": A social network for our history.</p>
-                <iframe src="http://158.109.8.76/xarxes/" width="100%" height="600px" style="border: none;"></iframe>
-            </div>
+
+                <p>
+                    And an overview of some applications:
+                    <a href="http://dagapp.cvc.uab.es/xpp_portal/">XPP Portal</a>
+                </p>
+            </div>   </p>         
               
               
         </div>
 
         <div class="section" id="document-understanding">
-            <h3>Document Understanding</h3>
-            <div class="subsection" id="document-understanding">
-                <h4>Bridging Cross-Modal Alignment for OCR-Free
-                    Content Retrieval in Scanned Documents (Under Review)</h4>
-                <p>
-This work focuses on understanding the behaviors of historical document understanding methods from a retrieval perspective. We address the challenge of image retrieval falling short of text-based models’
-performance, akin to the case in word spotting where text representations are unnecessary. We propose an approach emphasizing visual-based
-understanding to bridge this gap. By scrutinizing the model’s inference process, we aim to uncover whether it prioritizes efficient keyword spot-
-ting, similar to the cognitive human visual system, or employs opaque
-shortcuts. Our research provides valuable insights into these model behaviors and capabilities. We explore the model’s responses under various conditions, including named entity awareness, keyword presence, and
-topics related to document degradation, layout and other visual features.
-This study advances our understanding of these models and their potential for efficient document understanding in situations where recognition
-is not a suitable solution.
-                </p>
-              </div>
-              
-            <div class="subsection" id="date-estimation-paper">
-                <h4>Date Estimation in the Wild of Scanned Historical Photos: An Image Retrieval Approach (ICDAR 2021)</h4>
-                <p class="abstract">
-                    Date estimation of historical document images is a challenging problem, with several contributions in the literature that lack the ability to generalize from one dataset to others. This paper presents a robust date estimation system based on a retrieval approach that generalizes well in front of heterogeneous collections. We use a ranking loss function named smooth-nDCG to train a Convolutional Neural Network that learns an ordination of documents for each problem. One of the main usages of the presented approach is as a tool for historical contextual retrieval. It means that scholars could perform comparative analysis of historical images from big datasets in terms of the period where they were produced. We provide experimental evaluation on different types of documents from real datasets of manuscript and newspaper images.
-                </p>
-                <a href="https://link.springer.com/chapter/10.1007/978-3-030-86331-9_20">
-                    <button class="paper-button">Read Paper</button>
-                </a>
-            </div>
-            <div class="subsection" id="learning-to-rank-words-paper">
-                <h4>Learning to Rank Words: Optimizing Ranking Metrics for Word Spotting (ICDAR 2021) (co-author)</h4>
-                <p class="abstract">
-                    In this paper, we explore and evaluate the use of ranking-based objective functions for learning simultaneously a word string and a word image encoder. We consider retrieval frameworks in which the user expects a retrieval list ranked according to a defined relevance score. In the context of a word spotting problem, the relevance score has been set according to the string edit distance from the query string. We experimentally demonstrate the competitive performance of the proposed model on query-by-string word spotting for both handwritten and real scene word images. We also provide the results for query-by-example word spotting, although it is not the main focus of this work.
-                </p>
-                <a href="https://link.springer.com/chapter/10.1007/978-3-030-86331-9_25">
-                    <button class="paper-button">Read Paper</button>
-                </a>
-            </div>
-            <div class="subsection" id="generic-image-retrieval-paper">
-                <h4>A Generic Image Retrieval Method for Date Estimation of Historical Document Collections (DAS 2022)</h4>
-                <p class="abstract">
-                    Date estimation of historical document images is a challenging problem, with several contributions in the literature that lack the ability to generalize from one dataset to others. This paper presents a robust date estimation system based on a retrieval approach that generalizes well in front of heterogeneous collections. We use a ranking loss function named smooth-nDCG to train a Convolutional Neural Network that learns an ordination of documents for each problem. One of the main usages of the presented approach is as a tool for historical contextual retrieval. It means that scholars could perform comparative analysis of historical images from big datasets in terms of the period where they were produced. We provide experimental evaluation on different types of documents from real datasets of manuscript and newspaper images.
-                </p>
-                <a href="https://link.springer.com/chapter/10.1007/978-3-031-06555-2_39">
-                    <button class="paper-button">Read Paper</button>
-                </a>
-            </div>
+            <h3>Research</h3>
+            My main contributions to SCIENCE!
+            <br>
+            Find in this section my work around document understanding and information retrieval on historical sources.
+            <br>
+            <br>
+            <a href="./research.html">
+
+                <button class="paper-button">Read More!</button>
+            </a> 
+            <br>
+
+            <img src="./static/images/fas_boe.png" width="100%">
         </div>
 
         <div class="section" id="teaching-resources">
-              
+            <h3>Teaching</h3>
+            Student projects I supervised.
+            <br>
+            <br>
+            <a href="./teaching.html">
+
+                <button class="paper-button">Read More!</button>
+            </a>
         </div>
 
         <div class="section" id="recommended-lectures">
@@ -180,7 +104,15 @@ Some of the most successful knowledge graph embedding (KGE) models for link pred
                     <button class="paper-button">Read Paper</button>
                 </a>
             </div>
-            
+            <div class="subsection" id="relational_proxies">
+                <h4>Relational Proxies: Emergent Relationships as Fine-Grained Discriminators</h4>
+                <p class="abstract">
+                    Fine-grained categories that largely share the same set of parts cannot be discriminated based on part information alone, as they mostly differ in the way the local parts relate to the overall global structure of the object. We propose Relational Proxies, a novel approach that leverages the relational information between the global and local views of an object for encoding its semantic label. Starting with a rigorous formalization of the notion of distinguishability between fine-grained categories, we prove the necessary and sufficient conditions that a model must satisfy in order to learn the underlying decision boundaries in the fine-grained setting. We design Relational Proxies based on our theoretical findings and evaluate it on seven challenging fine-grained benchmark datasets and achieve state-of-the-art results on all of them, surpassing the performance of all existing works with a margin exceeding 4% in some cases. We also experimentally validate our theory on fine-grained distinguishability and obtain consistent results across multiple benchmarks. 
+                    </p>
+                <a href="https://arxiv.org/abs/2210.02149">    
+                    <button class="paper-button">Read Paper</button>
+                </a>
+            </div>
         </div>
 
         <div class="section" id="interests">
