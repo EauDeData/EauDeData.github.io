@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Report Ranking | Concurs de Joves Epidemiòlegs</title>
+    <link rel="stylesheet" href="../static/index_whimsical.css">
+</head>
+<body>
+    <div id="header">
+        <h2>Report Ranking by Single Day Error</h2>
+        <nav>
+            <a href="../index.html">Torna a Casa</a>
+            <a href="./ranking.html">Puja Resultats</a>
+
+        </nav>
+    </div>
+
+    <div class="section">
+        <h2 style="text-align:center;">Informe de Classificació per Error d'un Sol Dia</h2>
+        <table id="rankingTable" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #FFC0CB;">
+                    <th style="padding: 10px; border: 1px solid #ccc;">Rang</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Nom de l'Equip</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">NIU</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Error Total MSE</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Error MSE d'un Sol Dia</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Error MSE de Cinc Dies</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Error MSE de Deu Dies</th>
+        
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be populated here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchRanking() {
+            try {
+                const response = await fetch('http://158.109.8.44:8080/covid_chalenge/load_ranking');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch ranking data');
+                }
+                const ranking = await response.json();
+
+                const rankingTableBody = document.getElementById('rankingTable').querySelector('tbody');
+                rankingTableBody.innerHTML = ''; // Clear existing data
+
+                ranking.forEach((report, index) => {
+                    const row = rankingTableBody.insertRow();
+                    row.insertCell(0).textContent = index + 1;
+                    row.insertCell(1).textContent = report.team_name;
+                    row.insertCell(2).textContent = report.niu;
+                    row.insertCell(3).textContent = report.total_error.toFixed(3);
+                    row.insertCell(3).textContent = report.single_day_error.toFixed(3);
+                    row.insertCell(3).textContent = report.five_days_error.toFixed(3);
+                    row.insertCell(3).textContent = report.ten_days_error.toFixed(3);
+
+
+                    // Add some basic styling for rows
+                    row.style.backgroundColor = index % 2 === 0 ? '#FFF8E7' : '#FAFAFA';
+                    row.style.border = '1px solid #ccc';
+                });
+            } catch (error) {
+                console.error('Error loading ranking:', error);
+            }
+        }
+
+        // Fetch ranking data on page load
+        window.onload = fetchRanking;
+    </script>
+
+</body>
+</html>

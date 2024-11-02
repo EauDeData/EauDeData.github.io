@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Report | Concurs de Joves Epidemiòlegs</title>
+    <link rel="stylesheet" href="../static/index_whimsical.css">
+</head>
+<body>
+    <div id="header">
+        <h2>Formulari | Concurs de Joves Epidemiòlegs</h2>
+        <nav>
+            <a href="../index.html">Torna a Casa</a>
+            <a href="./ranking.html">Consulta Resultats</a>
+
+        </nav>
+    </div>
+
+    <div class="section">
+        <h2 style="text-align:center;">Upload Report Data</h2>
+        <form id="uploadForm" enctype="multipart/form-data" class="paper-button">
+            <label for="team_name">Team Name:</label>
+            <input type="text" id="team_name" name="team_name" required class="subsection">
+            <br>
+            <label for="niu">NIU:</label>
+            <input type="text" id="niu" name="niu" required class="subsection">
+            <br>
+
+            <label for="file">Upload Graph Data (Pickle File):</label>
+            <input type="file" id="file" name="file" accept=".pkl" required class="subsection">
+            <br>
+
+            <button type="button" onclick="submitForm()" class="paper-button">Submit Report</button>
+        </form>
+        
+        <p id="responseMessage" style="text-align:center; font-size:1.1em;"></p>
+    </div>
+
+    <script>
+        async function submitForm() {
+            const form = document.getElementById('uploadForm');
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('http://158.109.8.44:8080/covid_chalenge/submit_report', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('responseMessage').textContent = result.message;
+                    document.getElementById('responseMessage').style.color = 'green';
+                } else {
+                    document.getElementById('responseMessage').textContent = result.error;
+                    document.getElementById('responseMessage').style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                document.getElementById('responseMessage').textContent = 'Submission failed. Please try again.';
+                document.getElementById('responseMessage').style.color = 'red';
+            }
+        }
+    </script>
+</body>
+</html>
