@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Interactive Timeline</title>
+    <title>Adrià Molina, CV</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/vis-timeline/7.7.2/vis-timeline-graph2d.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-timeline/7.7.2/vis-timeline-graph2d.min.js"></script>
     <style>
@@ -172,15 +172,68 @@ a:hover {
         height: 200px;
         border: none;
     }
+    .category-studies {
+    border-color: #4caf50;
+    background-color: #a5d6a7;
+    color: #1b5e20;
+    }
+
+    .category-job {
+        border-color: #2196f3;
+        background-color: #90caf9;
+        color: #0d47a1;
+    }
+
+    .category-project {
+        border-color: #ff9800;
+        background-color: #ffcc80;
+        color: #e65100;
+    }
+
+    .category-divulga {
+        border-color: #9c27b0;
+        background-color: #ce93d8;
+        color: #4a148c;
+    }
+
+    .category-hack {
+        border-color: #f44336;
+        background-color: #ef9a9a;
+        color: #b71c1c;
+    }
+
+    .category-conference {
+        border-color: #00bcd4;
+        background-color: #80deea;
+        color: #006064;
+    }
+
+    .category-paper {
+        border-color: #8bc34a;
+        background-color: #dcedc8;
+        color: #33691e;
+    }
+
+    .category-award {
+        border-color: #ffeb3b;
+        background-color: #fff9c4;
+        color: #f57f17;
+    }
+
     </style>
+
 </head>
 <body>
+
     <div id="header">
-        <h2>Interactive Timeline</h2>
+        <h2>Adrià Molina, CV</h2>
     </div>
+    <nav>
+        <a href="../index.html">Torna a la pàgina principal.</a>
+    </nav>
     <div id="timeline"></div>
     <script>
-        const events = [{"name": "Enginyeria de Dades", "start_date": "2018-09-12", "end_date": "2022-07-01", "category": "studies", "href": "https://ddd.uab.cat/record/264631?ln=ca", "id": 1}, {"name": "Intern de Recerca", "start_date": "2019-05-01", "end_date": "2021-07-01", "category": "job", "href": "", "id": 2}, {"name": "Enginyer de Recerca", "start_date": "2021-09-01", "end_date": "2023-11-07", "category": "job", "href": "https://eaudedata.github.io/heritage.html", "id": 3}, {"name": "Investigador Pre-Doctoral", "start_date": "2023-11-08", "end_date": "2027-11-09", "category": "job", "href": "https://orcid.org/0000-0003-0167-8756", "id": 4}, {"name": "Projecte FECYT", "start_date": "2021-07-01", "end_date": "2021-10-01", "category": "project", "href": "https://x.com/DEWEstimator/status/1407377043927584771", "id": 5}, {"name": "Master Interuniversitari en Visi\u00f3 per Computador", "start_date": "2022-10-10", "end_date": "2023-09-17", "category": "studies", "href": "https://ddd.uab.cat/pub/trerecpro/2023/284333/MolinaAdria_TFM.pdf", "id": 6}, {"name": "ExperimentAI", "start_date": "2023-05-17", "end_date": null, "category": "divulga", "href": "https://x.com/CVC_UAB/status/1658844895640006656", "id": 7}, {"name": "Professor Associat UAB", "start_date": "2022-09-11", "end_date": "2023-02-01", "category": "job", "href": "", "id": 8}, {"name": "CVC Hackathon Organizer", "start_date": "2024-02-06", "end_date": "2024-02-07", "category": "hack", "href": "https://x.com/CVC_UAB/status/1755269170613154003", "id": 9}, {"name": "Participant a la Primera MamutHack", "start_date": "2019-10-05", "end_date": "2019-10-07", "category": "hack", "href": "https://x.com/CoordInformUAB/status/1180399937672101889", "id": 10}, {"name": "DAS22", "start_date": "2022-05-21", "end_date": "2022-05-26", "category": "conference", "href": "https://x.com/CVC_UAB/status/1529121113833365504", "id": 11}, {"name": "Document Date Estimation", "start_date": "2022-05-21", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-031-06555-2_39", "id": 12}, {"name": "Date-Sensitive Historical Photograph Retrieval", "start_date": "2021-09-02", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-030-86331-9_20", "id": 13}, {"name": "ICDAR2021", "start_date": "2021-09-02", "end_date": "2021-09-09", "category": "conference", "href": "", "id": 14}, {"name": "ECCV2024 (workshops)", "start_date": "2024-09-29", "end_date": "2024-10-01", "category": "conference", "href": "https://x.com/CVC_UAB/status/1841115365876568438", "id": 15}, {"name": "ICDAR2024", "start_date": "2024-08-31", "end_date": "2024-09-05", "category": "conference", "href": "https://x.com/CVC_UAB/status/1831976923012227505", "id": 16}, {"name": "Runner-Up Best DAS2024 Student Paper", "start_date": "2024-09-02", "end_date": null, "category": "award", "href": "https://x.com/CVC_UAB/status/1831976926434807959", "id": 17}, {"name": "Best ICDAR2024 Doctoral Consortium", "start_date": "2024-09-05", "end_date": null, "category": "award", "href": "https://x.com/CVC_UAB/status/1831701139030413469", "id": 18}, {"name": "Best CVCRD2024 Presenetation", "start_date": "2024-07-19", "end_date": null, "category": "award", "href": "", "id": 19}, {"name": "SCE2024", "start_date": "2024-11-05", "end_date": null, "category": "divulga", "href": "https://x.com/CVC_UAB/status/1853862491152871739", "id": 20}, {"name": "Formaci\u00f3 en Disseminaci\u00f3", "start_date": "2024-10-16", "end_date": "2024-10-21", "category": "studies", "href": "https://x.com/CVC_UAB/status/1848268880784851296", "id": 21}, {"name": "Formaci\u00f3 G\u00e8nere i Ci\u00e8ncia", "start_date": "2024-12-02", "end_date": null, "category": "studies", "href": "https://x.com/CVC_UAB/status/1863527989792686204", "id": 22}, {"name": "Formaci\u00f3 Salut Mental i Ci\u00e8ncia", "start_date": "2024-10-10", "end_date": "2025-10-10", "category": "studies", "href": "", "id": 23}, {"name": "AinaHack Participant", "start_date": "2024-11-08", "end_date": "2024-11-09", "category": "hack", "href": "https://x.com/CVC_UAB/status/1856996528390295717", "id": 24}, {"name": "Impulsor Projecte Transfer\u00e8ncia CatDIH Arxius", "start_date": "2024-10-01", "end_date": "2025-09-01", "category": "", "href": null, "id": 25}, {"name": "Object-Centric Date Estimation", "start_date": "2024-03-22", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-031-56063-7_9", "id": 26}, {"name": "FAS: Large Scale Historical Document Retrieval", "start_date": "2024-09-10", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-031-70442-0_21", "id": 27}, {"name": "Learning To Rank Words", "start_date": "2021-09-02", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-030-86331-9_25", "id": 28}, {"name": "RAG per Documentaci\u00f3 Legal (supervisor)", "start_date": "2024-01-07", "end_date": "2024-07-01", "category": "project", "href": "https://ddd.uab.cat/record/300044?ln=ca", "id": 29}, {"name": "Models Generatius per Descripci\u00f3 en Catal\u00e0 (supervisor)", "start_date": "2024-01-07", "end_date": "2024-07-01", "category": "project", "href": "", "id": 30}, {"name": "Cerca Massiva de Paraules Clau per BOE Hist\u00f2ric (supervisor)", "start_date": "2024-01-07", "end_date": "2024-07-01", "category": "project", "href": "", "id": 31}, {"name": "Structured Analysis of Historical Handwritten Ciphers", "start_date": "2024-10-01", "end_date": null, "category": "paper", "href": "https://arxiv.org/pdf/2410.21913", "id": 32}, {"name": "The Role of Generative Systems in Historical Photography Management", "start_date": "2024-10-01", "end_date": null, "category": "paper", "href": "https://arxiv.org/pdf/2409.03911", "id": 33}, {"name": "Faster extraction of matrimonial advertisements", "start_date": "2024-04-30", "end_date": null, "category": "paper", "href": "https://www.tandfonline.com/doi/abs/10.1080/1081602X.2024.2416946", "id": 34}];
+        const events = [{"name": "Projecte FECYT", "start_date": "2021-07-01", "end_date": "2021-10-01", "category": "project", "href": "https://x.com/DEWEstimator/status/1407377043927584771", "id": 1}, {"name": "Master Interuniversitari en Visi\u00f3 per Computador", "start_date": "2022-10-10", "end_date": "2023-09-17", "category": "studies", "href": "https://ddd.uab.cat/pub/trerecpro/2023/284333/MolinaAdria_TFM.pdf", "id": 2}, {"name": "Best ICDAR2024 Doctoral Consortium", "start_date": "2024-09-05", "end_date": null, "category": "award", "href": "https://x.com/CVC_UAB/status/1831701139030413469", "id": 3}, {"name": "CVC Hackathon Organizer", "start_date": "2024-02-06", "end_date": "2024-02-07", "category": "hack", "href": "https://x.com/CVC_UAB/status/1755269170613154003", "id": 4}, {"name": "SCE2024", "start_date": "2024-11-05", "end_date": null, "category": "divulga", "href": "https://x.com/CVC_UAB/status/1853862491152871739", "id": 5}, {"name": "Best CVCRD2024 Presenetation", "start_date": "2024-07-19", "end_date": null, "category": "award", "href": "", "id": 6}, {"name": "Enginyeria de Dades", "start_date": "2018-09-12", "end_date": "2022-07-01", "category": "studies", "href": "https://ddd.uab.cat/record/264631?ln=ca", "id": 7}, {"name": "Professor Associat UAB", "start_date": "2022-09-11", "end_date": "2023-02-01", "category": "job", "href": "", "id": 8}, {"name": "AinaHack Participant", "start_date": "2024-11-08", "end_date": "2024-11-09", "category": "hack", "href": "https://x.com/CVC_UAB/status/1856996528390295717", "id": 9}, {"name": "FAS: Large Scale Historical Document Retrieval", "start_date": "2024-09-10", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-031-70442-0_21", "id": 10}, {"name": "Formaci\u00f3 Salut Mental i Ci\u00e8ncia", "start_date": "2024-10-10", "end_date": "2025-10-10", "category": "studies", "href": "", "id": 11}, {"name": "Object-Centric Date Estimation", "start_date": "2024-03-22", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-031-56063-7_9", "id": 12}, {"name": "Formaci\u00f3 en Disseminaci\u00f3", "start_date": "2024-10-16", "end_date": "2024-10-21", "category": "studies", "href": "https://x.com/CVC_UAB/status/1848268880784851296", "id": 13}, {"name": "ECCV2024 (workshops)", "start_date": "2024-09-29", "end_date": "2024-10-01", "category": "conference", "href": "https://x.com/CVC_UAB/status/1841115365876568438", "id": 14}, {"name": "Investigador Pre-Doctoral", "start_date": "2023-11-08", "end_date": "2027-11-09", "category": "job", "href": "https://orcid.org/0000-0003-0167-8756", "id": 15}, {"name": "Learning To Rank Words", "start_date": "2021-09-02", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-030-86331-9_25", "id": 16}, {"name": "Participant a la Primera MamutHack", "start_date": "2019-10-05", "end_date": "2019-10-07", "category": "hack", "href": "https://x.com/CoordInformUAB/status/1180399937672101889", "id": 17}, {"name": "ExperimentAI", "start_date": "2023-05-17", "end_date": null, "category": "divulga", "href": "https://x.com/CVC_UAB/status/1658844895640006656", "id": 18}, {"name": "The Role of Generative Systems in Historical Photography Management", "start_date": "2024-10-01", "end_date": null, "category": "paper", "href": "https://arxiv.org/pdf/2409.03911", "id": 19}, {"name": "Date-Sensitive Historical Photograph Retrieval", "start_date": "2021-09-02", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-030-86331-9_20", "id": 20}, {"name": "Cerca Massiva de Paraules Clau per BOE Hist\u00f2ric (supervisor)", "start_date": "2024-01-07", "end_date": "2024-07-01", "category": "project", "href": "", "id": 21}, {"name": "Formaci\u00f3 G\u00e8nere i Ci\u00e8ncia", "start_date": "2024-12-02", "end_date": null, "category": "studies", "href": "https://x.com/CVC_UAB/status/1863527989792686204", "id": 22}, {"name": "ICDAR2024", "start_date": "2024-08-31", "end_date": "2024-09-05", "category": "conference", "href": "https://x.com/CVC_UAB/status/1831976923012227505", "id": 23}, {"name": "Document Date Estimation", "start_date": "2022-05-21", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-031-06555-2_39", "id": 24}, {"name": "RAG per Documentaci\u00f3 Legal (supervisor)", "start_date": "2024-01-07", "end_date": "2024-07-01", "category": "project", "href": "https://ddd.uab.cat/record/300044?ln=ca", "id": 25}, {"name": "Runner-Up Best DAS2024 Student Paper", "start_date": "2024-09-02", "end_date": null, "category": "award", "href": "https://x.com/CVC_UAB/status/1831976926434807959", "id": 26}, {"name": "Intern de Recerca", "start_date": "2019-05-01", "end_date": "2021-07-01", "category": "job", "href": "", "id": 27}, {"name": "Models Generatius per Descripci\u00f3 en Catal\u00e0 (supervisor)", "start_date": "2024-01-07", "end_date": "2024-07-01", "category": "project", "href": "", "id": 28}, {"name": "Structured Analysis of Historical Handwritten Ciphers", "start_date": "2024-10-01", "end_date": null, "category": "paper", "href": "https://arxiv.org/pdf/2410.21913", "id": 29}, {"name": "Impulsor Projecte Transfer\u00e8ncia CatDIH Arxius", "start_date": "2024-10-01", "end_date": "2025-09-01", "category": "", "href": null, "id": 30}, {"name": "DAS22", "start_date": "2022-05-21", "end_date": "2022-05-26", "category": "conference", "href": "https://x.com/CVC_UAB/status/1529121113833365504", "id": 31}, {"name": "Faster extraction of matrimonial advertisements", "start_date": "2024-04-30", "end_date": null, "category": "paper", "href": "https://www.tandfonline.com/doi/abs/10.1080/1081602X.2024.2416946", "id": 32}, {"name": "Enginyer de Recerca", "start_date": "2021-09-01", "end_date": "2023-11-07", "category": "job", "href": "https://eaudedata.github.io/heritage.html", "id": 33}, {"name": "ICDAR2021", "start_date": "2021-09-02", "end_date": "2021-09-09", "category": "conference", "href": "", "id": 34}];
         
         const items = new vis.DataSet(events.map(event => ({
             id: event.id,
@@ -188,9 +241,10 @@ a:hover {
             start: event.start_date,
             end: event.end_date,
             type: event.end_date ? 'range' : 'point',
-            className: `category-${event.category}`,
+            className: `category-$conference`, // Dynamic class based on category
             href: event.href
         })));
+
         
         const options = {
             height: '500px',

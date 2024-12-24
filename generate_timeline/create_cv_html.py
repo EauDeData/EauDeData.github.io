@@ -1,6 +1,7 @@
 import csv
 import json
 from datetime import datetime
+import random
 
 def parse_date(date_str):
     if not date_str:
@@ -18,7 +19,7 @@ def generate_html(events):
     html_content = f"""<!DOCTYPE html>
 <html>
 <head>
-    <title>Interactive Timeline</title>
+    <title>Adrià Molina, CV</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/vis-timeline/7.7.2/vis-timeline-graph2d.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-timeline/7.7.2/vis-timeline-graph2d.min.js"></script>
     <style>
@@ -62,12 +63,65 @@ def generate_html(events):
         height: 200px;
         border: none;
     }}
+    .category-studies {{
+    border-color: #4caf50;
+    background-color: #a5d6a7;
+    color: #1b5e20;
+    }}
+
+    .category-job {{
+        border-color: #2196f3;
+        background-color: #90caf9;
+        color: #0d47a1;
+    }}
+
+    .category-project {{
+        border-color: #ff9800;
+        background-color: #ffcc80;
+        color: #e65100;
+    }}
+
+    .category-divulga {{
+        border-color: #9c27b0;
+        background-color: #ce93d8;
+        color: #4a148c;
+    }}
+
+    .category-hack {{
+        border-color: #f44336;
+        background-color: #ef9a9a;
+        color: #b71c1c;
+    }}
+
+    .category-conference {{
+        border-color: #00bcd4;
+        background-color: #80deea;
+        color: #006064;
+    }}
+
+    .category-paper {{
+        border-color: #8bc34a;
+        background-color: #dcedc8;
+        color: #33691e;
+    }}
+
+    .category-award {{
+        border-color: #ffeb3b;
+        background-color: #fff9c4;
+        color: #f57f17;
+    }}
+
     </style>
+
 </head>
 <body>
+
     <div id="header">
-        <h2>Interactive Timeline</h2>
+        <h2>Adrià Molina, CV</h2>
     </div>
+    <nav>
+        <a href="../index.html">Torna a la pàgina principal.</a>
+    </nav>
     <div id="timeline"></div>
     <script>
         const events = {json.dumps(events)};
@@ -78,9 +132,10 @@ def generate_html(events):
             start: event.start_date,
             end: event.end_date,
             type: event.end_date ? 'range' : 'point',
-            className: `category-${{event.category}}`,
+            className: `category-${event.get("category")}`, // Dynamic class based on category
             href: event.href
         }})));
+
         
         const options = {{
             height: '500px',
@@ -148,7 +203,8 @@ def main():
                 'category': row['category'],
                 'href': row['href']
             })
-    
+            
+    random.shuffle(events)
     html_content = generate_html(events)
     
     with open('timeline.html', 'w') as file:
