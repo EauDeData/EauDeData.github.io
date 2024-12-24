@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Timeline</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis-timeline/7.7.2/vis-timeline-graph2d.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-timeline/7.7.2/vis-timeline-graph2d.min.js"></script>
+    <style>
+    /* CSS: A Dance of Spirit and Code, Inspired by the Cosmos */
+
+body {
+    font-family: 'Georgia', serif; /* Classical typographic weight, like an existential whisper */
+    color: #333; /* Balanced between light and dark, a chiaroscuro of content */
+    background: #FAF9F6; /* A parchment canvas, hinting at the wisdom of ages */
+    line-height: 1.6; /* Breathing space, like an invocation echoing across a cathedral */
+    margin: 0;
+    padding: 0;
+}
+
+#header {
+    background-color: #FFC0CB; /* Renaissance fresco meets '80s Miami mystique */
+    padding: 20px;
+    text-align: center;
+    font-weight: bold; /* A typographic salute to Greek tragedy */
+    font-size: 1.5em; /* Monumental, but approachable */
+}
+
+nav a {
+    color: #00274D; /* Midnight blue, vast and contemplative */
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0 15px;
+    font-family: 'Arial', sans-serif;
+}
+
+nav a:hover {
+    color: #DAA520; /* A gilded glow, evoking Byzantine iconography */
+}
+
+.section {
+    padding: 40px;
+    margin: 20px auto;
+    max-width: 800px;
+    background: #FFF8E7; /* Hints of illuminated manuscripts */
+    border-radius: 8px; /* Soft, as if cradling ancient knowledge */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* A whisper of dimensionality */
+}
+
+.subsection h4 {
+    font-size: 1.4em;
+    color: #00274D;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.subsection p, .subsection a {
+    color: #444;
+    font-size: 1em;
+}
+
+.subsection .abstract {
+    color: #555;
+    font-style: italic;
+    background: #FFF8E7;
+    padding: 10px;
+    border-left: 4px solid #FFC0CB;
+    margin-bottom: 20px;
+}
+
+.paper-button {
+    background-color: #DAA520;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.paper-button:hover {
+    transform: scale(1.05);
+    background-color: #B8860B; /* Like dusk settling on the horizon */
+}
+
+blockquote.twitter-tweet {
+    border-left: 3px solid #FFC0CB;
+    margin-left: 0;
+    padding-left: 15px;
+    color: #333;
+    font-style: italic;
+    background: #FAFAFA;
+}
+
+#heritage-projector-widget iframe,
+#interests-widget iframe {
+    border: none;
+    width: 100%;
+    height: 300px;
+    display: block;
+    margin: 20px auto;
+}
+
+a {
+    color: #DAA520;
+}
+
+a:hover {
+    color: #B8860B; /* A sun-kissed transformation */
+}
+
+#contact {
+    background-color: #00274D;
+    color: white;
+    padding: 40px;
+    text-align: center;
+}
+
+#contact ul {
+    list-style: none;
+    padding: 0;
+}
+
+#contact ul li {
+    margin: 10px 0;
+}
+
+#contact ul a {
+    color: #DAA520;
+    font-size: 1em;
+    text-decoration: none;
+}
+
+#contact ul a:hover {
+    color: #B8860B;
+}
+    
+    #timeline {
+        width: 100%;
+        height: 600px;
+        margin: 20px 0;
+    }
+    
+    .vis-item {
+        border-color: #aa0000;
+        background-color: #222;
+        color: #f7f7f7;
+        font-family: 'Holly Bale', sans-serif;
+    }
+    
+    .vis-item.vis-selected {
+        background-color: #ff0000;
+    }
+    
+    .timeline-tooltip {
+        position: absolute;
+        background: #333;
+        border: 2px solid #aa0000;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        max-width: 300px;
+        z-index: 1000;
+    }
+    
+    .timeline-tooltip img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .timeline-tooltip iframe {
+        width: 100%;
+        height: 200px;
+        border: none;
+    }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h2>Interactive Timeline</h2>
+    </div>
+    <div id="timeline"></div>
+    <script>
+        const events = [{"name": "Enginyeria de Dades", "start_date": "2018-09-12", "end_date": "2022-07-01", "category": "studies", "href": "https://ddd.uab.cat/record/264631?ln=ca", "id": 1}, {"name": "Intern de Recerca", "start_date": "2019-05-01", "end_date": "2021-07-01", "category": "job", "href": "", "id": 2}, {"name": "Enginyer de Recerca", "start_date": "2021-09-01", "end_date": "2023-11-07", "category": "job", "href": "https://eaudedata.github.io/heritage.html", "id": 3}, {"name": "Investigador Pre-Doctoral", "start_date": "2023-11-08", "end_date": "2027-11-09", "category": "job", "href": "https://orcid.org/0000-0003-0167-8756", "id": 4}, {"name": "Projecte FECYT", "start_date": "2021-07-01", "end_date": "2021-10-01", "category": "project", "href": "https://x.com/DEWEstimator/status/1407377043927584771", "id": 5}, {"name": "Master Interuniversitari en Visi\u00f3 per Computador", "start_date": "2022-10-10", "end_date": "2023-09-17", "category": "studies", "href": "https://ddd.uab.cat/pub/trerecpro/2023/284333/MolinaAdria_TFM.pdf", "id": 6}, {"name": "ExperimentAI", "start_date": "2023-05-17", "end_date": null, "category": "divulga", "href": "https://x.com/CVC_UAB/status/1658844895640006656", "id": 7}, {"name": "Professor Associat UAB", "start_date": "2022-09-11", "end_date": "2023-02-01", "category": "job", "href": "", "id": 8}, {"name": "CVC Hackathon Organizer", "start_date": "2024-02-06", "end_date": "2024-02-07", "category": "hack", "href": "https://x.com/CVC_UAB/status/1755269170613154003", "id": 9}, {"name": "Participant a la Primera MamutHack", "start_date": "2019-10-05", "end_date": "2019-10-07", "category": "hack", "href": "https://x.com/CoordInformUAB/status/1180399937672101889", "id": 10}, {"name": "DAS22", "start_date": "2022-05-21", "end_date": "2022-05-26", "category": "conference", "href": "https://x.com/CVC_UAB/status/1529121113833365504", "id": 11}, {"name": "Document Date Estimation", "start_date": "2022-05-21", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-031-06555-2_39", "id": 12}, {"name": "Date-Sensitive Historical Photograph Retrieval", "start_date": "2021-09-02", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-030-86331-9_20", "id": 13}, {"name": "ICDAR2021", "start_date": "2021-09-02", "end_date": "2021-09-09", "category": "conference", "href": "", "id": 14}, {"name": "ECCV2024 (workshops)", "start_date": "2024-09-29", "end_date": "2024-10-01", "category": "conference", "href": "https://x.com/CVC_UAB/status/1841115365876568438", "id": 15}, {"name": "ICDAR2024", "start_date": "2024-08-31", "end_date": "2024-09-05", "category": "conference", "href": "https://x.com/CVC_UAB/status/1831976923012227505", "id": 16}, {"name": "Runner-Up Best DAS2024 Student Paper", "start_date": "2024-09-02", "end_date": null, "category": "award", "href": "https://x.com/CVC_UAB/status/1831976926434807959", "id": 17}, {"name": "Best ICDAR2024 Doctoral Consortium", "start_date": "2024-09-05", "end_date": null, "category": "award", "href": "https://x.com/CVC_UAB/status/1831701139030413469", "id": 18}, {"name": "Best CVCRD2024 Presenetation", "start_date": "2024-07-19", "end_date": null, "category": "award", "href": "", "id": 19}, {"name": "SCE2024", "start_date": "2024-11-05", "end_date": null, "category": "divulga", "href": "https://x.com/CVC_UAB/status/1853862491152871739", "id": 20}, {"name": "Formaci\u00f3 en Disseminaci\u00f3", "start_date": "2024-10-16", "end_date": "2024-10-21", "category": "studies", "href": "https://x.com/CVC_UAB/status/1848268880784851296", "id": 21}, {"name": "Formaci\u00f3 G\u00e8nere i Ci\u00e8ncia", "start_date": "2024-12-02", "end_date": null, "category": "studies", "href": "https://x.com/CVC_UAB/status/1863527989792686204", "id": 22}, {"name": "Formaci\u00f3 Salut Mental i Ci\u00e8ncia", "start_date": "2024-10-10", "end_date": "2025-10-10", "category": "studies", "href": "", "id": 23}, {"name": "AinaHack Participant", "start_date": "2024-11-08", "end_date": "2024-11-09", "category": "hack", "href": "https://x.com/CVC_UAB/status/1856996528390295717", "id": 24}, {"name": "Impulsor Projecte Transfer\u00e8ncia CatDIH Arxius", "start_date": "2024-10-01", "end_date": "2025-09-01", "category": "", "href": null, "id": 25}, {"name": "Object-Centric Date Estimation", "start_date": "2024-03-22", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-031-56063-7_9", "id": 26}, {"name": "FAS: Large Scale Historical Document Retrieval", "start_date": "2024-09-10", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-031-70442-0_21", "id": 27}, {"name": "Learning To Rank Words", "start_date": "2021-09-02", "end_date": null, "category": "paper", "href": "https://link.springer.com/chapter/10.1007/978-3-030-86331-9_25", "id": 28}, {"name": "RAG per Documentaci\u00f3 Legal (supervisor)", "start_date": "2024-01-07", "end_date": "2024-07-01", "category": "project", "href": "https://ddd.uab.cat/record/300044?ln=ca", "id": 29}, {"name": "Models Generatius per Descripci\u00f3 en Catal\u00e0 (supervisor)", "start_date": "2024-01-07", "end_date": "2024-07-01", "category": "project", "href": "", "id": 30}, {"name": "Cerca Massiva de Paraules Clau per BOE Hist\u00f2ric (supervisor)", "start_date": "2024-01-07", "end_date": "2024-07-01", "category": "project", "href": "", "id": 31}, {"name": "Structured Analysis of Historical Handwritten Ciphers", "start_date": "2024-10-01", "end_date": null, "category": "paper", "href": "https://arxiv.org/pdf/2410.21913", "id": 32}, {"name": "The Role of Generative Systems in Historical Photography Management", "start_date": "2024-10-01", "end_date": null, "category": "paper", "href": "https://arxiv.org/pdf/2409.03911", "id": 33}, {"name": "Faster extraction of matrimonial advertisements", "start_date": "2024-04-30", "end_date": null, "category": "paper", "href": "https://www.tandfonline.com/doi/abs/10.1080/1081602X.2024.2416946", "id": 34}];
+        
+        const items = new vis.DataSet(events.map(event => ({
+            id: event.id,
+            content: event.name,
+            start: event.start_date,
+            end: event.end_date,
+            type: event.end_date ? 'range' : 'point',
+            className: `category-${event.category}`,
+            href: event.href
+        })));
+        
+        const options = {
+            height: '500px',
+            orientation: 'top',
+            stack: true,
+            zoomMin: 1000 * 60 * 60 * 24 * 30,
+            zoomMax: 1000 * 60 * 60 * 24 * 365 * 5
+        };
+        
+        const container = document.getElementById('timeline');
+        const timeline = new vis.Timeline(container, items, options);
+        
+        let tooltip = null;
+        
+        timeline.on('itemover', (properties) => {
+            const item = items.get(properties.item);
+            if (item.href) {
+                if (!tooltip) {
+                    tooltip = document.createElement('div');
+                    tooltip.className = 'timeline-tooltip';
+                    document.body.appendChild(tooltip);
+                }
+                
+                const isImage = /\.(jpg|jpeg|png|gif)$/i.test(item.href);
+                tooltip.innerHTML = isImage 
+                    ? `<img src="${item.href}" alt="${item.content}">`
+                    : `<iframe src="${item.href}"></iframe>`;
+                
+                const rect = properties.event.target.getBoundingClientRect();
+                tooltip.style.left = `${rect.left}px`;
+                tooltip.style.top = `${rect.bottom + 10}px`;
+            }
+        });
+        
+        timeline.on('itemout', () => {
+            if (tooltip) {
+                tooltip.remove();
+                tooltip = null;
+            }
+        });
+        
+        timeline.on('click', (properties) => {
+            if (properties.item) {
+                const item = items.get(properties.item);
+                if (item.href) {
+                    window.open(item.href, '_blank');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
