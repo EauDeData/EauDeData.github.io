@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualitzador de Cronologia de Google Maps</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            background-color: #9242f4;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .content {
+            display: flex;
+            flex: 1;
+        }
+        
+        .sidebar {
+            width: 300px;
+            padding: 1rem;
+            background-color: #f1f1f1;
+            overflow-y: auto;
+        }
+        
+        #map {
+            flex: 1;
+            height: 100%;
+        }
+        
+        .upload-container {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 2px dashed #ccc;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .upload-container:hover {
+            border-color: #9242f4;
+            background-color: #e8f0fe;
+        }
+        
+        .stats-container {
+            margin-top: 1rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1rem;
+        }
+        
+        .legend {
+            padding: 0.5rem;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 1rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 10px;
+            margin-right: 0.5rem;
+        }
+        
+        button {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+        
+        button:hover {
+            background-color: #9242f4;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid #4285f4;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Visualitzador de Cronologia de Google Maps</h1>
+        </div>
+        
+        <div class="content">
+            <div class="sidebar">
+                <div class="upload-container" id="uploadContainer">
+                    <p>Arrossega i deixa anar el teu fitxer JSON de Google Maps aquí</p>
+                    <p>O</p>
+                    <input type="file" id="fileInput" style="display: none;" accept=".json">
+                    <button id="selectFileBtn">Seleccionar Fitxer</button>
+                </div>
+                
+                <div class="controls">
+                    <h3>Controls de Visualització</h3>
+                    <div>
+                        <label for="segmentOpacity">Opacitat del camí d'activitat:</label>
+                        <input type="range" id="segmentOpacity" min="0.1" max="1" step="0.1" value="0.6">
+                    </div>
+                    <div>
+                        <label for="segmentWeight">Gruix del camí d'activitat:</label>
+                        <input type="range" id="segmentWeight" min="2" max="10" step="1" value="4">
+                    </div>
+                    <div>
+                        <label for="pathOpacity">Opacitat del camí de cronologia:</label>
+                        <input type="range" id="pathOpacity" min="0.1" max="1" step="0.1" value="0.4">
+                    </div>
+                    <div>
+                        <label for="pathWeight">Gruix del camí de cronologia:</label>
+                        <input type="range" id="pathWeight" min="2" max="10" step="1" value="3">
+                    </div>
+                    <div>
+                        <input type="checkbox" id="showActivities" checked>
+                        <label for="showActivities">Mostrar activitats</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="showVisits" checked>
+                        <label for="showVisits">Mostrar visites</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="showTimelinePaths" checked>
+                        <label for="showTimelinePaths">Mostrar camins de cronologia</label>
+                    </div>
+                </div>
+                
+                <div class="stats-container">
+                    <h3>Estadístiques</h3>
+                    <div id="stats">
+                        <p>Carrega un fitxer per veure estadístiques</p>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <h3>Llegenda</h3>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #4285f4;"></div>
+                        <span>Activitats (A peu)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #0f9d58;"></div>
+                        <span>Activitats (Vehicle)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #db4437;"></div>
+                        <span>Activitats (Desconegut)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #9c27b0; border-radius: 50%;"></div>
+                        <span>Punts de visita</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff9800;"></div>
+                        <span>Camins de cronologia</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="map"></div>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map
+            const map = L.map('map').setView([0, 0], 2);
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap & CartoDB',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+            
+            // Layer groups for different data types
+            const activitiesLayer = L.layerGroup().addTo(map);
+            const visitsLayer = L.layerGroup().addTo(map);
+            const timelinePathsLayer = L.layerGroup().addTo(map);
+            
+            // File handling
+            const fileInput = document.getElementById('fileInput');
+            const uploadContainer = document.getElementById('uploadContainer');
+            const selectFileBtn = document.getElementById('selectFileBtn');
+            const loading = document.getElementById('loading');
+            
+            // Controls
+            const segmentOpacity = document.getElementById('segmentOpacity');
+            const segmentWeight = document.getElementById('segmentWeight');
+            const pathOpacity = document.getElementById('pathOpacity');
+            const pathWeight = document.getElementById('pathWeight');
+            const showActivities = document.getElementById('showActivities');
+            const showVisits = document.getElementById('showVisits');
+            const showTimelinePaths = document.getElementById('showTimelinePaths');
+            
+            // Handle drag and drop
+            uploadContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadContainer.style.borderColor = '#4285f4';
+                uploadContainer.style.backgroundColor = '#e8f0fe';
+            });
+            
+            uploadContainer.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadContainer.style.borderColor = '#ccc';
+                uploadContainer.style.backgroundColor = '';
+            });
+            
+            uploadContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadContainer.style.borderColor = '#ccc';
+                uploadContainer.style.backgroundColor = '';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+            
+            selectFileBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+            
+            // Handle file processing
+            function handleFile(file) {
+                if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+                    alert('Si us plau, selecciona un fitxer JSON');
+                    return;
+                }
+                
+                loading.style.display = 'flex';
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        processData(data);
+                    } catch (error) {
+                        console.error('Error analitzant JSON:', error);
+                        alert('Error analitzant el fitxer JSON. Si us plau, assegura\'t que té un format JSON vàlid.');
+                    } finally {
+                        loading.style.display = 'none';
+                    }
+                };
+                
+                reader.onerror = () => {
+                    alert('Error llegint el fitxer');
+                    loading.style.display = 'none';
+                };
+                
+                reader.readAsText(file);
+            }
+            
+            // Process JSON data and visualize on map
+            function processData(data) {
+                // Clear previous data
+                activitiesLayer.clearLayers();
+                visitsLayer.clearLayers();
+                timelinePathsLayer.clearLayers();
+                
+                if (!data.semanticSegments || !Array.isArray(data.semanticSegments)) {
+                    alert('Format de dades no vàlid. S\'esperava un JSON amb una matriu semanticSegments.');
+                    return;
+                }
+                
+                const bounds = L.latLngBounds();
+                const activities = [];
+                const visits = [];
+                const timelinePaths = [];
+                
+                // Process each semantic segment
+                data.semanticSegments.forEach(segment => {
+                    if (segment.activity) {
+                        // Process activity segments (movements)
+                        processActivity(segment, bounds, activities);
+                    } else if (segment.visit) {
+                        // Process visit points
+                        processVisit(segment, bounds, visits);
+                    } else if (segment.timelinePath) {
+                        // Process timeline paths
+                        processTimelinePath(segment, bounds, timelinePaths);
+                    }
+                });
+                
+                // Fit map to bounds
+                if (!bounds.isValid()) {
+                    map.setView([0, 0], 2);
+                } else {
+                    map.fitBounds(bounds);
+                }
+                
+                // Update statistics
+                updateStatistics(activities, visits, timelinePaths);
+            }
+            
+            // Process activity segments
+            function processActivity(segment, bounds, activities) {
+                if (!segment.activity.start || !segment.activity.end) return;
+                
+                // Parse lat/lng strings from the format "41.524559°, 2.1264009°"
+                const startLatLng = parseLatLng(segment.activity.start.latLng);
+                const endLatLng = parseLatLng(segment.activity.end.latLng);
+                
+                if (!startLatLng || !endLatLng) return;
+                
+                // Determine color based on activity type
+                let color = '#db4437'; // Red for unknown
+                if (segment.activity.topCandidate) {
+                    if (segment.activity.topCandidate.type === 'WALKING') {
+                        color = '#4285f4'; // Blue for walking
+                    } else if (segment.activity.topCandidate.type === 'IN_PASSENGER_VEHICLE') {
+                        color = '#0f9d58'; // Green for vehicle
+                    }
+                }
+                
+                // Create polyline for activity
+                const activityPath = L.polyline(
+                    [
+                        [startLatLng.lat, startLatLng.lng],
+                        [endLatLng.lat, endLatLng.lng]
+                    ],
+                    {
+                        color: color,
+                        weight: parseInt(segmentWeight.value),
+                        opacity: parseFloat(segmentOpacity.value)
+                    }
+                );
+                
+                // Add popup with details
+                let popupContent = '<div><strong>Activitat</strong><br>';
+                if (segment.startTime && segment.endTime) {
+                    popupContent += `Temps: ${formatDate(segment.startTime)} - ${formatDate(segment.endTime)}<br>`;
+                }
+                if (segment.activity.distanceMeters) {
+                    popupContent += `Distància: ${formatDistance(segment.activity.distanceMeters)}<br>`;
+                }
+                if (segment.activity.topCandidate && segment.activity.topCandidate.type) {
+                    popupContent += `Tipus: ${formatActivityType(segment.activity.topCandidate.type)}<br>`;
+                }
+                popupContent += '</div>';
+                
+                activityPath.bindPopup(popupContent);
+                activitiesLayer.addLayer(activityPath);
+                
+                bounds.extend([startLatLng.lat, startLatLng.lng]);
+                bounds.extend([endLatLng.lat, endLatLng.lng]);
+                
+                activities.push({
+                    startTime: segment.startTime,
+                    endTime: segment.endTime,
+                    type: segment.activity.topCandidate ? segment.activity.topCandidate.type : 'UNKNOWN',
+                    distance: segment.activity.distanceMeters
+                });
+            }
+            
+            // Process visit points
+            function processVisit(segment, bounds, visits) {
+                if (!segment.visit || !segment.visit.topCandidate || !segment.visit.topCandidate.placeLocation) return;
+                
+                // Parse lat/lng string
+                const latLng = parseLatLng(segment.visit.topCandidate.placeLocation.latLng);
+                if (!latLng) return;
+                
+                // Create marker for visit point
+                const marker = L.circleMarker([latLng.lat, latLng.lng], {
+                    radius: 8,
+                    fillColor: '#9c27b0', // Purple for visits
+                    color: '#fff',
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
+                
+                // Add popup with details
+                let popupContent = '<div><strong>Visita</strong><br>';
+                if (segment.startTime && segment.endTime) {
+                    popupContent += `Temps: ${formatDate(segment.startTime)} - ${formatDate(segment.endTime)}<br>`;
+                    popupContent += `Durada: ${calculateDuration(segment.startTime, segment.endTime)}<br>`;
+                }
+                if (segment.visit.topCandidate.placeId) {
+                    popupContent += `ID del lloc: ${segment.visit.topCandidate.placeId}<br>`;
+                }
+                if (segment.visit.topCandidate.semanticType) {
+                    popupContent += `Tipus: ${segment.visit.topCandidate.semanticType}<br>`;
+                }
+                if (segment.visit.probability) {
+                    popupContent += `Probabilitat: ${(segment.visit.probability * 100).toFixed(1)}%<br>`;
+                }
+                popupContent += '</div>';
+                
+                marker.bindPopup(popupContent);
+                visitsLayer.addLayer(marker);
+                
+                bounds.extend([latLng.lat, latLng.lng]);
+                
+                visits.push({
+                    startTime: segment.startTime,
+                    endTime: segment.endTime,
+                    placeId: segment.visit.topCandidate.placeId,
+                    semanticType: segment.visit.topCandidate.semanticType,
+                    probability: segment.visit.probability
+                });
+            }
+            
+            // Process timeline paths
+            function processTimelinePath(segment, bounds, timelinePaths) {
+                if (!segment.timelinePath || !Array.isArray(segment.timelinePath) || segment.timelinePath.length === 0) return;
+                
+                const points = [];
+                const timelinePoints = [];
+                
+                // Process each point in the timeline path
+                segment.timelinePath.forEach(point => {
+                    const latLng = parseLatLng(point.point);
+                    if (!latLng) return;
+                    
+                    points.push([latLng.lat, latLng.lng]);
+                    bounds.extend([latLng.lat, latLng.lng]);
+                    
+                    timelinePoints.push({
+                        lat: latLng.lat,
+                        lng: latLng.lng,
+                        time: point.time
+                    });
+                    
+                    // Add small marker for each timeline point
+                    const pointMarker = L.circleMarker([latLng.lat, latLng.lng], {
+                        radius: 3,
+                        fillColor: '#ff9800', // Orange for timeline points
+                        color: '#fff',
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                    
+                    pointMarker.bindPopup(`<strong>Punt de cronologia</strong><br>Temps: ${formatDate(point.time)}`);
+                    timelinePathsLayer.addLayer(pointMarker);
+                });
+                
+                // Create polyline for timeline path if there are at least 2 points
+                if (points.length >= 2) {
+                    const pathLine = L.polyline(points, {
+                        color: '#ff9800', // Orange for timeline paths
+                        weight: parseInt(pathWeight.value),
+                        opacity: parseFloat(pathOpacity.value),
+                        dashArray: '5, 10' // Make it dashed to distinguish from activities
+                    });
+                    
+                    // Add popup with details
+                    let popupContent = '<div><strong>Camí de cronologia</strong><br>';
+                    if (segment.startTime && segment.endTime) {
+                        popupContent += `Interval de temps: ${formatDate(segment.startTime)} - ${formatDate(segment.endTime)}<br>`;
+                    }
+                    popupContent += `Punts: ${points.length}<br>`;
+                    popupContent += '</div>';
+                    
+                    pathLine.bindPopup(popupContent);
+                    timelinePathsLayer.addLayer(pathLine);
+                }
+                
+                timelinePaths.push({
+                    startTime: segment.startTime,
+                    endTime: segment.endTime,
+                    points: timelinePoints
+                });
+            }
+            
+            // Helper function to parse lat/lng strings
+            function parseLatLng(latLngStr) {
+                if (!latLngStr) return null;
+                
+                // Format example: "41.524559°, 2.1264009°"
+                const parts = latLngStr.split(',');
+                if (parts.length !== 2) return null;
+                
+                const lat = parseFloat(parts[0].replace('°', '').trim());
+                const lng = parseFloat(parts[1].replace('°', '').trim());
+                
+                if (isNaN(lat) || isNaN(lng)) return null;
+                
+                return { lat, lng };
+            }
+            
+            // Format date for display
+            function formatDate(dateStr) {
+                if (!dateStr) return 'Desconegut';
+                
+                try {
+                    const date = new Date(dateStr);
+                    return date.toLocaleString();
+                } catch (e) {
+                    return dateStr;
+                }
+            }
+            
+            // Calculate duration between two dates
+            function calculateDuration(startStr, endStr) {
+                if (!startStr || !endStr) return 'Desconegut';
+                
+                try {
+                    const start = new Date(startStr);
+                    const end = new Date(endStr);
+                    const diff = (end - start) / 1000; // in seconds
+                    
+                    if (diff < 60) {
+                        return `${Math.round(diff)} segons`;
+                    } else if (diff < 3600) {
+                        return `${Math.round(diff / 60)} minuts`;
+                    } else if (diff < 86400) {
+                        const hours = Math.floor(diff / 3600);
+                        const minutes = Math.floor((diff % 3600) / 60);
+                        return `${hours} hora${hours !== 1 ? 'es' : ''} ${minutes} minut${minutes !== 1 ? 's' : ''}`;
+                    } else {
+                        const days = Math.floor(diff / 86400);
+                        const hours = Math.floor((diff % 86400) / 3600);
+                        return `${days} dia${days !== 1 ? 'es' : ''} ${hours} hora${hours !== 1 ? 'es' : ''}`;
+                    }
+                } catch (e) {
+                    return 'Error calculant la durada';
+                }
+            }
+            
+            // Format distance for display
+            function formatDistance(meters) {
+                if (!meters) return 'Desconegut';
+                
+                if (meters < 1000) {
+                    return `${Math.round(meters)} metres`;
+                } else {
+                    return `${(meters / 1000).toFixed(2)} km`;
+                }
+            }
+            
+            // Format activity type for display
+            function formatActivityType(type) {
+                if (!type) return 'Desconegut';
+                
+                // Replace underscores with spaces and capitalize each word
+                return type.replace(/_/g, ' ').toLowerCase().replace(/(?:^|\s)\S/g, function(a) {
+                    return a.toUpperCase();
+                });
+            }
+            
+            // Update statistics display
+            function updateStatistics(activities, visits, timelinePaths) {
+                const statsContainer = document.getElementById('stats');
+                
+                // Calculate statistics
+                const totalActivities = activities.length;
+                const totalVisits = visits.length;
+                const totalPaths = timelinePaths.length;
+                
+                let totalDistance = 0;
+                let activityTypes = {};
+                
+                activities.forEach(activity => {
+                    if (activity.distance) {
+                        totalDistance += activity.distance;
+                    }
+                    
+                    if (activity.type) {
+                        activityTypes[activity.type] = (activityTypes[activity.type] || 0) + 1;
+                    }
+                });
+                
+                // Calculate date range
+                let minDate = null;
+                let maxDate = null;
+                
+                const allItems = [...activities, ...visits, ...timelinePaths];
+                allItems.forEach(item => {
+                    if (item.startTime) {
+                        const start = new Date(item.startTime);
+                        if (!minDate || start < minDate) {
+                            minDate = start;
+                        }
+                    }
+                    
+                    if (item.endTime) {
+                        const end = new Date(item.endTime);
+                        if (!maxDate || end > maxDate) {
+                            maxDate = end;
+                        }
+                    }
+                });
+                
+                // Format HTML
+                let statsHTML = '';
+                
+                if (minDate && maxDate) {
+                    statsHTML += `<p><strong>Interval de dates:</strong><br>${minDate.toLocaleDateString()} - ${maxDate.toLocaleDateString()}</p>`;
+                }
+                
+                statsHTML += `
+                    <p><strong>Activitats:</strong> ${totalActivities}</p>
+                    <p><strong>Visites:</strong> ${totalVisits}</p>
+                    <p><strong>Camins de cronologia:</strong> ${totalPaths}</p>
+                    <p><strong>Distància total:</strong> ${formatDistance(totalDistance)}</p>
+                `;
+                
+                if (Object.keys(activityTypes).length > 0) {
+                    statsHTML += '<p><strong>Tipus d\'activitat:</strong></p><ul>';
+                    
+                    Object.entries(activityTypes).forEach(([type, count]) => {
+                        statsHTML += `<li>${formatActivityType(type)}: ${count}</li>`;
+                    });
+                    
+                    statsHTML += '</ul>';
+                }
+                
+                statsContainer.innerHTML = statsHTML;
+            }
+            
+            // Control event listeners
+            segmentOpacity.addEventListener('input', updateStyles);
+            segmentWeight.addEventListener('input', updateStyles);
+            pathOpacity.addEventListener('input', updateStyles);
+            pathWeight.addEventListener('input', updateStyles);
+            showActivities.addEventListener('change', updateVisibility);
+            showVisits.addEventListener('change', updateVisibility);
+            showTimelinePaths.addEventListener('change', updateVisibility);
+            
+            function updateStyles() {
+                const segOpacity = parseFloat(segmentOpacity.value);
+                const segWeight = parseInt(segmentWeight.value);
+                const pOpacity = parseFloat(pathOpacity.value);
+                const pWeight = parseInt(pathWeight.value);
+                
+                activitiesLayer.eachLayer(layer => {
+                    if (layer instanceof L.Polyline) {
+                        layer.setStyle({
+                            opacity: segOpacity,
+                            weight: segWeight
+                        });
+                    }
+                });
+                
+                timelinePathsLayer.eachLayer(layer => {
+                    if (layer instanceof L.Polyline) {
+                        layer.setStyle({
+                            opacity: pOpacity,
+                            weight: pWeight
+                        });
+                    }
+                });
+            }
+            
+            function updateVisibility() {
+                if (showActivities.checked) {
+                    map.addLayer(activitiesLayer);
+                } else {
+                    map.removeLayer(activitiesLayer);
+                }
+                
+                if (showVisits.checked) {
+                    map.addLayer(visitsLayer);
+                } else {
+                    map.removeLayer(visitsLayer);
+                }
+                
+                if (showTimelinePaths.checked) {
+                    map.addLayer(timelinePathsLayer);
+                } else {
+                    map.removeLayer(timelinePathsLayer);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
