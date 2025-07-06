@@ -2,9 +2,48 @@
 <html>
 <head>
     <title>A. Molina CVC Page</title>
-    <link rel="stylesheet" href="./static/index_whimsical.css">
+    <link rel="stylesheet" href="./static/index_whimsical.css" id="theme-stylesheet">
+    <style>
+        /* Style selector styles */
+        #style-selector {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            border: 1px solid #ccc;
+        }
+        
+        #style-selector select {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        #style-selector label {
+            margin-right: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
+    <!-- Style Selector -->
+    <div id="style-selector">
+        <label for="theme-select">Theme:</label>
+        <select id="theme-select">
+            <option value="index_whimsical.css">Whimsical (Default)</option>
+            <option value="index.css">Standard</option>
+            <option value="index_original.css">Original</option>
+            <option value="index_crackhead.css">Crackhead</option>
+        </select>
+    </div>
+
     <div id="header">
         <h2>A. Molina CVC Page</h2>
         <nav>
@@ -13,16 +52,16 @@
             <a href="./teaching.html">Teaching Resources</a>
             <a href="#recommended-lectures">Recommended Lectures</a>
             <a href="./generate_timeline/timeline.html">Curriculum</a>
-
         </nav>
     </div>
- <div class="section">
-<h3>Divulgació</h3>
+    
+    <div class="section">
+        <h3>Divulgació</h3>
+        En una època marcada per la saturació informativa i la desinformació automatitzada, el dubte —com a eina crítica per interpretar el món— és progressivament erosionat pels mateixos sistemes que haurien de facilitar-nos l'accés al coneixement. La supressió del dubte en entorns digitals, accelerada per interfícies algorítmiques que presenten la informació amb una aparença d'autoritat indiscutible, posa en risc tant la memòria col·lectiva com la capacitat de dissidència epistemològica. 
 
-En una època marcada per la saturació informativa i la desinformació automatitzada, el dubte —com a eina crítica per interpretar el món— és progressivament erosionat pels mateixos sistemes que haurien de facilitar-nos l’accés al coneixement. La supressió del dubte en entorns digitals, accelerada per interfícies algorítmiques que presenten la informació amb una aparença d’autoritat indiscutible, posa en risc tant la memòria col·lectiva com la capacitat de dissidència epistemològica. 
-
-[En construcció]
-</div>
+        [En construcció]
+    </div>
+    
     <div id="content">
         <div class="section" id="heritage-management">
             <h3>Heritage Management</h3>
@@ -32,7 +71,6 @@ En una època marcada per la saturació informativa i la desinformació automati
             <br>
             <br>
             <a href="./heritage.html">
-
                 <button class="paper-button">Read More!</button>
             </a> 
             <br>
@@ -49,7 +87,7 @@ En una època marcada per la saturació informativa i la desinformació automati
                     iframe3.style.display = "block";
                     iframe3.style.margin = "0 auto"; // Center the widget horizontally
                     widgetContainer3.appendChild(iframe3);
-                  </script>
+                </script>
                   
                 <p>
                     Explore the Heritage Projector repository on GitHub:
@@ -60,9 +98,7 @@ En una època marcada per la saturació informativa i la desinformació automati
                     And an overview of some applications:
                     <a href="http://dagapp.cvc.uab.es/xpp_portal/">XPP Portal</a>
                 </p>
-            </div>   </p>         
-              
-              
+            </div></p>         
         </div>
 
         <div class="section" id="document-understanding">
@@ -73,7 +109,6 @@ En una època marcada per la saturació informativa i la desinformació automati
             <br>
             <br>
             <a href="./research.html">
-
                 <button class="paper-button">Read More!</button>
             </a> 
             <br>
@@ -87,7 +122,6 @@ En una època marcada per la saturació informativa i la desinformació automati
             <br>
             <br>
             <a href="./teaching.html">
-
                 <button class="paper-button">Read More!</button>
             </a>
         </div>
@@ -107,7 +141,8 @@ En una època marcada per la saturació informativa i la desinformació automati
             <div class="subsection" id="probabilistic-circuit-paper">
                 <h4>How to Turn Your Knowledge Graph Embeddings into Generative Models</h4>
                 <p class="abstract">
-Some of the most successful knowledge graph embedding (KGE) models for link prediction -- CP, RESCAL, TuckER, ComplEx -- can be interpreted as energy-based models. Under this perspective they are not amenable for exact maximum-likelihood estimation (MLE), sampling and struggle to integrate logical constraints. This work re-interprets the score functions of these KGEs as circuits -- constrained computational graphs allowing efficient marginalisation. Then, we design two recipes to obtain efficient generative circuit models by either restricting their activations to be non-negative or squaring their outputs. Our interpretation comes with little or no loss of performance for link prediction, while the circuits framework unlocks exact learning by MLE, efficient sampling of new triples, and guarantee that logical constraints are satisfied by design. Furthermore, our models scale more gracefully than the original KGEs on graphs with millions of entities.                 </p>
+                    Some of the most successful knowledge graph embedding (KGE) models for link prediction -- CP, RESCAL, TuckER, ComplEx -- can be interpreted as energy-based models. Under this perspective they are not amenable for exact maximum-likelihood estimation (MLE), sampling and struggle to integrate logical constraints. This work re-interprets the score functions of these KGEs as circuits -- constrained computational graphs allowing efficient marginalisation. Then, we design two recipes to obtain efficient generative circuit models by either restricting their activations to be non-negative or squaring their outputs. Our interpretation comes with little or no loss of performance for link prediction, while the circuits framework unlocks exact learning by MLE, efficient sampling of new triples, and guarantee that logical constraints are satisfied by design. Furthermore, our models scale more gracefully than the original KGEs on graphs with millions of entities.
+                </p>
                 <a href="https://arxiv.org/abs/2305.15944">
                     <button class="paper-button">Read Paper</button>
                 </a>
@@ -116,7 +151,7 @@ Some of the most successful knowledge graph embedding (KGE) models for link pred
                 <h4>Relational Proxies: Emergent Relationships as Fine-Grained Discriminators</h4>
                 <p class="abstract">
                     Fine-grained categories that largely share the same set of parts cannot be discriminated based on part information alone, as they mostly differ in the way the local parts relate to the overall global structure of the object. We propose Relational Proxies, a novel approach that leverages the relational information between the global and local views of an object for encoding its semantic label. Starting with a rigorous formalization of the notion of distinguishability between fine-grained categories, we prove the necessary and sufficient conditions that a model must satisfy in order to learn the underlying decision boundaries in the fine-grained setting. We design Relational Proxies based on our theoretical findings and evaluate it on seven challenging fine-grained benchmark datasets and achieve state-of-the-art results on all of them, surpassing the performance of all existing works with a margin exceeding 4% in some cases. We also experimentally validate our theory on fine-grained distinguishability and obtain consistent results across multiple benchmarks. 
-                    </p>
+                </p>
                 <a href="https://arxiv.org/abs/2210.02149">    
                     <button class="paper-button">Read Paper</button>
                 </a>
@@ -125,12 +160,9 @@ Some of the most successful knowledge graph embedding (KGE) models for link pred
 
         <div class="section" id="interests">
             <div class="subsection" id="citations">
-
                 <h4>Papers and Community</h4>
                 <p>
-
                     Explore the citations graph of my main interests in research. Or don't do it, could not care less.
-
                 </p>
                 <div id="interests-widget"></div>
                 <script>
@@ -144,7 +176,7 @@ Some of the most successful knowledge graph embedding (KGE) models for link pred
                     iframe1.style.display = "block";
                     iframe1.style.margin = "0 auto"; // Center the widget horizontally
                     widgetContainer1.appendChild(iframe1);
-                  </script>
+                </script>
 
                 <p>
                     Explore the interests graph:
@@ -152,7 +184,6 @@ Some of the most successful knowledge graph embedding (KGE) models for link pred
                 </p>
 
                 <p>
-
                     Explore the colaborations and papers we have done at my research group! (just pretend it wasn't last updated 100 years ago)
                 </p>
                 <div id="dag-widget"></div>
@@ -167,15 +198,14 @@ Some of the most successful knowledge graph embedding (KGE) models for link pred
                     iframe2.style.display = "block";
                     iframe2.style.margin = "0 auto"; // Center the widget horizontally
                     widgetContainer2.appendChild(iframe2);
-                  </script>
+                </script>
 
                 <p>
                     Explore the DAG graph:
                     <a href="https://ouestware.gitlab.io/retina/beta/#/graph/?url=https%3A%2F%2Fgist.githubusercontent.com%2FEauDeData%2Fe9160e9fe6bac2fd699865d4cc588974%2Fraw%2Ffa9c89f4feeee006289e8b5a1b106f4c3fed4a2e%2Fnetwork-96185545-279.gexf&n=Adria%20Molina">Retina Graph</a>
                 </p>
             </div>
-        </div >
-
+        </div>
     </div>
 
     <div id="contact">
@@ -186,5 +216,25 @@ Some of the most successful knowledge graph embedding (KGE) models for link pred
             <li><a href="https://orcid.org/0000-0003-0167-8756">Orcid: 0000-0003-0167-8756 (perfil de recerca)</a></li>
         </ul>
     </div>
+
+    <script>
+        // Theme selector functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeSelect = document.getElementById('theme-select');
+            const themeStylesheet = document.getElementById('theme-stylesheet');
+            
+            // Load saved theme from localStorage or default to whimsical
+            const savedTheme = localStorage.getItem('selectedTheme') || 'index_whimsical.css';
+            themeSelect.value = savedTheme;
+            themeStylesheet.href = './static/' + savedTheme;
+            
+            // Handle theme changes
+            themeSelect.addEventListener('change', function() {
+                const selectedTheme = this.value;
+                themeStylesheet.href = './static/' + selectedTheme;
+                localStorage.setItem('selectedTheme', selectedTheme);
+            });
+        });
+    </script>
 </body>
 </html>
