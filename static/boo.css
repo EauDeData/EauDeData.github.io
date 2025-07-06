@@ -1,0 +1,873 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Creepster&family=Nosifer&display=swap');
+
+:root {
+    --blood-red: #8B0000;
+    --pale-blood: #CD853F;
+    --nightmare-black: #0D0D0D;
+    --yharnam-stone: #2F2F2F;
+    --moonlight-silver: #C0C0C0;
+    --madness-purple: #4B0082;
+    --eldritch-green: #228B22;
+    --hunter-gold: #DAA520;
+    --insight-blue: #191970;
+    --cosmic-void: #000000;
+    --cathedral-grey: #696969;
+    --beast-brown: #654321;
+    --frenzy-orange: #FF4500;
+    --paleblood-white: #F5F5DC;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cinzel', serif;
+    background: 
+        radial-gradient(circle at 20% 20%, var(--madness-purple) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, var(--blood-red) 0%, transparent 50%),
+        linear-gradient(135deg, var(--nightmare-black) 0%, var(--yharnam-stone) 50%, var(--nightmare-black) 100%);
+    background-size: 100% 100%, 100% 100%, 400% 400%;
+    animation: nightmareShift 20s ease-in-out infinite, bloodMoon 8s ease-in-out infinite alternate;
+    color: var(--paleblood-white);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Cosmic horror background animation */
+@keyframes nightmareShift {
+    0%, 100% { background-position: 0% 0%, 100% 100%, 0% 50%; }
+    50% { background-position: 100% 100%, 0% 0%, 100% 50%; }
+}
+
+@keyframes bloodMoon {
+    0% { filter: hue-rotate(0deg) contrast(1); }
+    100% { filter: hue-rotate(10deg) contrast(1.2); }
+}
+
+/* Eldritch fog effect */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at center, transparent 20%, var(--nightmare-black) 80%),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(139, 0, 0, 0.02) 2px,
+            rgba(139, 0, 0, 0.02) 4px
+        );
+    animation: eldritchFog 15s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes eldritchFog {
+    0% { opacity: 0.3; transform: translateX(-100px); }
+    50% { opacity: 0.1; transform: translateX(0px); }
+    100% { opacity: 0.3; transform: translateX(100px); }
+}
+
+/* Cosmic void tentacles from edges */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 10% 10%, var(--cosmic-void) 0%, transparent 40%),
+        radial-gradient(ellipse at 90% 90%, var(--cosmic-void) 0%, transparent 40%),
+        radial-gradient(ellipse at 10% 90%, var(--cosmic-void) 0%, transparent 40%),
+        radial-gradient(ellipse at 90% 10%, var(--cosmic-void) 0%, transparent 40%);
+    animation: cosmicPulse 12s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes cosmicPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.1; }
+}
+
+/* Style selector as Hunter's Mark */
+#style-selector {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: 
+        radial-gradient(circle, var(--blood-red) 0%, var(--nightmare-black) 70%);
+    padding: 15px 20px;
+    border-radius: 50px;
+    box-shadow: 
+        0 0 30px var(--blood-red),
+        inset 0 0 30px rgba(0, 0, 0, 0.8),
+        0 0 60px rgba(139, 0, 0, 0.4);
+    border: 3px solid var(--hunter-gold);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    animation: hunterMark 3s ease-in-out infinite;
+}
+
+@keyframes hunterMark {
+    0%, 100% { 
+        box-shadow: 
+            0 0 30px var(--blood-red),
+            inset 0 0 30px rgba(0, 0, 0, 0.8),
+            0 0 60px rgba(139, 0, 0, 0.4);
+    }
+    50% { 
+        box-shadow: 
+            0 0 40px var(--blood-red),
+            inset 0 0 30px rgba(0, 0, 0, 0.8),
+            0 0 80px rgba(139, 0, 0, 0.6);
+    }
+}
+
+#style-selector:hover {
+    transform: scale(1.1);
+    box-shadow: 
+        0 0 50px var(--blood-red),
+        inset 0 0 30px rgba(0, 0, 0, 0.8),
+        0 0 100px rgba(139, 0, 0, 0.8);
+}
+
+#style-selector label {
+    font-family: 'Nosifer', cursive;
+    color: var(--hunter-gold);
+    font-size: 14px;
+    text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.9),
+        0 0 10px var(--blood-red);
+    margin-right: 10px;
+    display: inline-block;
+}
+
+#style-selector select {
+    background: 
+        linear-gradient(135deg, var(--nightmare-black), var(--yharnam-stone));
+    color: var(--paleblood-white);
+    border: 2px solid var(--blood-red);
+    border-radius: 25px;
+    padding: 8px 15px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+        inset 0 0 15px rgba(0, 0, 0, 0.8),
+        0 0 15px rgba(139, 0, 0, 0.3);
+}
+
+#style-selector select:hover {
+    box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.9),
+        0 0 25px var(--blood-red);
+    transform: scale(1.05);
+}
+
+/* Header as Cathedral Ward */
+#header {
+    background: 
+        linear-gradient(135deg, var(--nightmare-black), var(--yharnam-stone)),
+        radial-gradient(circle at center, var(--madness-purple) 0%, transparent 70%);
+    padding: 40px;
+    text-align: center;
+    border-bottom: 5px solid var(--blood-red);
+    box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.8),
+        inset 0 -10px 30px rgba(139, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Gothic cathedral effect */
+#header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 50px,
+            rgba(139, 0, 0, 0.1) 50px,
+            rgba(139, 0, 0, 0.1) 52px
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 30px,
+            rgba(139, 0, 0, 0.05) 30px,
+            rgba(139, 0, 0, 0.05) 32px
+        );
+    animation: cathedralShadows 10s linear infinite;
+    z-index: 1;
+}
+
+@keyframes cathedralShadows {
+    0% { transform: translateX(0px) translateY(0px); }
+    100% { transform: translateX(-100px) translateY(-50px); }
+}
+
+#header h2 {
+    font-family: 'Nosifer', cursive;
+    font-size: 3.5em;
+    color: var(--hunter-gold);
+    text-shadow: 
+        4px 4px 8px rgba(0, 0, 0, 0.9),
+        0 0 30px var(--blood-red),
+        0 0 60px var(--madness-purple);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+    animation: madnessFlicker 4s ease-in-out infinite;
+}
+
+@keyframes madnessFlicker {
+    0%, 90%, 100% { 
+        opacity: 1;
+        text-shadow: 
+            4px 4px 8px rgba(0, 0, 0, 0.9),
+            0 0 30px var(--blood-red),
+            0 0 60px var(--madness-purple);
+    }
+    95% { 
+        opacity: 0.8;
+        text-shadow: 
+            4px 4px 8px rgba(0, 0, 0, 0.9),
+            0 0 40px var(--blood-red),
+            0 0 80px var(--madness-purple);
+    }
+}
+
+/* Navigation as Hunter's Workshop tools */
+nav {
+    position: relative;
+    z-index: 2;
+}
+
+nav a {
+    display: inline-block;
+    margin: 0 15px;
+    padding: 15px 25px;
+    background: 
+        linear-gradient(135deg, var(--yharnam-stone), var(--nightmare-black));
+    color: var(--paleblood-white);
+    text-decoration: none;
+    border-radius: 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 3px solid var(--blood-red);
+    transition: all 0.4s ease;
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.6),
+        inset 0 0 20px rgba(139, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+}
+
+nav a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, transparent, var(--blood-red), transparent);
+    transition: left 0.6s ease;
+}
+
+nav a:hover::before {
+    left: 100%;
+}
+
+nav a:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.8),
+        inset 0 0 30px rgba(139, 0, 0, 0.3),
+        0 0 30px var(--blood-red);
+    color: var(--hunter-gold);
+    background: 
+        linear-gradient(135deg, var(--nightmare-black), var(--yharnam-stone));
+}
+
+/* Sections as Nightmare Realms */
+.section {
+    margin: 40px 20px;
+    padding: 35px;
+    background: 
+        linear-gradient(135deg, 
+            rgba(13, 13, 13, 0.9), 
+            rgba(47, 47, 47, 0.9)),
+        radial-gradient(circle at 20% 20%, var(--madness-purple) 0%, transparent 50%);
+    border-radius: 0;
+    border: 3px solid var(--blood-red);
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.8),
+        inset 0 0 40px rgba(139, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(0 0, 95% 0, 100% 100%, 5% 100%);
+    animation: nightmareRealm 6s ease-in-out infinite alternate;
+}
+
+@keyframes nightmareRealm {
+    0% { 
+        box-shadow: 
+            0 20px 50px rgba(0, 0, 0, 0.8),
+            inset 0 0 40px rgba(139, 0, 0, 0.1);
+    }
+    100% { 
+        box-shadow: 
+            0 20px 50px rgba(0, 0, 0, 0.8),
+            inset 0 0 40px rgba(139, 0, 0, 0.2),
+            0 0 30px rgba(139, 0, 0, 0.3);
+    }
+}
+
+/* Eldritch corruption effect */
+.section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-conic-gradient(
+            from 0deg at 50% 50%,
+            transparent 0deg,
+            rgba(139, 0, 0, 0.05) 15deg,
+            transparent 30deg
+        );
+    animation: eldritchCorruption 15s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes eldritchCorruption {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.section h3 {
+    font-family: 'Nosifer', cursive;
+    font-size: 2.5em;
+    color: var(--hunter-gold);
+    margin-bottom: 25px;
+    text-shadow: 
+        3px 3px 6px rgba(0, 0, 0, 0.9),
+        0 0 20px var(--blood-red),
+        0 0 40px var(--madness-purple);
+    position: relative;
+    z-index: 2;
+    animation: insightGlow 5s ease-in-out infinite alternate;
+}
+
+@keyframes insightGlow {
+    0% { 
+        text-shadow: 
+            3px 3px 6px rgba(0, 0, 0, 0.9),
+            0 0 20px var(--blood-red),
+            0 0 40px var(--madness-purple);
+    }
+    100% { 
+        text-shadow: 
+            3px 3px 6px rgba(0, 0, 0, 0.9),
+            0 0 30px var(--blood-red),
+            0 0 60px var(--madness-purple);
+    }
+}
+
+.section h4 {
+    font-family: 'Creepster', cursive;
+    font-size: 1.8em;
+    color: var(--frenzy-orange);
+    margin: 25px 0 15px 0;
+    text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.9),
+        0 0 15px var(--blood-red);
+    position: relative;
+    z-index: 2;
+}
+
+.section p {
+    font-size: 1.1em;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: var(--paleblood-white);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 2;
+}
+
+/* Hunter's weapons (buttons) */
+.paper-button {
+    background: 
+        linear-gradient(135deg, var(--blood-red), var(--nightmare-black));
+    color: var(--hunter-gold);
+    border: 3px solid var(--hunter-gold);
+    padding: 15px 30px;
+    font-family: 'Cinzel', serif;
+    font-size: 1.2em;
+    font-weight: 600;
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.6),
+        inset 0 0 20px rgba(139, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+}
+
+.paper-button::before {
+    content: '⚔️';
+    position: absolute;
+    top: 50%;
+    left: -40px;
+    transform: translateY(-50%);
+    font-size: 1.5em;
+    transition: all 0.4s ease;
+}
+
+.paper-button:hover::before {
+    left: 10px;
+}
+
+.paper-button:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.8),
+        inset 0 0 30px rgba(139, 0, 0, 0.4),
+        0 0 40px var(--blood-red);
+    background: 
+        linear-gradient(135deg, var(--nightmare-black), var(--blood-red));
+    color: var(--paleblood-white);
+    padding-left: 60px;
+}
+
+/* Cosmic Truth abstracts */
+.abstract {
+    background: 
+        linear-gradient(135deg, 
+            rgba(75, 0, 130, 0.2), 
+            rgba(139, 0, 0, 0.2)),
+        radial-gradient(circle at center, var(--madness-purple) 0%, transparent 70%);
+    border: 2px solid var(--madness-purple);
+    border-radius: 0;
+    padding: 25px;
+    margin: 20px 0;
+    font-style: italic;
+    position: relative;
+    box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.6),
+        0 8px 20px rgba(0, 0, 0, 0.5);
+    clip-path: polygon(0 0, 98% 0, 100% 100%, 2% 100%);
+}
+
+.abstract::before {
+    content: '👁️';
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    font-size: 2.5em;
+    background: var(--nightmare-black);
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 
+        0 0 20px rgba(0, 0, 0, 0.8),
+        0 0 40px var(--madness-purple);
+    animation: eyeOfKnowledge 3s ease-in-out infinite;
+}
+
+@keyframes eyeOfKnowledge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Subsections as Chalice Dungeons */
+.subsection {
+    margin: 30px 0;
+    padding: 25px;
+    background: 
+        linear-gradient(135deg, 
+            rgba(0, 0, 0, 0.7), 
+            rgba(47, 47, 47, 0.7));
+    border-radius: 0;
+    border: 2px solid var(--pale-blood);
+    box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.8),
+        0 8px 20px rgba(0, 0, 0, 0.5);
+    clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
+}
+
+/* Cursed images */
+img {
+    border: 4px solid var(--blood-red);
+    border-radius: 0;
+    box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.8),
+        0 0 30px var(--blood-red);
+    transition: all 0.3s ease;
+    max-width: 100%;
+    height: auto;
+    filter: contrast(1.2) brightness(0.9);
+}
+
+img:hover {
+    transform: scale(1.02);
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.9),
+        0 0 40px var(--blood-red),
+        0 0 60px var(--madness-purple);
+    filter: contrast(1.4) brightness(1.1);
+}
+
+/* Eldritch Truth widgets */
+iframe {
+    border: 4px solid var(--blood-red) !important;
+    border-radius: 0 !important;
+    box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.8),
+        0 0 30px var(--blood-red) !important;
+    transition: all 0.3s ease !important;
+    filter: contrast(1.1) brightness(0.9) !important;
+}
+
+iframe:hover {
+    transform: scale(1.02) !important;
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.9),
+        0 0 40px var(--blood-red),
+        0 0 60px var(--madness-purple) !important;
+    filter: contrast(1.3) brightness(1.1) !important;
+}
+
+/* Contact as Hunter's Dream */
+#contact {
+    background: 
+        linear-gradient(135deg, var(--nightmare-black), var(--yharnam-stone)),
+        radial-gradient(circle at center, var(--madness-purple) 0%, transparent 70%);
+    padding: 50px;
+    margin: 40px 20px;
+    border-radius: 0;
+    border: 5px solid var(--hunter-gold);
+    box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.9),
+        inset 0 0 50px rgba(139, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+}
+
+#contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-radial-gradient(
+            circle at 50% 50%,
+            transparent 0px,
+            rgba(139, 0, 0, 0.1) 50px,
+            transparent 100px
+        );
+    animation: huntersDream 20s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes huntersDream {
+    0% { transform: rotate(0deg) scale(1); }
+    100% { transform: rotate(360deg) scale(1.2); }
+}
+
+#contact h2 {
+    font-family: 'Nosifer', cursive;
+    font-size: 2.8em;
+    color: var(--hunter-gold);
+    text-align: center;
+    margin-bottom: 30px;
+    text-shadow: 
+        4px 4px 8px rgba(0, 0, 0, 0.9),
+        0 0 30px var(--blood-red),
+        0 0 60px var(--madness-purple);
+    position: relative;
+    z-index: 2;
+}
+
+#contact ul {
+    list-style: none;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+#contact li {
+    margin: 20px 0;
+    font-size: 1.2em;
+}
+
+#contact a {
+    color: var(--paleblood-white);
+    text-decoration: none;
+    padding: 15px 25px;
+    border: 3px solid var(--blood-red);
+    border-radius: 0;
+    display: inline-block;
+    background: 
+        linear-gradient(135deg, var(--nightmare-black), var(--yharnam-stone));
+    transition: all 0.4s ease;
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.6),
+        inset 0 0 20px rgba(139, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+}
+
+#contact a::before {
+    content: '🩸';
+    position: absolute;
+    top: 50%;
+    left: -40px;
+    transform: translateY(-50%);
+    font-size: 1.5em;
+    transition: all 0.4s ease;
+}
+
+#contact a:hover::before {
+    left: 10px;
+}
+
+#contact a:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.8),
+        inset 0 0 30px rgba(139, 0, 0, 0.3),
+        0 0 30px var(--blood-red);
+    color: var(--hunter-gold);
+    padding-left: 60px;
+}
+
+/* Responsive nightmare */
+@media (max-width: 768px) {
+    #header h2 {
+        font-size: 2.5em;
+    }
+    
+    .section {
+        margin: 20px 10px;
+        padding: 25px;
+    }
+    
+    .section h3 {
+        font-size: 2em;
+    }
+    
+    nav a {
+        display: block;
+        margin: 10px 0;
+    }
+    
+    #style-selector {
+        top: 10px;
+        right: 10px;
+        padding: 10px 15px;
+    }
+}
+
+/* Cursed scrollbar */
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--nightmare-black);
+    border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--blood-red), var(--madness-purple));
+    border-radius: 0;
+    border: 2px solid var(--nightmare-black);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--madness-purple), var(--blood-red));
+    box-shadow: 0 0 15px var(--blood-red);
+}
+
+/* Nightmare cursors */
+* {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><text y="15" style="font-size:12px;">🩸</text></svg>'), auto;
+}
+
+a, button, select {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><text y="15" style="font-size:12px;">⚔️</text></svg>'), pointer;
+}
+
+/* Final eldritch touch - floating insight */
+@keyframes insight {
+    0% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+    50% { transform: translateY(-30px) rotate(180deg); opacity: 0.7; }
+    100% { transform: translateY(0px) rotate(360deg); opacity: 0.3; }
+}
+
+.section:nth-child(odd)::after {
+    content: '👁️';
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2.5em;
+    animation: insight 8s ease-in-out infinite;
+    color: var(--madness-purple);
+    filter: drop-shadow(0 0 10px var(--madness-purple));
+}
+
+.section:nth-child(even)::after {
+    content: '🌙';
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2.5em;
+    animation: insight 10s ease-in-out infinite reverse;
+    color: var(--blood-red);
+    filter: drop-shadow(0 0 10px var(--blood-red));
+}
+
+/* Frenzy effect on hover */
+.section:hover {
+    animation: frenzy 0.1s ease-in-out infinite;
+}
+
+@keyframes frenzy {
+    0% { transform: translateX(0px) translateY(0px) rotate(0deg); }
+    25% { transform: translateX(1px) translateY(-1px) rotate(0.5deg); }
+    50% { transform: translateX(-1px) translateY(1px) rotate(-0.5deg); }
+    75% { transform: translateX(1px) translateY(1px) rotate(0.3deg); }
+    100% { transform: translateX(0px) translateY(0px) rotate(0deg); }
+}
+
+/* Blood echoes floating animation */
+.section:hover::after {
+    animation: bloodEchoes 0.5s ease-in-out infinite, insight 8s ease-in-out infinite;
+}
+
+@keyframes bloodEchoes {
+    0% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-5px) scale(1.1); }
+    100% { transform: translateY(0px) scale(1); }
+}
+
+/* Paleblood moon phases */
+body:hover::before {
+    animation: eldritchFog 15s linear infinite, moonPhases 2s ease-in-out infinite;
+}
+
+@keyframes moonPhases {
+    0% { opacity: 0.3; }
+    25% { opacity: 0.1; }
+    50% { opacity: 0.5; }
+    75% { opacity: 0.2; }
+    100% { opacity: 0.3; }
+}
+
+/* Insight madness text distortion */
+.section:hover h3 {
+    animation: insightMadness 0.2s ease-in-out infinite;
+}
+
+@keyframes insightMadness {
+    0% { filter: blur(0px); }
+    50% { filter: blur(0.5px); }
+    100% { filter: blur(0px); }
+}
+
+/* Cosmic horror screen corruption */
+@media (prefers-reduced-motion: no-preference) {
+    body {
+        animation: nightmareShift 20s ease-in-out infinite, 
+                   bloodMoon 8s ease-in-out infinite alternate,
+                   cosmicCorruption 60s linear infinite;
+    }
+}
+
+@keyframes cosmicCorruption {
+    0% { filter: hue-rotate(0deg) contrast(1) brightness(1); }
+    33% { filter: hue-rotate(5deg) contrast(1.1) brightness(0.95); }
+    66% { filter: hue-rotate(-5deg) contrast(1.05) brightness(1.05); }
+    100% { filter: hue-rotate(0deg) contrast(1) brightness(1); }
+}
+
+/* Blood ministration loading state */
+.loading::before {
+    content: '🩸 Blood Ministration in Progress... 🩸';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--nightmare-black);
+    color: var(--blood-red);
+    padding: 20px 40px;
+    border: 3px solid var(--hunter-gold);
+    font-family: 'Nosifer', cursive;
+    font-size: 1.5em;
+    z-index: 9999;
+    animation: bloodPulse 1s ease-in-out infinite;
+}
+
+@keyframes bloodPulse {
+    0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+/* Forbidden knowledge tooltip */
+[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--nightmare-black);
+    color: var(--blood-red);
+    padding: 10px 15px;
+    border: 2px solid var(--hunter-gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.9em;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+

@@ -1,0 +1,236 @@
+/* General Reset */
+body, h1, h2, h3, h4, h5, h6, p, a, ul, li, button {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Global Styles */
+body {
+    background: radial-gradient(circle at 30% 30%, #0d0d0f 0%, #050505 100%);
+    color: #d7d3c3;
+    font-family: 'Garamond', 'Georgia', serif;
+    line-height: 1.7;
+    background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
+    background-repeat: repeat;
+    overflow-x: hidden;
+}
+
+/* Unsettling floating glyphs */
+body::before {
+    content: '';
+    position: fixed;
+    top: -10%;
+    left: -10%;
+    width: 150%;
+    height: 150%;
+    background: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    opacity: 0.03;
+    animation: drift 120s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes drift {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(20px, 20px) rotate(180deg); }
+    100% { transform: translate(0, 0) rotate(360deg); }
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+    font-family: 'Cinzel', 'Garamond', serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #c7b37e;
+}
+
+h2 {
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+
+h3 {
+    font-size: 1.6em;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(199, 179, 126, 0.2);
+    padding-bottom: 5px;
+}
+
+h4 {
+    font-size: 1.2em;
+    color: #9c8770;
+    margin-top: 15px;
+}
+
+/* Links */
+a {
+    color: #8db0aa;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #e57474;
+    text-shadow: 0 0 5px rgba(229, 116, 116, 0.5);
+}
+
+/* Nav Bar */
+nav {
+    background: rgba(15, 15, 20, 0.7);
+    padding: 15px;
+    border-bottom: 1px solid rgba(199, 179, 126, 0.3);
+    text-align: center;
+}
+
+nav a {
+    margin: 0 15px;
+    color: #c7b37e;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+nav a:hover {
+    color: #e57474;
+}
+
+/* Sections */
+.section {
+    background: rgba(20, 20, 25, 0.85);
+    margin: 40px auto;
+    padding: 20px;
+    max-width: 800px;
+    border: 1px solid rgba(199, 179, 126, 0.15);
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.section::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -20%;
+    width: 150%;
+    height: 150%;
+    background: url('https://www.transparenttextures.com/patterns/swirl.png');
+    opacity: 0.02;
+    animation: drift 200s linear infinite;
+    pointer-events: none;
+}
+
+/* Paper Buttons */
+.paper-button {
+    background: linear-gradient(135deg, #3b3b3b, #1f1f1f);
+    color: #d7d3c3;
+    border: 1px solid rgba(199, 179, 126, 0.3);
+    padding: 10px 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+    margin-top: 10px;
+}
+
+.paper-button:hover {
+    background: #7a1b1b;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(122, 27, 27, 0.8);
+}
+
+/* Style Selector */
+#style-selector {
+    background: rgba(20, 20, 25, 0.95);
+    border: 1px solid rgba(199, 179, 126, 0.4);
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+/* Images */
+img {
+    filter: grayscale(40%) contrast(110%);
+    transition: filter 0.5s ease;
+}
+
+img:hover {
+    filter: grayscale(0%) contrast(120%);
+}
+
+/* Contact Section */
+#contact {
+    background: rgba(15, 15, 20, 0.85);
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid rgba(199, 179, 126, 0.3);
+}
+
+#contact h2 {
+    margin-bottom: 15px;
+}
+
+#contact a {
+    color: #8db0aa;
+}
+
+#contact a:hover {
+    color: #e57474;
+}
+
+/* Widgets */
+iframe {
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.7));
+    border-radius: 4px;
+}
+
+/* Subtle Floating Animations for Sections */
+.section {
+    animation: float 10s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Abstracts */
+.abstract {
+    background: rgba(40, 40, 50, 0.7);
+    padding: 10px;
+    border-left: 3px solid #8db0aa;
+    margin: 10px 0;
+    font-size: 0.95em;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #8db0aa;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #e57474;
+}
+
+/* Recommended Lectures Titles */
+#recommended-lectures h4 {
+    color: #c7b37e;
+}
+
+/* Footer Creepiness */
+body::after {
+    content: 'The cosmos watches.';
+    position: fixed;
+    bottom: 5px;
+    right: 10px;
+    color: rgba(199, 179, 126, 0.2);
+    font-size: 0.8em;
+    pointer-events: none;
+    font-style: italic;
+}
