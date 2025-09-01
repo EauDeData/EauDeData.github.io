@@ -11,8 +11,19 @@ Reads 'preguntas_dgt.csv' and outputs 'test.html':
 import csv
 import json
 
-INPUT_CSV = "preguntas_dgt.csv"
+INPUT_CSV = "preguntas_dgt_cat.csv"
 OUTPUT_HTML = "test.html"
+
+
+def maybe_split(text):
+    if text.endswith('.'): text = text[:-1]
+    splitted = text.split('.')
+    if len(splitted) >= 2:
+        return splitted[1] + '.'
+    
+    return text + '.'
+    
+    
 
 
 def read_csv(path):
@@ -36,11 +47,11 @@ def make_questions_json(rows):
                 {
                     "id": i,
                     "imagen": r["imagen"],
-                    "pregunta": r["pregunta"].split('.')[1],
+                    "pregunta": maybe_split(r["pregunta"]),
                     "opciones": {
-                        "a": r["opcion_a"].split('A.')[1],
-                        "b": r["opcion_b"].split('B.')[1],
-                        "c": r["opcion_c"].split('C.')[1],
+                        "a": maybe_split(r["opcion_a"]),
+                        "b": maybe_split(r["opcion_b"]),
+                        "c": maybe_split(r["opcion_c"]),
                     },
                     "correcta": r["respuesta_correcta"],
                 }
@@ -80,7 +91,7 @@ def generate_html(questions_json):
 </head>
 <body>
 <div class="wrap">
-  <h1>Test DGT — Práctica</h1>
+  <h1>Test DGT — Pràctica</h1>
   <div id="quiz"></div>
 </div>
 
@@ -172,10 +183,10 @@ function showFeedback(clickedBtn, opts, q, chosen) {
   });
 
   if (chosen === correct) {
-    feedback.textContent = '✔ Correcto. La respuesta es ' + correct.toUpperCase() + '.';
+    feedback.textContent = '✔ Correcte. La resposta és ' + correct.toUpperCase() + '.';
     feedback.className = 'feedback correct';
   } else {
-    feedback.textContent = '✘ Incorrecto. La correcta era ' + correct.toUpperCase() + '.';
+    feedback.textContent = '✘ Incorrecta. La correcta era ' + correct.toUpperCase() + '.';
     feedback.className = 'feedback incorrect';
   }
   feedback.style.display = 'block';
