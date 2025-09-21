@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pàgina CVC A. Molina</title>
+    <link rel="stylesheet" href="./static/index_whimsical.css" id="theme-stylesheet">
+    <style>
+        /* Estils del selector d'estil */
+        #style-selector {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            border: 1px solid #ccc;
+        }
+        
+        #style-selector select {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        #style-selector label {
+            margin-right: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Selector d'Estil -->
+    <div id="style-selector">
+        <label for="theme-select">Tema:</label>
+        <select id="theme-select">
+            <option value="index_whimsical.css">Capritxós (Per defecte)</option>
+            <option value="index.css">Tecnòleg</option>
+            <option value="index_original.css">Original</option>
+            <option value="index_crackhead.css">Crackhead</option>
+            <option value="css_druid.css">Druida</option>
+            <option value="boo.css">Terror de Baixos Recursos</option>
+            <option value="index_cosmic_horror.css">Còsmic</option>
+        </select>
+    </div>
+
+    <div id="header">
+        <h2>Pàgina CVC A. Molina</h2>
+        <nav>
+            <a href="./heritage.html">Gestió del Patrimoni</a>
+            <a href="./research.html">Recerca</a>
+            <a href="./teaching.html">Recursos Docents</a>
+            <a href="#recommended-lectures">Lectures Recomanades</a>
+            <a href="./generate_timeline/timeline.html">Currículum</a>
+        </nav>
+    </div>
+    
+    <div class="section">
+        <h3>Divulgació</h3>
+        En una època marcada per la saturació informativa i la desinformació automatitzada, el dubte —com a eina crítica per interpretar el món— és progressivament erosionat pels mateixos sistemes que haurien de facilitar-nos l'accés al coneixement. La supressió del dubte en entorns digitals, accelerada per interfícies algorítmiques que presenten la informació amb una aparença d'autoritat indiscutible, posa en risc tant la memòria col·lectiva com la capacitat de dissidència epistemològica.
+
+        [En construcció, se supossa que aquí vull ecriure la meva tesi]
+    </div>
+    
+    <div id="content">
+        <div class="section" id="heritage-management">
+            <h3>Gestió del Patrimoni</h3>
+            Tinc una passió per la gestió del patrimoni i les humanitats digitals...
+            <br>
+            Si vols llegir-ne més...
+            <br>
+            <br>
+            <a href="./heritage.html">
+                <button class="paper-button">Llegeix més!</button>
+            </a> 
+            <br>
+            <p><div class="subsection" id="image-collection-projectors">
+                <div id="heritage-projector-widget"></div>
+                <script>
+                    // Incorporar el widget del Projector del Patrimoni
+                    const widgetContainer3 = document.getElementById("heritage-projector-widget");
+                    const iframe3 = document.createElement("iframe");
+                    iframe3.src = "./master/projectors/www.heritage.projector/map.html";
+                    iframe3.width = "50%";
+                    iframe3.height = "300px";
+                    iframe3.style.border = "none";
+                    iframe3.style.display = "block";
+                    iframe3.style.margin = "0 auto"; // Centrar el widget horitzontalment
+                    widgetContainer3.appendChild(iframe3);
+                </script>
+                  
+                <p>
+                    Explora el repositori del Projector del Patrimoni a GitHub:
+                    <a href="https://github.com/EauDeData/cvc-dataset-projector">EauDeData/cvc-dataset-projector</a>
+                </p>
+
+                <p>
+                    I una visió general d'algunes aplicacions:
+                    <a href="http://dagapp.cvc.uab.es/xpp_portal/">Portal XPP</a>
+                </p>
+            </div></p>         
+        </div>
+
+        <div class="section" id="document-understanding">
+            <h3>Recerca</h3>
+            Les meves principals contribucions a la CIÈNCIA!
+            <br>
+            Troba en aquesta secció el meu treball sobre comprensió de documents i recuperació d'informació en fonts històriques.
+            <br>
+            <br>
+            <a href="./research.html">
+                <button class="paper-button">Llegeix més!</button>
+            </a> 
+            <br>
+
+            <img src="./static/images/fas_boe.png" width="100%">
+        </div>
+
+        <div class="section" id="teaching-resources">
+            <h3>Docència</h3>
+            Visita aquí els projectes docents, propostes i recursos que he preparat per a tots vosaltres :) .
+            <br>
+            <br>
+            <a href="./teaching.html">
+                <button class="paper-button">Llegeix més!</button>
+            </a>
+        </div>
+
+        <div class="section" id="recommended-lectures">
+            <h3>Lectures Recomanades</h3>
+            <div class="subsection" id="task-arithmetic-paper">
+                <h4>Aritmètica de Tasques a l'Espai Tangent: Edició Millorada de Models Pre-entrenats</h4>
+                <p class="abstract">
+                    L'aritmètica de tasques ha emergit recentment com un enfocament cost-efectiu i escalable per editar models pre-entrenats directament a l'espai de pesos: Afegint els pesos ajustats de diferents tasques, el rendiment del model pot millorar-se en aquestes tasques, mentre que negar-los porta a l'oblit de la tasca. No obstant això, la nostra comprensió de l'eficàcia de l'aritmètica de tasques i els seus principis subjacents continua sent limitada. Presentem un estudi exhaustiu de l'aritmètica de tasques en models de visió-llenguatge i mostrem que la separació de pesos és el factor crucial que la fa efectiva. Aquesta propietat sorgeix durant el pre-entrenament i es manifesta quan direccions distintes a l'espai de pesos governen regions separades i localitzades a l'espai de funcions associades amb les tasques. Notablement, mostrem que ajustar models al seu espai tangent linearitzant-los amplifica la separació de pesos. Això porta a millores substancials del rendiment en múltiples punts de referència d'aritmètica de tasques i models diversos. Basant-nos en aquestes troballes, proporcionem anàlisis teòriques i empíriques del kernel tangent neural (NTK) d'aquests models i establim una connexió convincent entre l'aritmètica de tasques i la localització espacial de les eigenfuncions del NTK. En general, el nostre treball descobreix noves perspectives sobre els mecanismes fonamentals de l'aritmètica de tasques i ofereix un enfocament més fiable i efectiu per editar models pre-entrenats mitjançant la linearització NTK.
+                </p>
+                <a href="https://arxiv.org/abs/2305.12827">
+                    <button class="paper-button">Llegeix l'Article</button>
+                </a>
+            </div>
+
+            <div class="subsection" id="probabilistic-circuit-paper">
+                <h4>Com Convertir l'Espai Latent de Grafs de Coneixement en Models Generatius</h4>
+                <p class="abstract">
+                    Alguns dels models vectorials de graf de coneixement (KGE) més exitosos per a la predicció d'enllaços -- CP, RESCAL, TuckER, ComplEx -- poden interpretar-se com a models basats en energia. Des d'aquesta perspectiva no són adequats per a l'estimació exacta de màxima versemblança (MLE), mostreig i lluiten per integrar restriccions lògiques. Aquest treball reinterpreta les funcions de puntuació d'aquests KGEs com a circuits -- grafs computacionals restringits que permeten marginalització eficient. Després, dissenyem dues receptes per obtenir models de circuit generatiu eficients ja sigui restringint les seves activacions a ser no-negatives o elevant al quadrat les seves sortides. La nostra interpretació ve amb poca o cap pèrdua de rendiment per a la predicció d'enllaços, mentre que el marc de circuits desbloqueja l'aprenentatge exacte per MLE, mostreig eficient de noves triples, i garanteix que les restriccions lògiques es satisfacin per disseny. A més, els nostres models escalen més elegantment que els KGEs originals en grafs amb milions d'entitats.
+                </p>
+                <a href="https://arxiv.org/abs/2305.15944">
+                    <button class="paper-button">Llegeix l'Article</button>
+                </a>
+            </div>
+            <div class="subsection" id="relational_proxies">
+                <h4>Proxies Relacionals: Relacions Emergents com a Discriminadors de Gra Fi</h4>
+                <p class="abstract">
+                    Les categories de gra fi que comparteixen en gran mesura el mateix conjunt de parts no poden discriminar-se basant-se només en la informació de les parts, ja que difereixen principalment en la manera com les parts locals es relacionen amb l'estructura global general de l'objecte. Proposem Proxies Relacionals, un enfocament nou que aprofita la informació relacional entre les vistes globals i locals d'un objecte per codificar la seva etiqueta semàntica. Començant amb una formalització rigorosa de la noció de distinguibilitat entre categories de gra fi, demostrem les condicions necessàries i suficients que un model ha de satisfer per aprendre els límits de decisió subjacents en l'entorn de gra fi. Dissenyem Proxies Relacionals basant-nos en les nostres troballes teòriques i l'avaluem en set conjunts de dades de referència de gra fi desafiants i aconseguim resultats d'última generació en tots ells, superant el rendiment de tots els treballs existents amb un marge que supera el 4% en alguns casos. També validem experimentalment la nostra teoria sobre la distinguibilitat de gra fi i obtenim resultats consistents en múltiples punts de referència.
+                </p>
+                <a href="https://arxiv.org/abs/2210.02149">    
+                    <button class="paper-button">Llegeix l'Article</button>
+                </a>
+            </div>
+        </div>
+
+        <div class="section" id="interests">
+            <div class="subsection" id="citations">
+                <h4>Articles i Comunitat</h4>
+                <p>
+                    Explora el graf de citacions dels meus principals interessos en recerca. O no ho facis, tant me fa.
+                </p>
+                <div id="interests-widget"></div>
+                <script>
+                    // Incorporar el widget del Projector del Patrimoni
+                    const widgetContainer1 = document.getElementById("interests-widget");
+                    const iframe1 = document.createElement("iframe");
+                    iframe1.src = "https://ouestware.gitlab.io/retina/beta/#/graph/?url=https%3A%2F%2Fgist.githubusercontent.com%2FEauDeData%2F767228574d283bd8eb6b0624151b0c77%2Fraw%2Fee660afb016559b48f8373f986fd9d551ed58659%2Fnetwork-21b794d5-30b.gexf";
+                    iframe1.width = "100%";
+                    iframe1.height = "300px";
+                    iframe1.style.border = "none";
+                    iframe1.style.display = "block";
+                    iframe1.style.margin = "0 auto"; // Centrar el widget horitzontalment
+                    widgetContainer1.appendChild(iframe1);
+                </script>
+
+                <p>
+                    Explora el graf d'interessos:
+                    <a href="https://ouestware.gitlab.io/retina/beta/#/graph/?url=https%3A%2F%2Fgist.githubusercontent.com%2FEauDeData%2F767228574d283bd8eb6b0624151b0c77%2Fraw%2Fee660afb016559b48f8373f986fd9d551ed58659%2Fnetwork-21b794d5-30b.gexf">Graf Retina</a>
+                </p>
+
+                <p>
+                    Explora les col·laboracions i articles que hem fet al meu grup de recerca! (només fingeix que no es va actualitzar per darrer cop fa 100 anys)
+                </p>
+                <div id="dag-widget"></div>
+                <script>
+                    // Incorporar el widget del Projector del Patrimoni
+                    const widgetContainer2 = document.getElementById("dag-widget");
+                    const iframe2 = document.createElement("iframe");
+                    iframe2.src = "https://ouestware.gitlab.io/retina/beta/#/graph/?url=https%3A%2F%2Fgist.githubusercontent.com%2FEauDeData%2Fe9160e9fe6bac2fd699865d4cc588974%2Fraw%2Ffa9c89f4feeee006289e8b5a1b106f4c3fed4a2e%2Fnetwork-96185545-279.gexf&n=Adria%20Molina";
+                    iframe2.width = "100%";
+                    iframe2.height = "300px";
+                    iframe2.style.border = "none";
+                    iframe2.style.display = "block";
+                    iframe2.style.margin = "0 auto"; // Centrar el widget horitzontalment
+                    widgetContainer2.appendChild(iframe2);
+                </script>
+
+                <p>
+                    Explora el graf DAG:
+                    <a href="https://ouestware.gitlab.io/retina/beta/#/graph/?url=https%3A%2F%2Fgist.githubusercontent.com%2FEauDeData%2Fe9160e9fe6bac2fd699865d4cc588974%2Fraw%2Ffa9c89f4feeee006289e8b5a1b106f4c3fed4a2e%2Fnetwork-96185545-279.gexf&n=Adria%20Molina">Graf Retina</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="contact">
+        <h2>Contacte</h2>
+        <ul>
+            <li><a href="mailto:amolina@cvc.uab.cat?Subject=[ASSIGNATURA]+ASSUMPTE">Correu: amolina@cvc.uab.cat</a></li>
+            <li><a href="https://www.linkedin.com/in/adri%C3%A0-molina-927865174/">Linked-In: Adrià Molina Rodríguez</a></li>
+            <li><a href="https://orcid.org/0000-0003-0167-8756">Orcid: 0000-0003-0167-8756 (perfil de recerca)</a></li>
+        </ul>
+    </div>
+
+    <script>
+        // Funcionalitat del selector de temes
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeSelect = document.getElementById('theme-select');
+            const themeStylesheet = document.getElementById('theme-stylesheet');
+            
+            // Carrega el tema guardat des de localStorage o per defecte el capritxós
+            const savedTheme = localStorage.getItem('selectedTheme') || 'index_whimsical.css';
+            themeSelect.value = savedTheme;
+            themeStylesheet.href = './static/' + savedTheme;
+            
+            // Gestiona els canvis de tema
+            themeSelect.addEventListener('change', function() {
+                const selectedTheme = this.value;
+                themeStylesheet.href = './static/' + selectedTheme;
+                localStorage.setItem('selectedTheme', selectedTheme);
+            });
+        });
+    </script>
+</body>
+</html>
