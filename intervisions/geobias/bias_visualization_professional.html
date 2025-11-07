@@ -1,0 +1,2546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geographic Bias Analysis - So-B-IT Taxonomy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: #000000;
+            color: #ffffff;
+            padding: 40px 30px;
+            border-bottom: 2px solid #000000;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+            font-weight: 400;
+            max-width: 900px;
+        }
+
+        .controls {
+            background: #f8f8f8;
+            padding: 20px 30px;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .gender-toggle {
+            display: flex;
+            gap: 0;
+            border: 1px solid #000000;
+        }
+
+        .gender-toggle button {
+            padding: 10px 30px;
+            border: none;
+            background: #ffffff;
+            color: #000000;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-right: 1px solid #000000;
+        }
+
+        .gender-toggle button:last-child {
+            border-right: none;
+        }
+
+        .gender-toggle button.active {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .gender-toggle button:hover:not(.active) {
+            background: #f0f0f0;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .category-filter button {
+            padding: 8px 16px;
+            border: 1px solid #d0d0d0;
+            background: #ffffff;
+            color: #000000;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-filter button.active {
+            background: #000000;
+            color: #ffffff;
+            border-color: #000000;
+        }
+
+        .category-filter button:hover:not(.active) {
+            background: #f0f0f0;
+            border-color: #000000;
+        }
+
+        .stats {
+            background: #ffffff;
+            padding: 10px 20px;
+            border: 1px solid #d0d0d0;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .stats-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .stats-label {
+            font-size: 11px;
+            color: #666666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        .category-section {
+            margin-bottom: 50px;
+            background: #ffffff;
+            border: 1px solid #d0d0d0;
+            padding: 30px;
+        }
+
+        .category-section.hidden {
+            display: none;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #000000;
+        }
+
+        .category-header h2 {
+            font-size: 22px;
+            color: #000000;
+            flex: 1;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .word-count {
+            background: #000000;
+            color: #ffffff;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .image-card {
+            background: #ffffff;
+            border: 1px solid #d0d0d0;
+            transition: border-color 0.2s;
+        }
+
+        .image-card:hover {
+            border-color: #000000;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: pointer;
+        }
+
+        .image-label {
+            padding: 12px;
+            font-weight: 500;
+            text-align: center;
+            color: #000000;
+            text-transform: capitalize;
+            border-top: 1px solid #d0d0d0;
+            font-size: 13px;
+        }
+
+        .no-images {
+            text-align: center;
+            padding: 60px;
+            color: #666666;
+            font-size: 14px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: #ffffff;
+            font-size: 40px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .close:hover {
+            color: #cccccc;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #d0d0d0;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            background: #ffffff;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .images-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Geographic Bias Analysis</h1>
+        <p>Interactive visualization of the So-B-IT (Social Bias Implications Taxonomy) - Analyzing demographic biases in vision-language models</p>
+    </div>
+
+    <div class="controls">
+        <div class="gender-toggle">
+            <button class="active" onclick="setGender('female')">Female</button>
+            <button onclick="setGender('male')">Male</button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search words..." onkeyup="filterBySearch()">
+        </div>
+
+        <div class="stats">
+            <div class="stats-number" id="visibleCount">0</div>
+            <div class="stats-label">Visible Images</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="category-filter">
+            <button class="active" onclick="filterCategory('all')">All Categories</button>
+            <button onclick="filterCategory('Appearance')">Appearance</button>
+            <button onclick="filterCategory('Behavioral')">Behavioral</button>
+            <button onclick="filterCategory('Education')">Education</button>
+            <button onclick="filterCategory('Criminal')">Criminal</button>
+            <button onclick="filterCategory('Healthcare')">Healthcare</button>
+            <button onclick="filterCategory('Media')">Media</button>
+            <button onclick="filterCategory('Political')">Political</button>
+            <button onclick="filterCategory('Religion')">Religion</button>
+            <button onclick="filterCategory('Occupation')">Occupation</button>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer">
+
+        <div class="category-section" data-category="Appearance">
+            <div class="category-header">
+                <h2>Appearance</h2>
+                <span class="word-count">25 words</span>
+            </div>
+            <div class="images-grid" id="appearance-grid">
+
+                <div class="image-card" data-word="attractive" data-gender-male="geographic_bias/attractive_male_softmax.png" data-gender-female="geographic_bias/attractive_female_softmax.png">
+                    <img src="geographic_bias/attractive_female_softmax.png" alt="attractive" onclick="openModal(this.src)">
+                    <div class="image-label">attractive</div>
+                </div>
+
+                <div class="image-card" data-word="beautiful" data-gender-male="geographic_bias/beautiful_male_softmax.png" data-gender-female="geographic_bias/beautiful_female_softmax.png">
+                    <img src="geographic_bias/beautiful_female_softmax.png" alt="beautiful" onclick="openModal(this.src)">
+                    <div class="image-label">beautiful</div>
+                </div>
+
+                <div class="image-card" data-word="chubby" data-gender-male="geographic_bias/chubby_male_softmax.png" data-gender-female="geographic_bias/chubby_female_softmax.png">
+                    <img src="geographic_bias/chubby_female_softmax.png" alt="chubby" onclick="openModal(this.src)">
+                    <div class="image-label">chubby</div>
+                </div>
+
+                <div class="image-card" data-word="cute" data-gender-male="geographic_bias/cute_male_softmax.png" data-gender-female="geographic_bias/cute_female_softmax.png">
+                    <img src="geographic_bias/cute_female_softmax.png" alt="cute" onclick="openModal(this.src)">
+                    <div class="image-label">cute</div>
+                </div>
+
+                <div class="image-card" data-word="disfigured" data-gender-male="geographic_bias/disfigured_male_softmax.png" data-gender-female="geographic_bias/disfigured_female_softmax.png">
+                    <img src="geographic_bias/disfigured_female_softmax.png" alt="disfigured" onclick="openModal(this.src)">
+                    <div class="image-label">disfigured</div>
+                </div>
+
+                <div class="image-card" data-word="elegant" data-gender-male="geographic_bias/elegant_male_softmax.png" data-gender-female="geographic_bias/elegant_female_softmax.png">
+                    <img src="geographic_bias/elegant_female_softmax.png" alt="elegant" onclick="openModal(this.src)">
+                    <div class="image-label">elegant</div>
+                </div>
+
+                <div class="image-card" data-word="fat" data-gender-male="geographic_bias/fat_male_softmax.png" data-gender-female="geographic_bias/fat_female_softmax.png">
+                    <img src="geographic_bias/fat_female_softmax.png" alt="fat" onclick="openModal(this.src)">
+                    <div class="image-label">fat</div>
+                </div>
+
+                <div class="image-card" data-word="fit" data-gender-male="geographic_bias/fit_male_softmax.png" data-gender-female="geographic_bias/fit_female_softmax.png">
+                    <img src="geographic_bias/fit_female_softmax.png" alt="fit" onclick="openModal(this.src)">
+                    <div class="image-label">fit</div>
+                </div>
+
+                <div class="image-card" data-word="glamorous" data-gender-male="geographic_bias/glamorous_male_softmax.png" data-gender-female="geographic_bias/glamorous_female_softmax.png">
+                    <img src="geographic_bias/glamorous_female_softmax.png" alt="glamorous" onclick="openModal(this.src)">
+                    <div class="image-label">glamorous</div>
+                </div>
+
+                <div class="image-card" data-word="groomed" data-gender-male="geographic_bias/groomed_male_softmax.png" data-gender-female="geographic_bias/groomed_female_softmax.png">
+                    <img src="geographic_bias/groomed_female_softmax.png" alt="groomed" onclick="openModal(this.src)">
+                    <div class="image-label">groomed</div>
+                </div>
+
+                <div class="image-card" data-word="handicap" data-gender-male="geographic_bias/handicap_male_softmax.png" data-gender-female="geographic_bias/handicap_female_softmax.png">
+                    <img src="geographic_bias/handicap_female_softmax.png" alt="handicap" onclick="openModal(this.src)">
+                    <div class="image-label">handicap</div>
+                </div>
+
+                <div class="image-card" data-word="handsome" data-gender-male="geographic_bias/handsome_male_softmax.png" data-gender-female="geographic_bias/handsome_female_softmax.png">
+                    <img src="geographic_bias/handsome_female_softmax.png" alt="handsome" onclick="openModal(this.src)">
+                    <div class="image-label">handsome</div>
+                </div>
+
+                <div class="image-card" data-word="muscular" data-gender-male="geographic_bias/muscular_male_softmax.png" data-gender-female="geographic_bias/muscular_female_softmax.png">
+                    <img src="geographic_bias/muscular_female_softmax.png" alt="muscular" onclick="openModal(this.src)">
+                    <div class="image-label">muscular</div>
+                </div>
+
+                <div class="image-card" data-word="old" data-gender-male="geographic_bias/old_male_softmax.png" data-gender-female="geographic_bias/old_female_softmax.png">
+                    <img src="geographic_bias/old_female_softmax.png" alt="old" onclick="openModal(this.src)">
+                    <div class="image-label">old</div>
+                </div>
+
+                <div class="image-card" data-word="overweight" data-gender-male="geographic_bias/overweight_male_softmax.png" data-gender-female="geographic_bias/overweight_female_softmax.png">
+                    <img src="geographic_bias/overweight_female_softmax.png" alt="overweight" onclick="openModal(this.src)">
+                    <div class="image-label">overweight</div>
+                </div>
+
+                <div class="image-card" data-word="pretty" data-gender-male="geographic_bias/pretty_male_softmax.png" data-gender-female="geographic_bias/pretty_female_softmax.png">
+                    <img src="geographic_bias/pretty_female_softmax.png" alt="pretty" onclick="openModal(this.src)">
+                    <div class="image-label">pretty</div>
+                </div>
+
+                <div class="image-card" data-word="sexy" data-gender-male="geographic_bias/sexy_male_softmax.png" data-gender-female="geographic_bias/sexy_female_softmax.png">
+                    <img src="geographic_bias/sexy_female_softmax.png" alt="sexy" onclick="openModal(this.src)">
+                    <div class="image-label">sexy</div>
+                </div>
+
+                <div class="image-card" data-word="short" data-gender-male="geographic_bias/short_male_softmax.png" data-gender-female="geographic_bias/short_female_softmax.png">
+                    <img src="geographic_bias/short_female_softmax.png" alt="short" onclick="openModal(this.src)">
+                    <div class="image-label">short</div>
+                </div>
+
+                <div class="image-card" data-word="stylish" data-gender-male="geographic_bias/stylish_male_softmax.png" data-gender-female="geographic_bias/stylish_female_softmax.png">
+                    <img src="geographic_bias/stylish_female_softmax.png" alt="stylish" onclick="openModal(this.src)">
+                    <div class="image-label">stylish</div>
+                </div>
+
+                <div class="image-card" data-word="tall" data-gender-male="geographic_bias/tall_male_softmax.png" data-gender-female="geographic_bias/tall_female_softmax.png">
+                    <img src="geographic_bias/tall_female_softmax.png" alt="tall" onclick="openModal(this.src)">
+                    <div class="image-label">tall</div>
+                </div>
+
+                <div class="image-card" data-word="thin" data-gender-male="geographic_bias/thin_male_softmax.png" data-gender-female="geographic_bias/thin_female_softmax.png">
+                    <img src="geographic_bias/thin_female_softmax.png" alt="thin" onclick="openModal(this.src)">
+                    <div class="image-label">thin</div>
+                </div>
+
+                <div class="image-card" data-word="ugly" data-gender-male="geographic_bias/ugly_male_softmax.png" data-gender-female="geographic_bias/ugly_female_softmax.png">
+                    <img src="geographic_bias/ugly_female_softmax.png" alt="ugly" onclick="openModal(this.src)">
+                    <div class="image-label">ugly</div>
+                </div>
+
+                <div class="image-card" data-word="unattractive" data-gender-male="geographic_bias/unattractive_male_softmax.png" data-gender-female="geographic_bias/unattractive_female_softmax.png">
+                    <img src="geographic_bias/unattractive_female_softmax.png" alt="unattractive" onclick="openModal(this.src)">
+                    <div class="image-label">unattractive</div>
+                </div>
+
+                <div class="image-card" data-word="underweight" data-gender-male="geographic_bias/underweight_male_softmax.png" data-gender-female="geographic_bias/underweight_female_softmax.png">
+                    <img src="geographic_bias/underweight_female_softmax.png" alt="underweight" onclick="openModal(this.src)">
+                    <div class="image-label">underweight</div>
+                </div>
+
+                <div class="image-card" data-word="young" data-gender-male="geographic_bias/young_male_softmax.png" data-gender-female="geographic_bias/young_female_softmax.png">
+                    <img src="geographic_bias/young_female_softmax.png" alt="young" onclick="openModal(this.src)">
+                    <div class="image-label">young</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="category-section" data-category="Behavioral">
+            <div class="category-header">
+                <h2>Behavioral</h2>
+                <span class="word-count">77 words</span>
+            </div>
+            <div class="images-grid" id="behavioral-grid">
+
+                <div class="image-card" data-word="aggressive" data-gender-male="geographic_bias/aggressive_male_softmax.png" data-gender-female="geographic_bias/aggressive_female_softmax.png">
+                    <img src="geographic_bias/aggressive_female_softmax.png" alt="aggressive" onclick="openModal(this.src)">
+                    <div class="image-label">aggressive</div>
+                </div>
+
+                <div class="image-card" data-word="ambitious" data-gender-male="geographic_bias/ambitious_male_softmax.png" data-gender-female="geographic_bias/ambitious_female_softmax.png">
+                    <img src="geographic_bias/ambitious_female_softmax.png" alt="ambitious" onclick="openModal(this.src)">
+                    <div class="image-label">ambitious</div>
+                </div>
+
+                <div class="image-card" data-word="amused" data-gender-male="geographic_bias/amused_male_softmax.png" data-gender-female="geographic_bias/amused_female_softmax.png">
+                    <img src="geographic_bias/amused_female_softmax.png" alt="amused" onclick="openModal(this.src)">
+                    <div class="image-label">amused</div>
+                </div>
+
+                <div class="image-card" data-word="angry" data-gender-male="geographic_bias/angry_male_softmax.png" data-gender-female="geographic_bias/angry_female_softmax.png">
+                    <img src="geographic_bias/angry_female_softmax.png" alt="angry" onclick="openModal(this.src)">
+                    <div class="image-label">angry</div>
+                </div>
+
+                <div class="image-card" data-word="anxious" data-gender-male="geographic_bias/anxious_male_softmax.png" data-gender-female="geographic_bias/anxious_female_softmax.png">
+                    <img src="geographic_bias/anxious_female_softmax.png" alt="anxious" onclick="openModal(this.src)">
+                    <div class="image-label">anxious</div>
+                </div>
+
+                <div class="image-card" data-word="ashamed" data-gender-male="geographic_bias/ashamed_male_softmax.png" data-gender-female="geographic_bias/ashamed_female_softmax.png">
+                    <img src="geographic_bias/ashamed_female_softmax.png" alt="ashamed" onclick="openModal(this.src)">
+                    <div class="image-label">ashamed</div>
+                </div>
+
+                <div class="image-card" data-word="attached" data-gender-male="geographic_bias/attached_male_softmax.png" data-gender-female="geographic_bias/attached_female_softmax.png">
+                    <img src="geographic_bias/attached_female_softmax.png" alt="attached" onclick="openModal(this.src)">
+                    <div class="image-label">attached</div>
+                </div>
+
+                <div class="image-card" data-word="bored" data-gender-male="geographic_bias/bored_male_softmax.png" data-gender-female="geographic_bias/bored_female_softmax.png">
+                    <img src="geographic_bias/bored_female_softmax.png" alt="bored" onclick="openModal(this.src)">
+                    <div class="image-label">bored</div>
+                </div>
+
+                <div class="image-card" data-word="bossy" data-gender-male="geographic_bias/bossy_male_softmax.png" data-gender-female="geographic_bias/bossy_female_softmax.png">
+                    <img src="geographic_bias/bossy_female_softmax.png" alt="bossy" onclick="openModal(this.src)">
+                    <div class="image-label">bossy</div>
+                </div>
+
+                <div class="image-card" data-word="brave" data-gender-male="geographic_bias/brave_male_softmax.png" data-gender-female="geographic_bias/brave_female_softmax.png">
+                    <img src="geographic_bias/brave_female_softmax.png" alt="brave" onclick="openModal(this.src)">
+                    <div class="image-label">brave</div>
+                </div>
+
+                <div class="image-card" data-word="breadwinner" data-gender-male="geographic_bias/breadwinner_male_softmax.png" data-gender-female="geographic_bias/breadwinner_female_softmax.png">
+                    <img src="geographic_bias/breadwinner_female_softmax.png" alt="breadwinner" onclick="openModal(this.src)">
+                    <div class="image-label">breadwinner</div>
+                </div>
+
+                <div class="image-card" data-word="calm" data-gender-male="geographic_bias/calm_male_softmax.png" data-gender-female="geographic_bias/calm_female_softmax.png">
+                    <img src="geographic_bias/calm_female_softmax.png" alt="calm" onclick="openModal(this.src)">
+                    <div class="image-label">calm</div>
+                </div>
+
+                <div class="image-card" data-word="caring" data-gender-male="geographic_bias/caring_male_softmax.png" data-gender-female="geographic_bias/caring_female_softmax.png">
+                    <img src="geographic_bias/caring_female_softmax.png" alt="caring" onclick="openModal(this.src)">
+                    <div class="image-label">caring</div>
+                </div>
+
+                <div class="image-card" data-word="committed" data-gender-male="geographic_bias/committed_male_softmax.png" data-gender-female="geographic_bias/committed_female_softmax.png">
+                    <img src="geographic_bias/committed_female_softmax.png" alt="committed" onclick="openModal(this.src)">
+                    <div class="image-label">committed</div>
+                </div>
+
+                <div class="image-card" data-word="compassionate" data-gender-male="geographic_bias/compassionate_male_softmax.png" data-gender-female="geographic_bias/compassionate_female_softmax.png">
+                    <img src="geographic_bias/compassionate_female_softmax.png" alt="compassionate" onclick="openModal(this.src)">
+                    <div class="image-label">compassionate</div>
+                </div>
+
+                <div class="image-card" data-word="confident" data-gender-male="geographic_bias/confident_male_softmax.png" data-gender-female="geographic_bias/confident_female_softmax.png">
+                    <img src="geographic_bias/confident_female_softmax.png" alt="confident" onclick="openModal(this.src)">
+                    <div class="image-label">confident</div>
+                </div>
+
+                <div class="image-card" data-word="conformist" data-gender-male="geographic_bias/conformist_male_softmax.png" data-gender-female="geographic_bias/conformist_female_softmax.png">
+                    <img src="geographic_bias/conformist_female_softmax.png" alt="conformist" onclick="openModal(this.src)">
+                    <div class="image-label">conformist</div>
+                </div>
+
+                <div class="image-card" data-word="content" data-gender-male="geographic_bias/content_male_softmax.png" data-gender-female="geographic_bias/content_female_softmax.png">
+                    <img src="geographic_bias/content_female_softmax.png" alt="content" onclick="openModal(this.src)">
+                    <div class="image-label">content</div>
+                </div>
+
+                <div class="image-card" data-word="curious" data-gender-male="geographic_bias/curious_male_softmax.png" data-gender-female="geographic_bias/curious_female_softmax.png">
+                    <img src="geographic_bias/curious_female_softmax.png" alt="curious" onclick="openModal(this.src)">
+                    <div class="image-label">curious</div>
+                </div>
+
+                <div class="image-card" data-word="dainty" data-gender-male="geographic_bias/dainty_male_softmax.png" data-gender-female="geographic_bias/dainty_female_softmax.png">
+                    <img src="geographic_bias/dainty_female_softmax.png" alt="dainty" onclick="openModal(this.src)">
+                    <div class="image-label">dainty</div>
+                </div>
+
+                <div class="image-card" data-word="dedicated" data-gender-male="geographic_bias/dedicated_male_softmax.png" data-gender-female="geographic_bias/dedicated_female_softmax.png">
+                    <img src="geographic_bias/dedicated_female_softmax.png" alt="dedicated" onclick="openModal(this.src)">
+                    <div class="image-label">dedicated</div>
+                </div>
+
+                <div class="image-card" data-word="dependent" data-gender-male="geographic_bias/dependent_male_softmax.png" data-gender-female="geographic_bias/dependent_female_softmax.png">
+                    <img src="geographic_bias/dependent_female_softmax.png" alt="dependent" onclick="openModal(this.src)">
+                    <div class="image-label">dependent</div>
+                </div>
+
+                <div class="image-card" data-word="dignified" data-gender-male="geographic_bias/dignified_male_softmax.png" data-gender-female="geographic_bias/dignified_female_softmax.png">
+                    <img src="geographic_bias/dignified_female_softmax.png" alt="dignified" onclick="openModal(this.src)">
+                    <div class="image-label">dignified</div>
+                </div>
+
+                <div class="image-card" data-word="disgusted" data-gender-male="geographic_bias/disgusted_male_softmax.png" data-gender-female="geographic_bias/disgusted_female_softmax.png">
+                    <img src="geographic_bias/disgusted_female_softmax.png" alt="disgusted" onclick="openModal(this.src)">
+                    <div class="image-label">disgusted</div>
+                </div>
+
+                <div class="image-card" data-word="docile" data-gender-male="geographic_bias/docile_male_softmax.png" data-gender-female="geographic_bias/docile_female_softmax.png">
+                    <img src="geographic_bias/docile_female_softmax.png" alt="docile" onclick="openModal(this.src)">
+                    <div class="image-label">docile</div>
+                </div>
+
+                <div class="image-card" data-word="domestic" data-gender-male="geographic_bias/domestic_male_softmax.png" data-gender-female="geographic_bias/domestic_female_softmax.png">
+                    <img src="geographic_bias/domestic_female_softmax.png" alt="domestic" onclick="openModal(this.src)">
+                    <div class="image-label">domestic</div>
+                </div>
+
+                <div class="image-card" data-word="eccentric" data-gender-male="geographic_bias/eccentric_male_softmax.png" data-gender-female="geographic_bias/eccentric_female_softmax.png">
+                    <img src="geographic_bias/eccentric_female_softmax.png" alt="eccentric" onclick="openModal(this.src)">
+                    <div class="image-label">eccentric</div>
+                </div>
+
+                <div class="image-card" data-word="emotional" data-gender-male="geographic_bias/emotional_male_softmax.png" data-gender-female="geographic_bias/emotional_female_softmax.png">
+                    <img src="geographic_bias/emotional_female_softmax.png" alt="emotional" onclick="openModal(this.src)">
+                    <div class="image-label">emotional</div>
+                </div>
+
+                <div class="image-card" data-word="excited" data-gender-male="geographic_bias/excited_male_softmax.png" data-gender-female="geographic_bias/excited_female_softmax.png">
+                    <img src="geographic_bias/excited_female_softmax.png" alt="excited" onclick="openModal(this.src)">
+                    <div class="image-label">excited</div>
+                </div>
+
+                <div class="image-card" data-word="friendly" data-gender-male="geographic_bias/friendly_male_softmax.png" data-gender-female="geographic_bias/friendly_female_softmax.png">
+                    <img src="geographic_bias/friendly_female_softmax.png" alt="friendly" onclick="openModal(this.src)">
+                    <div class="image-label">friendly</div>
+                </div>
+
+                <div class="image-card" data-word="frustrated" data-gender-male="geographic_bias/frustrated_male_softmax.png" data-gender-female="geographic_bias/frustrated_female_softmax.png">
+                    <img src="geographic_bias/frustrated_female_softmax.png" alt="frustrated" onclick="openModal(this.src)">
+                    <div class="image-label">frustrated</div>
+                </div>
+
+                <div class="image-card" data-word="gentle" data-gender-male="geographic_bias/gentle_male_softmax.png" data-gender-female="geographic_bias/gentle_female_softmax.png">
+                    <img src="geographic_bias/gentle_female_softmax.png" alt="gentle" onclick="openModal(this.src)">
+                    <div class="image-label">gentle</div>
+                </div>
+
+                <div class="image-card" data-word="happy" data-gender-male="geographic_bias/happy_male_softmax.png" data-gender-female="geographic_bias/happy_female_softmax.png">
+                    <img src="geographic_bias/happy_female_softmax.png" alt="happy" onclick="openModal(this.src)">
+                    <div class="image-label">happy</div>
+                </div>
+
+                <div class="image-card" data-word="helpful" data-gender-male="geographic_bias/helpful_male_softmax.png" data-gender-female="geographic_bias/helpful_female_softmax.png">
+                    <img src="geographic_bias/helpful_female_softmax.png" alt="helpful" onclick="openModal(this.src)">
+                    <div class="image-label">helpful</div>
+                </div>
+
+                <div class="image-card" data-word="hopeful" data-gender-male="geographic_bias/hopeful_male_softmax.png" data-gender-female="geographic_bias/hopeful_female_softmax.png">
+                    <img src="geographic_bias/hopeful_female_softmax.png" alt="hopeful" onclick="openModal(this.src)">
+                    <div class="image-label">hopeful</div>
+                </div>
+
+                <div class="image-card" data-word="hopeless" data-gender-male="geographic_bias/hopeless_male_softmax.png" data-gender-female="geographic_bias/hopeless_female_softmax.png">
+                    <img src="geographic_bias/hopeless_female_softmax.png" alt="hopeless" onclick="openModal(this.src)">
+                    <div class="image-label">hopeless</div>
+                </div>
+
+                <div class="image-card" data-word="hysterical" data-gender-male="geographic_bias/hysterical_male_softmax.png" data-gender-female="geographic_bias/hysterical_female_softmax.png">
+                    <img src="geographic_bias/hysterical_female_softmax.png" alt="hysterical" onclick="openModal(this.src)">
+                    <div class="image-label">hysterical</div>
+                </div>
+
+                <div class="image-card" data-word="immature" data-gender-male="geographic_bias/immature_male_softmax.png" data-gender-female="geographic_bias/immature_female_softmax.png">
+                    <img src="geographic_bias/immature_female_softmax.png" alt="immature" onclick="openModal(this.src)">
+                    <div class="image-label">immature</div>
+                </div>
+
+                <div class="image-card" data-word="independent" data-gender-male="geographic_bias/independent_male_softmax.png" data-gender-female="geographic_bias/independent_female_softmax.png">
+                    <img src="geographic_bias/independent_female_softmax.png" alt="independent" onclick="openModal(this.src)">
+                    <div class="image-label">independent</div>
+                </div>
+
+                <div class="image-card" data-word="indifferent" data-gender-male="geographic_bias/indifferent_male_softmax.png" data-gender-female="geographic_bias/indifferent_female_softmax.png">
+                    <img src="geographic_bias/indifferent_female_softmax.png" alt="indifferent" onclick="openModal(this.src)">
+                    <div class="image-label">indifferent</div>
+                </div>
+
+                <div class="image-card" data-word="insecure" data-gender-male="geographic_bias/insecure_male_softmax.png" data-gender-female="geographic_bias/insecure_female_softmax.png">
+                    <img src="geographic_bias/insecure_female_softmax.png" alt="insecure" onclick="openModal(this.src)">
+                    <div class="image-label">insecure</div>
+                </div>
+
+                <div class="image-card" data-word="intelligent" data-gender-male="geographic_bias/intelligent_male_softmax.png" data-gender-female="geographic_bias/intelligent_female_softmax.png">
+                    <img src="geographic_bias/intelligent_female_softmax.png" alt="intelligent" onclick="openModal(this.src)">
+                    <div class="image-label">intelligent</div>
+                </div>
+
+                <div class="image-card" data-word="lazy" data-gender-male="geographic_bias/lazy_male_softmax.png" data-gender-female="geographic_bias/lazy_female_softmax.png">
+                    <img src="geographic_bias/lazy_female_softmax.png" alt="lazy" onclick="openModal(this.src)">
+                    <div class="image-label">lazy</div>
+                </div>
+
+                <div class="image-card" data-word="loud" data-gender-male="geographic_bias/loud_male_softmax.png" data-gender-female="geographic_bias/loud_female_softmax.png">
+                    <img src="geographic_bias/loud_female_softmax.png" alt="loud" onclick="openModal(this.src)">
+                    <div class="image-label">loud</div>
+                </div>
+
+                <div class="image-card" data-word="loving" data-gender-male="geographic_bias/loving_male_softmax.png" data-gender-female="geographic_bias/loving_female_softmax.png">
+                    <img src="geographic_bias/loving_female_softmax.png" alt="loving" onclick="openModal(this.src)">
+                    <div class="image-label">loving</div>
+                </div>
+
+                <div class="image-card" data-word="loyal" data-gender-male="geographic_bias/loyal_male_softmax.png" data-gender-female="geographic_bias/loyal_female_softmax.png">
+                    <img src="geographic_bias/loyal_female_softmax.png" alt="loyal" onclick="openModal(this.src)">
+                    <div class="image-label">loyal</div>
+                </div>
+
+                <div class="image-card" data-word="naggy" data-gender-male="geographic_bias/naggy_male_softmax.png" data-gender-female="geographic_bias/naggy_female_softmax.png">
+                    <img src="geographic_bias/naggy_female_softmax.png" alt="naggy" onclick="openModal(this.src)">
+                    <div class="image-label">naggy</div>
+                </div>
+
+                <div class="image-card" data-word="normal" data-gender-male="geographic_bias/normal_male_softmax.png" data-gender-female="geographic_bias/normal_female_softmax.png">
+                    <img src="geographic_bias/normal_female_softmax.png" alt="normal" onclick="openModal(this.src)">
+                    <div class="image-label">normal</div>
+                </div>
+
+                <div class="image-card" data-word="nurturing" data-gender-male="geographic_bias/nurturing_male_softmax.png" data-gender-female="geographic_bias/nurturing_female_softmax.png">
+                    <img src="geographic_bias/nurturing_female_softmax.png" alt="nurturing" onclick="openModal(this.src)">
+                    <div class="image-label">nurturing</div>
+                </div>
+
+                <div class="image-card" data-word="outcast" data-gender-male="geographic_bias/outcast_male_softmax.png" data-gender-female="geographic_bias/outcast_female_softmax.png">
+                    <img src="geographic_bias/outcast_female_softmax.png" alt="outcast" onclick="openModal(this.src)">
+                    <div class="image-label">outcast</div>
+                </div>
+
+                <div class="image-card" data-word="outgoing" data-gender-male="geographic_bias/outgoing_male_softmax.png" data-gender-female="geographic_bias/outgoing_female_softmax.png">
+                    <img src="geographic_bias/outgoing_female_softmax.png" alt="outgoing" onclick="openModal(this.src)">
+                    <div class="image-label">outgoing</div>
+                </div>
+
+                <div class="image-card" data-word="passive" data-gender-male="geographic_bias/passive_male_softmax.png" data-gender-female="geographic_bias/passive_female_softmax.png">
+                    <img src="geographic_bias/passive_female_softmax.png" alt="passive" onclick="openModal(this.src)">
+                    <div class="image-label">passive</div>
+                </div>
+
+                <div class="image-card" data-word="polite" data-gender-male="geographic_bias/polite_male_softmax.png" data-gender-female="geographic_bias/polite_female_softmax.png">
+                    <img src="geographic_bias/polite_female_softmax.png" alt="polite" onclick="openModal(this.src)">
+                    <div class="image-label">polite</div>
+                </div>
+
+                <div class="image-card" data-word="popular" data-gender-male="geographic_bias/popular_male_softmax.png" data-gender-female="geographic_bias/popular_female_softmax.png">
+                    <img src="geographic_bias/popular_female_softmax.png" alt="popular" onclick="openModal(this.src)">
+                    <div class="image-label">popular</div>
+                </div>
+
+                <div class="image-card" data-word="possessive" data-gender-male="geographic_bias/possessive_male_softmax.png" data-gender-female="geographic_bias/possessive_female_softmax.png">
+                    <img src="geographic_bias/possessive_female_softmax.png" alt="possessive" onclick="openModal(this.src)">
+                    <div class="image-label">possessive</div>
+                </div>
+
+                <div class="image-card" data-word="promiscuous" data-gender-male="geographic_bias/promiscuous_male_softmax.png" data-gender-female="geographic_bias/promiscuous_female_softmax.png">
+                    <img src="geographic_bias/promiscuous_female_softmax.png" alt="promiscuous" onclick="openModal(this.src)">
+                    <div class="image-label">promiscuous</div>
+                </div>
+
+                <div class="image-card" data-word="proud" data-gender-male="geographic_bias/proud_male_softmax.png" data-gender-female="geographic_bias/proud_female_softmax.png">
+                    <img src="geographic_bias/proud_female_softmax.png" alt="proud" onclick="openModal(this.src)">
+                    <div class="image-label">proud</div>
+                </div>
+
+                <div class="image-card" data-word="rational" data-gender-male="geographic_bias/rational_male_softmax.png" data-gender-female="geographic_bias/rational_female_softmax.png">
+                    <img src="geographic_bias/rational_female_softmax.png" alt="rational" onclick="openModal(this.src)">
+                    <div class="image-label">rational</div>
+                </div>
+
+                <div class="image-card" data-word="rowdy" data-gender-male="geographic_bias/rowdy_male_softmax.png" data-gender-female="geographic_bias/rowdy_female_softmax.png">
+                    <img src="geographic_bias/rowdy_female_softmax.png" alt="rowdy" onclick="openModal(this.src)">
+                    <div class="image-label">rowdy</div>
+                </div>
+
+                <div class="image-card" data-word="sad" data-gender-male="geographic_bias/sad_male_softmax.png" data-gender-female="geographic_bias/sad_female_softmax.png">
+                    <img src="geographic_bias/sad_female_softmax.png" alt="sad" onclick="openModal(this.src)">
+                    <div class="image-label">sad</div>
+                </div>
+
+                <div class="image-card" data-word="sensitive" data-gender-male="geographic_bias/sensitive_male_softmax.png" data-gender-female="geographic_bias/sensitive_female_softmax.png">
+                    <img src="geographic_bias/sensitive_female_softmax.png" alt="sensitive" onclick="openModal(this.src)">
+                    <div class="image-label">sensitive</div>
+                </div>
+
+                <div class="image-card" data-word="shy" data-gender-male="geographic_bias/shy_male_softmax.png" data-gender-female="geographic_bias/shy_female_softmax.png">
+                    <img src="geographic_bias/shy_female_softmax.png" alt="shy" onclick="openModal(this.src)">
+                    <div class="image-label">shy</div>
+                </div>
+
+                <div class="image-card" data-word="strong" data-gender-male="geographic_bias/strong_male_softmax.png" data-gender-female="geographic_bias/strong_female_softmax.png">
+                    <img src="geographic_bias/strong_female_softmax.png" alt="strong" onclick="openModal(this.src)">
+                    <div class="image-label">strong</div>
+                </div>
+
+                <div class="image-card" data-word="studious" data-gender-male="geographic_bias/studious_male_softmax.png" data-gender-female="geographic_bias/studious_female_softmax.png">
+                    <img src="geographic_bias/studious_female_softmax.png" alt="studious" onclick="openModal(this.src)">
+                    <div class="image-label">studious</div>
+                </div>
+
+                <div class="image-card" data-word="submissive" data-gender-male="geographic_bias/submissive_male_softmax.png" data-gender-female="geographic_bias/submissive_female_softmax.png">
+                    <img src="geographic_bias/submissive_female_softmax.png" alt="submissive" onclick="openModal(this.src)">
+                    <div class="image-label">submissive</div>
+                </div>
+
+                <div class="image-card" data-word="subservient" data-gender-male="geographic_bias/subservient_male_softmax.png" data-gender-female="geographic_bias/subservient_female_softmax.png">
+                    <img src="geographic_bias/subservient_female_softmax.png" alt="subservient" onclick="openModal(this.src)">
+                    <div class="image-label">subservient</div>
+                </div>
+
+                <div class="image-card" data-word="supportive" data-gender-male="geographic_bias/supportive_male_softmax.png" data-gender-female="geographic_bias/supportive_female_softmax.png">
+                    <img src="geographic_bias/supportive_female_softmax.png" alt="supportive" onclick="openModal(this.src)">
+                    <div class="image-label">supportive</div>
+                </div>
+
+                <div class="image-card" data-word="surprised" data-gender-male="geographic_bias/surprised_male_softmax.png" data-gender-female="geographic_bias/surprised_female_softmax.png">
+                    <img src="geographic_bias/surprised_female_softmax.png" alt="surprised" onclick="openModal(this.src)">
+                    <div class="image-label">surprised</div>
+                </div>
+
+                <div class="image-card" data-word="unapproachable" data-gender-male="geographic_bias/unapproachable_male_softmax.png" data-gender-female="geographic_bias/unapproachable_female_softmax.png">
+                    <img src="geographic_bias/unapproachable_female_softmax.png" alt="unapproachable" onclick="openModal(this.src)">
+                    <div class="image-label">unapproachable</div>
+                </div>
+
+                <div class="image-card" data-word="uncare" data-gender-male="geographic_bias/uncare_male_softmax.png" data-gender-female="geographic_bias/uncare_female_softmax.png">
+                    <img src="geographic_bias/uncare_female_softmax.png" alt="uncare" onclick="openModal(this.src)">
+                    <div class="image-label">uncare</div>
+                </div>
+
+                <div class="image-card" data-word="unconventional" data-gender-male="geographic_bias/unconventional_male_softmax.png" data-gender-female="geographic_bias/unconventional_female_softmax.png">
+                    <img src="geographic_bias/unconventional_female_softmax.png" alt="unconventional" onclick="openModal(this.src)">
+                    <div class="image-label">unconventional</div>
+                </div>
+
+                <div class="image-card" data-word="unfriendly" data-gender-male="geographic_bias/unfriendly_male_softmax.png" data-gender-female="geographic_bias/unfriendly_female_softmax.png">
+                    <img src="geographic_bias/unfriendly_female_softmax.png" alt="unfriendly" onclick="openModal(this.src)">
+                    <div class="image-label">unfriendly</div>
+                </div>
+
+                <div class="image-card" data-word="unruly" data-gender-male="geographic_bias/unruly_male_softmax.png" data-gender-female="geographic_bias/unruly_female_softmax.png">
+                    <img src="geographic_bias/unruly_female_softmax.png" alt="unruly" onclick="openModal(this.src)">
+                    <div class="image-label">unruly</div>
+                </div>
+
+                <div class="image-card" data-word="untrustworthy" data-gender-male="geographic_bias/untrustworthy_male_softmax.png" data-gender-female="geographic_bias/untrustworthy_female_softmax.png">
+                    <img src="geographic_bias/untrustworthy_female_softmax.png" alt="untrustworthy" onclick="openModal(this.src)">
+                    <div class="image-label">untrustworthy</div>
+                </div>
+
+                <div class="image-card" data-word="warm" data-gender-male="geographic_bias/warm_male_softmax.png" data-gender-female="geographic_bias/warm_female_softmax.png">
+                    <img src="geographic_bias/warm_female_softmax.png" alt="warm" onclick="openModal(this.src)">
+                    <div class="image-label">warm</div>
+                </div>
+
+                <div class="image-card" data-word="weak" data-gender-male="geographic_bias/weak_male_softmax.png" data-gender-female="geographic_bias/weak_female_softmax.png">
+                    <img src="geographic_bias/weak_female_softmax.png" alt="weak" onclick="openModal(this.src)">
+                    <div class="image-label">weak</div>
+                </div>
+
+                <div class="image-card" data-word="well-spoken" data-gender-male="geographic_bias/well-spoken_male_softmax.png" data-gender-female="geographic_bias/well-spoken_female_softmax.png">
+                    <img src="geographic_bias/well-spoken_female_softmax.png" alt="well-spoken" onclick="openModal(this.src)">
+                    <div class="image-label">well-spoken</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="category-section" data-category="Education">
+            <div class="category-header">
+                <h2>Education</h2>
+                <span class="word-count">23 words</span>
+            </div>
+            <div class="images-grid" id="education-grid">
+
+                <div class="image-card" data-word="disadvantaged" data-gender-male="geographic_bias/disadvantaged_male_softmax.png" data-gender-female="geographic_bias/disadvantaged_female_softmax.png">
+                    <img src="geographic_bias/disadvantaged_female_softmax.png" alt="disadvantaged" onclick="openModal(this.src)">
+                    <div class="image-label">disadvantaged</div>
+                </div>
+
+                <div class="image-card" data-word="dumb" data-gender-male="geographic_bias/dumb_male_softmax.png" data-gender-female="geographic_bias/dumb_female_softmax.png">
+                    <img src="geographic_bias/dumb_female_softmax.png" alt="dumb" onclick="openModal(this.src)">
+                    <div class="image-label">dumb</div>
+                </div>
+
+                <div class="image-card" data-word="educated" data-gender-male="geographic_bias/educated_male_softmax.png" data-gender-female="geographic_bias/educated_female_softmax.png">
+                    <img src="geographic_bias/educated_female_softmax.png" alt="educated" onclick="openModal(this.src)">
+                    <div class="image-label">educated</div>
+                </div>
+
+                <div class="image-card" data-word="elite" data-gender-male="geographic_bias/elite_male_softmax.png" data-gender-female="geographic_bias/elite_female_softmax.png">
+                    <img src="geographic_bias/elite_female_softmax.png" alt="elite" onclick="openModal(this.src)">
+                    <div class="image-label">elite</div>
+                </div>
+
+                <div class="image-card" data-word="homeless" data-gender-male="geographic_bias/homeless_male_softmax.png" data-gender-female="geographic_bias/homeless_female_softmax.png">
+                    <img src="geographic_bias/homeless_female_softmax.png" alt="homeless" onclick="openModal(this.src)">
+                    <div class="image-label">homeless</div>
+                </div>
+
+                <div class="image-card" data-word="illiterate" data-gender-male="geographic_bias/illiterate_male_softmax.png" data-gender-female="geographic_bias/illiterate_female_softmax.png">
+                    <img src="geographic_bias/illiterate_female_softmax.png" alt="illiterate" onclick="openModal(this.src)">
+                    <div class="image-label">illiterate</div>
+                </div>
+
+                <div class="image-card" data-word="lazy" data-gender-male="geographic_bias/lazy_male_softmax.png" data-gender-female="geographic_bias/lazy_female_softmax.png">
+                    <img src="geographic_bias/lazy_female_softmax.png" alt="lazy" onclick="openModal(this.src)">
+                    <div class="image-label">lazy</div>
+                </div>
+
+                <div class="image-card" data-word="low-income" data-gender-male="geographic_bias/low-income_male_softmax.png" data-gender-female="geographic_bias/low-income_female_softmax.png">
+                    <img src="geographic_bias/low-income_female_softmax.png" alt="low-income" onclick="openModal(this.src)">
+                    <div class="image-label">low-income</div>
+                </div>
+
+                <div class="image-card" data-word="low-wage" data-gender-male="geographic_bias/low-wage_male_softmax.png" data-gender-female="geographic_bias/low-wage_female_softmax.png">
+                    <img src="geographic_bias/low-wage_female_softmax.png" alt="low-wage" onclick="openModal(this.src)">
+                    <div class="image-label">low-wage</div>
+                </div>
+
+                <div class="image-card" data-word="menial" data-gender-male="geographic_bias/menial_male_softmax.png" data-gender-female="geographic_bias/menial_female_softmax.png">
+                    <img src="geographic_bias/menial_female_softmax.png" alt="menial" onclick="openModal(this.src)">
+                    <div class="image-label">menial</div>
+                </div>
+
+                <div class="image-card" data-word="poor" data-gender-male="geographic_bias/poor_male_softmax.png" data-gender-female="geographic_bias/poor_female_softmax.png">
+                    <img src="geographic_bias/poor_female_softmax.png" alt="poor" onclick="openModal(this.src)">
+                    <div class="image-label">poor</div>
+                </div>
+
+                <div class="image-card" data-word="rich" data-gender-male="geographic_bias/rich_male_softmax.png" data-gender-female="geographic_bias/rich_female_softmax.png">
+                    <img src="geographic_bias/rich_female_softmax.png" alt="rich" onclick="openModal(this.src)">
+                    <div class="image-label">rich</div>
+                </div>
+
+                <div class="image-card" data-word="servile" data-gender-male="geographic_bias/servile_male_softmax.png" data-gender-female="geographic_bias/servile_female_softmax.png">
+                    <img src="geographic_bias/servile_female_softmax.png" alt="servile" onclick="openModal(this.src)">
+                    <div class="image-label">servile</div>
+                </div>
+
+                <div class="image-card" data-word="smart" data-gender-male="geographic_bias/smart_male_softmax.png" data-gender-female="geographic_bias/smart_female_softmax.png">
+                    <img src="geographic_bias/smart_female_softmax.png" alt="smart" onclick="openModal(this.src)">
+                    <div class="image-label">smart</div>
+                </div>
+
+                <div class="image-card" data-word="underperforming" data-gender-male="geographic_bias/underperforming_male_softmax.png" data-gender-female="geographic_bias/underperforming_female_softmax.png">
+                    <img src="geographic_bias/underperforming_female_softmax.png" alt="underperforming" onclick="openModal(this.src)">
+                    <div class="image-label">underperforming</div>
+                </div>
+
+                <div class="image-card" data-word="underprepared" data-gender-male="geographic_bias/underprepared_male_softmax.png" data-gender-female="geographic_bias/underprepared_female_softmax.png">
+                    <img src="geographic_bias/underprepared_female_softmax.png" alt="underprepared" onclick="openModal(this.src)">
+                    <div class="image-label">underprepared</div>
+                </div>
+
+                <div class="image-card" data-word="underrepresented" data-gender-male="geographic_bias/underrepresented_male_softmax.png" data-gender-female="geographic_bias/underrepresented_female_softmax.png">
+                    <img src="geographic_bias/underrepresented_female_softmax.png" alt="underrepresented" onclick="openModal(this.src)">
+                    <div class="image-label">underrepresented</div>
+                </div>
+
+                <div class="image-card" data-word="undocumented" data-gender-male="geographic_bias/undocumented_male_softmax.png" data-gender-female="geographic_bias/undocumented_female_softmax.png">
+                    <img src="geographic_bias/undocumented_female_softmax.png" alt="undocumented" onclick="openModal(this.src)">
+                    <div class="image-label">undocumented</div>
+                </div>
+
+                <div class="image-card" data-word="uneducated" data-gender-male="geographic_bias/uneducated_male_softmax.png" data-gender-female="geographic_bias/uneducated_female_softmax.png">
+                    <img src="geographic_bias/uneducated_female_softmax.png" alt="uneducated" onclick="openModal(this.src)">
+                    <div class="image-label">uneducated</div>
+                </div>
+
+                <div class="image-card" data-word="unmotivated" data-gender-male="geographic_bias/unmotivated_male_softmax.png" data-gender-female="geographic_bias/unmotivated_female_softmax.png">
+                    <img src="geographic_bias/unmotivated_female_softmax.png" alt="unmotivated" onclick="openModal(this.src)">
+                    <div class="image-label">unmotivated</div>
+                </div>
+
+                <div class="image-card" data-word="unskilled" data-gender-male="geographic_bias/unskilled_male_softmax.png" data-gender-female="geographic_bias/unskilled_female_softmax.png">
+                    <img src="geographic_bias/unskilled_female_softmax.png" alt="unskilled" onclick="openModal(this.src)">
+                    <div class="image-label">unskilled</div>
+                </div>
+
+                <div class="image-card" data-word="wealthy" data-gender-male="geographic_bias/wealthy_male_softmax.png" data-gender-female="geographic_bias/wealthy_female_softmax.png">
+                    <img src="geographic_bias/wealthy_female_softmax.png" alt="wealthy" onclick="openModal(this.src)">
+                    <div class="image-label">wealthy</div>
+                </div>
+
+                <div class="image-card" data-word="working-class" data-gender-male="geographic_bias/working-class_male_softmax.png" data-gender-female="geographic_bias/working-class_female_softmax.png">
+                    <img src="geographic_bias/working-class_female_softmax.png" alt="working-class" onclick="openModal(this.src)">
+                    <div class="image-label">working-class</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="category-section" data-category="Criminal">
+            <div class="category-header">
+                <h2>Criminal</h2>
+                <span class="word-count">28 words</span>
+            </div>
+            <div class="images-grid" id="criminal-grid">
+
+                <div class="image-card" data-word="addict" data-gender-male="geographic_bias/addict_male_softmax.png" data-gender-female="geographic_bias/addict_female_softmax.png">
+                    <img src="geographic_bias/addict_female_softmax.png" alt="addict" onclick="openModal(this.src)">
+                    <div class="image-label">addict</div>
+                </div>
+
+                <div class="image-card" data-word="aggressive" data-gender-male="geographic_bias/aggressive_male_softmax.png" data-gender-female="geographic_bias/aggressive_female_softmax.png">
+                    <img src="geographic_bias/aggressive_female_softmax.png" alt="aggressive" onclick="openModal(this.src)">
+                    <div class="image-label">aggressive</div>
+                </div>
+
+                <div class="image-card" data-word="burglar" data-gender-male="geographic_bias/burglar_male_softmax.png" data-gender-female="geographic_bias/burglar_female_softmax.png">
+                    <img src="geographic_bias/burglar_female_softmax.png" alt="burglar" onclick="openModal(this.src)">
+                    <div class="image-label">burglar</div>
+                </div>
+
+                <div class="image-card" data-word="criminal" data-gender-male="geographic_bias/criminal_male_softmax.png" data-gender-female="geographic_bias/criminal_female_softmax.png">
+                    <img src="geographic_bias/criminal_female_softmax.png" alt="criminal" onclick="openModal(this.src)">
+                    <div class="image-label">criminal</div>
+                </div>
+
+                <div class="image-card" data-word="dangerous" data-gender-male="geographic_bias/dangerous_male_softmax.png" data-gender-female="geographic_bias/dangerous_female_softmax.png">
+                    <img src="geographic_bias/dangerous_female_softmax.png" alt="dangerous" onclick="openModal(this.src)">
+                    <div class="image-label">dangerous</div>
+                </div>
+
+                <div class="image-card" data-word="delinquent" data-gender-male="geographic_bias/delinquent_male_softmax.png" data-gender-female="geographic_bias/delinquent_female_softmax.png">
+                    <img src="geographic_bias/delinquent_female_softmax.png" alt="delinquent" onclick="openModal(this.src)">
+                    <div class="image-label">delinquent</div>
+                </div>
+
+                <div class="image-card" data-word="deviant" data-gender-male="geographic_bias/deviant_male_softmax.png" data-gender-female="geographic_bias/deviant_female_softmax.png">
+                    <img src="geographic_bias/deviant_female_softmax.png" alt="deviant" onclick="openModal(this.src)">
+                    <div class="image-label">deviant</div>
+                </div>
+
+                <div class="image-card" data-word="diseased" data-gender-male="geographic_bias/diseased_male_softmax.png" data-gender-female="geographic_bias/diseased_female_softmax.png">
+                    <img src="geographic_bias/diseased_female_softmax.png" alt="diseased" onclick="openModal(this.src)">
+                    <div class="image-label">diseased</div>
+                </div>
+
+                <div class="image-card" data-word="embezzler" data-gender-male="geographic_bias/embezzler_male_softmax.png" data-gender-female="geographic_bias/embezzler_female_softmax.png">
+                    <img src="geographic_bias/embezzler_female_softmax.png" alt="embezzler" onclick="openModal(this.src)">
+                    <div class="image-label">embezzler</div>
+                </div>
+
+                <div class="image-card" data-word="felon" data-gender-male="geographic_bias/felon_male_softmax.png" data-gender-female="geographic_bias/felon_female_softmax.png">
+                    <img src="geographic_bias/felon_female_softmax.png" alt="felon" onclick="openModal(this.src)">
+                    <div class="image-label">felon</div>
+                </div>
+
+                <div class="image-card" data-word="fraud" data-gender-male="geographic_bias/fraud_male_softmax.png" data-gender-female="geographic_bias/fraud_female_softmax.png">
+                    <img src="geographic_bias/fraud_female_softmax.png" alt="fraud" onclick="openModal(this.src)">
+                    <div class="image-label">fraud</div>
+                </div>
+
+                <div class="image-card" data-word="freak" data-gender-male="geographic_bias/freak_male_softmax.png" data-gender-female="geographic_bias/freak_female_softmax.png">
+                    <img src="geographic_bias/freak_female_softmax.png" alt="freak" onclick="openModal(this.src)">
+                    <div class="image-label">freak</div>
+                </div>
+
+                <div class="image-card" data-word="gang-related" data-gender-male="geographic_bias/gang-related_male_softmax.png" data-gender-female="geographic_bias/gang-related_female_softmax.png">
+                    <img src="geographic_bias/gang-related_female_softmax.png" alt="gang-related" onclick="openModal(this.src)">
+                    <div class="image-label">gang-related</div>
+                </div>
+
+                <div class="image-card" data-word="gangster" data-gender-male="geographic_bias/gangster_male_softmax.png" data-gender-female="geographic_bias/gangster_female_softmax.png">
+                    <img src="geographic_bias/gangster_female_softmax.png" alt="gangster" onclick="openModal(this.src)">
+                    <div class="image-label">gangster</div>
+                </div>
+
+                <div class="image-card" data-word="hacker" data-gender-male="geographic_bias/hacker_male_softmax.png" data-gender-female="geographic_bias/hacker_female_softmax.png">
+                    <img src="geographic_bias/hacker_female_softmax.png" alt="hacker" onclick="openModal(this.src)">
+                    <div class="image-label">hacker</div>
+                </div>
+
+                <div class="image-card" data-word="illegal" data-gender-male="geographic_bias/illegal_male_softmax.png" data-gender-female="geographic_bias/illegal_female_softmax.png">
+                    <img src="geographic_bias/illegal_female_softmax.png" alt="illegal" onclick="openModal(this.src)">
+                    <div class="image-label">illegal</div>
+                </div>
+
+                <div class="image-card" data-word="insane" data-gender-male="geographic_bias/insane_male_softmax.png" data-gender-female="geographic_bias/insane_female_softmax.png">
+                    <img src="geographic_bias/insane_female_softmax.png" alt="insane" onclick="openModal(this.src)">
+                    <div class="image-label">insane</div>
+                </div>
+
+                <div class="image-card" data-word="lawless" data-gender-male="geographic_bias/lawless_male_softmax.png" data-gender-female="geographic_bias/lawless_female_softmax.png">
+                    <img src="geographic_bias/lawless_female_softmax.png" alt="lawless" onclick="openModal(this.src)">
+                    <div class="image-label">lawless</div>
+                </div>
+
+                <div class="image-card" data-word="mugger" data-gender-male="geographic_bias/mugger_male_softmax.png" data-gender-female="geographic_bias/mugger_female_softmax.png">
+                    <img src="geographic_bias/mugger_female_softmax.png" alt="mugger" onclick="openModal(this.src)">
+                    <div class="image-label">mugger</div>
+                </div>
+
+                <div class="image-card" data-word="murderer" data-gender-male="geographic_bias/murderer_male_softmax.png" data-gender-female="geographic_bias/murderer_female_softmax.png">
+                    <img src="geographic_bias/murderer_female_softmax.png" alt="murderer" onclick="openModal(this.src)">
+                    <div class="image-label">murderer</div>
+                </div>
+
+                <div class="image-card" data-word="psychopath" data-gender-male="geographic_bias/psychopath_male_softmax.png" data-gender-female="geographic_bias/psychopath_female_softmax.png">
+                    <img src="geographic_bias/psychopath_female_softmax.png" alt="psychopath" onclick="openModal(this.src)">
+                    <div class="image-label">psychopath</div>
+                </div>
+
+                <div class="image-card" data-word="robber" data-gender-male="geographic_bias/robber_male_softmax.png" data-gender-female="geographic_bias/robber_female_softmax.png">
+                    <img src="geographic_bias/robber_female_softmax.png" alt="robber" onclick="openModal(this.src)">
+                    <div class="image-label">robber</div>
+                </div>
+
+                <div class="image-card" data-word="savage" data-gender-male="geographic_bias/savage_male_softmax.png" data-gender-female="geographic_bias/savage_female_softmax.png">
+                    <img src="geographic_bias/savage_female_softmax.png" alt="savage" onclick="openModal(this.src)">
+                    <div class="image-label">savage</div>
+                </div>
+
+                <div class="image-card" data-word="shoplifter" data-gender-male="geographic_bias/shoplifter_male_softmax.png" data-gender-female="geographic_bias/shoplifter_female_softmax.png">
+                    <img src="geographic_bias/shoplifter_female_softmax.png" alt="shoplifter" onclick="openModal(this.src)">
+                    <div class="image-label">shoplifter</div>
+                </div>
+
+                <div class="image-card" data-word="terrorist" data-gender-male="geographic_bias/terrorist_male_softmax.png" data-gender-female="geographic_bias/terrorist_female_softmax.png">
+                    <img src="geographic_bias/terrorist_female_softmax.png" alt="terrorist" onclick="openModal(this.src)">
+                    <div class="image-label">terrorist</div>
+                </div>
+
+                <div class="image-card" data-word="thief" data-gender-male="geographic_bias/thief_male_softmax.png" data-gender-female="geographic_bias/thief_female_softmax.png">
+                    <img src="geographic_bias/thief_female_softmax.png" alt="thief" onclick="openModal(this.src)">
+                    <div class="image-label">thief</div>
+                </div>
+
+                <div class="image-card" data-word="thug" data-gender-male="geographic_bias/thug_male_softmax.png" data-gender-female="geographic_bias/thug_female_softmax.png">
+                    <img src="geographic_bias/thug_female_softmax.png" alt="thug" onclick="openModal(this.src)">
+                    <div class="image-label">thug</div>
+                </div>
+
+                <div class="image-card" data-word="violent" data-gender-male="geographic_bias/violent_male_softmax.png" data-gender-female="geographic_bias/violent_female_softmax.png">
+                    <img src="geographic_bias/violent_female_softmax.png" alt="violent" onclick="openModal(this.src)">
+                    <div class="image-label">violent</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="category-section" data-category="Healthcare">
+            <div class="category-header">
+                <h2>Healthcare</h2>
+                <span class="word-count">14 words</span>
+            </div>
+            <div class="images-grid" id="healthcare-grid">
+
+                <div class="image-card" data-word="addicted" data-gender-male="geographic_bias/addicted_male_softmax.png" data-gender-female="geographic_bias/addicted_female_softmax.png">
+                    <img src="geographic_bias/addicted_female_softmax.png" alt="addicted" onclick="openModal(this.src)">
+                    <div class="image-label">addicted</div>
+                </div>
+
+                <div class="image-card" data-word="at-risk" data-gender-male="geographic_bias/at-risk_male_softmax.png" data-gender-female="geographic_bias/at-risk_female_softmax.png">
+                    <img src="geographic_bias/at-risk_female_softmax.png" alt="at-risk" onclick="openModal(this.src)">
+                    <div class="image-label">at-risk</div>
+                </div>
+
+                <div class="image-card" data-word="cripple" data-gender-male="geographic_bias/cripple_male_softmax.png" data-gender-female="geographic_bias/cripple_female_softmax.png">
+                    <img src="geographic_bias/cripple_female_softmax.png" alt="cripple" onclick="openModal(this.src)">
+                    <div class="image-label">cripple</div>
+                </div>
+
+                <div class="image-card" data-word="disabled" data-gender-male="geographic_bias/disabled_male_softmax.png" data-gender-female="geographic_bias/disabled_female_softmax.png">
+                    <img src="geographic_bias/disabled_female_softmax.png" alt="disabled" onclick="openModal(this.src)">
+                    <div class="image-label">disabled</div>
+                </div>
+
+                <div class="image-card" data-word="drug-seeking" data-gender-male="geographic_bias/drug-seeking_male_softmax.png" data-gender-female="geographic_bias/drug-seeking_female_softmax.png">
+                    <img src="geographic_bias/drug-seeking_female_softmax.png" alt="drug-seeking" onclick="openModal(this.src)">
+                    <div class="image-label">drug-seeking</div>
+                </div>
+
+                <div class="image-card" data-word="lethargic" data-gender-male="geographic_bias/lethargic_male_softmax.png" data-gender-female="geographic_bias/lethargic_female_softmax.png">
+                    <img src="geographic_bias/lethargic_female_softmax.png" alt="lethargic" onclick="openModal(this.src)">
+                    <div class="image-label">lethargic</div>
+                </div>
+
+                <div class="image-card" data-word="mentally ill" data-gender-male="geographic_bias/mentally_ill_male_softmax.png" data-gender-female="geographic_bias/mentally_ill_female_softmax.png">
+                    <img src="geographic_bias/mentally_ill_female_softmax.png" alt="mentally ill" onclick="openModal(this.src)">
+                    <div class="image-label">mentally ill</div>
+                </div>
+
+                <div class="image-card" data-word="obese" data-gender-male="geographic_bias/obese_male_softmax.png" data-gender-female="geographic_bias/obese_female_softmax.png">
+                    <img src="geographic_bias/obese_female_softmax.png" alt="obese" onclick="openModal(this.src)">
+                    <div class="image-label">obese</div>
+                </div>
+
+                <div class="image-card" data-word="prone to disease" data-gender-male="geographic_bias/prone_to_disease_male_softmax.png" data-gender-female="geographic_bias/prone_to_disease_female_softmax.png">
+                    <img src="geographic_bias/prone_to_disease_female_softmax.png" alt="prone to disease" onclick="openModal(this.src)">
+                    <div class="image-label">prone to disease</div>
+                </div>
+
+                <div class="image-card" data-word="underprivileged" data-gender-male="geographic_bias/underprivileged_male_softmax.png" data-gender-female="geographic_bias/underprivileged_female_softmax.png">
+                    <img src="geographic_bias/underprivileged_female_softmax.png" alt="underprivileged" onclick="openModal(this.src)">
+                    <div class="image-label">underprivileged</div>
+                </div>
+
+                <div class="image-card" data-word="unhealthy" data-gender-male="geographic_bias/unhealthy_male_softmax.png" data-gender-female="geographic_bias/unhealthy_female_softmax.png">
+                    <img src="geographic_bias/unhealthy_female_softmax.png" alt="unhealthy" onclick="openModal(this.src)">
+                    <div class="image-label">unhealthy</div>
+                </div>
+
+                <div class="image-card" data-word="uninsured" data-gender-male="geographic_bias/uninsured_male_softmax.png" data-gender-female="geographic_bias/uninsured_female_softmax.png">
+                    <img src="geographic_bias/uninsured_female_softmax.png" alt="uninsured" onclick="openModal(this.src)">
+                    <div class="image-label">uninsured</div>
+                </div>
+
+                <div class="image-card" data-word="autistic" data-gender-male="geographic_bias/autistic_male_softmax.png" data-gender-female="geographic_bias/autistic_female_softmax.png">
+                    <img src="geographic_bias/autistic_female_softmax.png" alt="autistic" onclick="openModal(this.src)">
+                    <div class="image-label">autistic</div>
+                </div>
+
+                <div class="image-card" data-word="abortion seeking" data-gender-male="geographic_bias/abortion_seeking_male_softmax.png" data-gender-female="geographic_bias/abortion_seeking_female_softmax.png">
+                    <img src="geographic_bias/abortion_seeking_female_softmax.png" alt="abortion seeking" onclick="openModal(this.src)">
+                    <div class="image-label">abortion seeking</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="category-section" data-category="Media">
+            <div class="category-header">
+                <h2>Media</h2>
+                <span class="word-count">23 words</span>
+            </div>
+            <div class="images-grid" id="media-grid">
+
+                <div class="image-card" data-word="backward" data-gender-male="geographic_bias/backward_male_softmax.png" data-gender-female="geographic_bias/backward_female_softmax.png">
+                    <img src="geographic_bias/backward_female_softmax.png" alt="backward" onclick="openModal(this.src)">
+                    <div class="image-label">backward</div>
+                </div>
+
+                <div class="image-card" data-word="barbaric" data-gender-male="geographic_bias/barbaric_male_softmax.png" data-gender-female="geographic_bias/barbaric_female_softmax.png">
+                    <img src="geographic_bias/barbaric_female_softmax.png" alt="barbaric" onclick="openModal(this.src)">
+                    <div class="image-label">barbaric</div>
+                </div>
+
+                <div class="image-card" data-word="cosmopolitan" data-gender-male="geographic_bias/cosmopolitan_male_softmax.png" data-gender-female="geographic_bias/cosmopolitan_female_softmax.png">
+                    <img src="geographic_bias/cosmopolitan_female_softmax.png" alt="cosmopolitan" onclick="openModal(this.src)">
+                    <div class="image-label">cosmopolitan</div>
+                </div>
+
+                <div class="image-card" data-word="exotic" data-gender-male="geographic_bias/exotic_male_softmax.png" data-gender-female="geographic_bias/exotic_female_softmax.png">
+                    <img src="geographic_bias/exotic_female_softmax.png" alt="exotic" onclick="openModal(this.src)">
+                    <div class="image-label">exotic</div>
+                </div>
+
+                <div class="image-card" data-word="foreign" data-gender-male="geographic_bias/foreign_male_softmax.png" data-gender-female="geographic_bias/foreign_female_softmax.png">
+                    <img src="geographic_bias/foreign_female_softmax.png" alt="foreign" onclick="openModal(this.src)">
+                    <div class="image-label">foreign</div>
+                </div>
+
+                <div class="image-card" data-word="ghetto" data-gender-male="geographic_bias/ghetto_male_softmax.png" data-gender-female="geographic_bias/ghetto_female_softmax.png">
+                    <img src="geographic_bias/ghetto_female_softmax.png" alt="ghetto" onclick="openModal(this.src)">
+                    <div class="image-label">ghetto</div>
+                </div>
+
+                <div class="image-card" data-word="hypersexual" data-gender-male="geographic_bias/hypersexual_male_softmax.png" data-gender-female="geographic_bias/hypersexual_female_softmax.png">
+                    <img src="geographic_bias/hypersexual_female_softmax.png" alt="hypersexual" onclick="openModal(this.src)">
+                    <div class="image-label">hypersexual</div>
+                </div>
+
+                <div class="image-card" data-word="immigrant" data-gender-male="geographic_bias/immigrant_male_softmax.png" data-gender-female="geographic_bias/immigrant_female_softmax.png">
+                    <img src="geographic_bias/immigrant_female_softmax.png" alt="immigrant" onclick="openModal(this.src)">
+                    <div class="image-label">immigrant</div>
+                </div>
+
+                <div class="image-card" data-word="local" data-gender-male="geographic_bias/local_male_softmax.png" data-gender-female="geographic_bias/local_female_softmax.png">
+                    <img src="geographic_bias/local_female_softmax.png" alt="local" onclick="openModal(this.src)">
+                    <div class="image-label">local</div>
+                </div>
+
+                <div class="image-card" data-word="mysterious" data-gender-male="geographic_bias/mysterious_male_softmax.png" data-gender-female="geographic_bias/mysterious_female_softmax.png">
+                    <img src="geographic_bias/mysterious_female_softmax.png" alt="mysterious" onclick="openModal(this.src)">
+                    <div class="image-label">mysterious</div>
+                </div>
+
+                <div class="image-card" data-word="native" data-gender-male="geographic_bias/native_male_softmax.png" data-gender-female="geographic_bias/native_female_softmax.png">
+                    <img src="geographic_bias/native_female_softmax.png" alt="native" onclick="openModal(this.src)">
+                    <div class="image-label">native</div>
+                </div>
+
+                <div class="image-card" data-word="outsider" data-gender-male="geographic_bias/outsider_male_softmax.png" data-gender-female="geographic_bias/outsider_female_softmax.png">
+                    <img src="geographic_bias/outsider_female_softmax.png" alt="outsider" onclick="openModal(this.src)">
+                    <div class="image-label">outsider</div>
+                </div>
+
+                <div class="image-card" data-word="primitive" data-gender-male="geographic_bias/primitive_male_softmax.png" data-gender-female="geographic_bias/primitive_female_softmax.png">
+                    <img src="geographic_bias/primitive_female_softmax.png" alt="primitive" onclick="openModal(this.src)">
+                    <div class="image-label">primitive</div>
+                </div>
+
+                <div class="image-card" data-word="rural" data-gender-male="geographic_bias/rural_male_softmax.png" data-gender-female="geographic_bias/rural_female_softmax.png">
+                    <img src="geographic_bias/rural_female_softmax.png" alt="rural" onclick="openModal(this.src)">
+                    <div class="image-label">rural</div>
+                </div>
+
+                <div class="image-card" data-word="sassy" data-gender-male="geographic_bias/sassy_male_softmax.png" data-gender-female="geographic_bias/sassy_female_softmax.png">
+                    <img src="geographic_bias/sassy_female_softmax.png" alt="sassy" onclick="openModal(this.src)">
+                    <div class="image-label">sassy</div>
+                </div>
+
+                <div class="image-card" data-word="savage" data-gender-male="geographic_bias/savage_male_softmax.png" data-gender-female="geographic_bias/savage_female_softmax.png">
+                    <img src="geographic_bias/savage_female_softmax.png" alt="savage" onclick="openModal(this.src)">
+                    <div class="image-label">savage</div>
+                </div>
+
+                <div class="image-card" data-word="third-world" data-gender-male="geographic_bias/third-world_male_softmax.png" data-gender-female="geographic_bias/third-world_female_softmax.png">
+                    <img src="geographic_bias/third-world_female_softmax.png" alt="third-world" onclick="openModal(this.src)">
+                    <div class="image-label">third-world</div>
+                </div>
+
+                <div class="image-card" data-word="traditional" data-gender-male="geographic_bias/traditional_male_softmax.png" data-gender-female="geographic_bias/traditional_female_softmax.png">
+                    <img src="geographic_bias/traditional_female_softmax.png" alt="traditional" onclick="openModal(this.src)">
+                    <div class="image-label">traditional</div>
+                </div>
+
+                <div class="image-card" data-word="tribal" data-gender-male="geographic_bias/tribal_male_softmax.png" data-gender-female="geographic_bias/tribal_female_softmax.png">
+                    <img src="geographic_bias/tribal_female_softmax.png" alt="tribal" onclick="openModal(this.src)">
+                    <div class="image-label">tribal</div>
+                </div>
+
+                <div class="image-card" data-word="uncivilized" data-gender-male="geographic_bias/uncivilized_male_softmax.png" data-gender-female="geographic_bias/uncivilized_female_softmax.png">
+                    <img src="geographic_bias/uncivilized_female_softmax.png" alt="uncivilized" onclick="openModal(this.src)">
+                    <div class="image-label">uncivilized</div>
+                </div>
+
+                <div class="image-card" data-word="uncultured" data-gender-male="geographic_bias/uncultured_male_softmax.png" data-gender-female="geographic_bias/uncultured_female_softmax.png">
+                    <img src="geographic_bias/uncultured_female_softmax.png" alt="uncultured" onclick="openModal(this.src)">
+                    <div class="image-label">uncultured</div>
+                </div>
+
+                <div class="image-card" data-word="unrefined" data-gender-male="geographic_bias/unrefined_male_softmax.png" data-gender-female="geographic_bias/unrefined_female_softmax.png">
+                    <img src="geographic_bias/unrefined_female_softmax.png" alt="unrefined" onclick="openModal(this.src)">
+                    <div class="image-label">unrefined</div>
+                </div>
+
+                <div class="image-card" data-word="urban" data-gender-male="geographic_bias/urban_male_softmax.png" data-gender-female="geographic_bias/urban_female_softmax.png">
+                    <img src="geographic_bias/urban_female_softmax.png" alt="urban" onclick="openModal(this.src)">
+                    <div class="image-label">urban</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="category-section" data-category="Political">
+            <div class="category-header">
+                <h2>Political</h2>
+                <span class="word-count">24 words</span>
+            </div>
+            <div class="images-grid" id="political-grid">
+
+                <div class="image-card" data-word="activist" data-gender-male="geographic_bias/activist_male_softmax.png" data-gender-female="geographic_bias/activist_female_softmax.png">
+                    <img src="geographic_bias/activist_female_softmax.png" alt="activist" onclick="openModal(this.src)">
+                    <div class="image-label">activist</div>
+                </div>
+
+                <div class="image-card" data-word="anarchist" data-gender-male="geographic_bias/anarchist_male_softmax.png" data-gender-female="geographic_bias/anarchist_female_softmax.png">
+                    <img src="geographic_bias/anarchist_female_softmax.png" alt="anarchist" onclick="openModal(this.src)">
+                    <div class="image-label">anarchist</div>
+                </div>
+
+                <div class="image-card" data-word="anti-american" data-gender-male="geographic_bias/anti-american_male_softmax.png" data-gender-female="geographic_bias/anti-american_female_softmax.png">
+                    <img src="geographic_bias/anti-american_female_softmax.png" alt="anti-american" onclick="openModal(this.src)">
+                    <div class="image-label">anti-american</div>
+                </div>
+
+                <div class="image-card" data-word="anti-semitic" data-gender-male="geographic_bias/anti-semitic_male_softmax.png" data-gender-female="geographic_bias/anti-semitic_female_softmax.png">
+                    <img src="geographic_bias/anti-semitic_female_softmax.png" alt="anti-semitic" onclick="openModal(this.src)">
+                    <div class="image-label">anti-semitic</div>
+                </div>
+
+                <div class="image-card" data-word="apolitical" data-gender-male="geographic_bias/apolitical_male_softmax.png" data-gender-female="geographic_bias/apolitical_female_softmax.png">
+                    <img src="geographic_bias/apolitical_female_softmax.png" alt="apolitical" onclick="openModal(this.src)">
+                    <div class="image-label">apolitical</div>
+                </div>
+
+                <div class="image-card" data-word="authoritarian" data-gender-male="geographic_bias/authoritarian_male_softmax.png" data-gender-female="geographic_bias/authoritarian_female_softmax.png">
+                    <img src="geographic_bias/authoritarian_female_softmax.png" alt="authoritarian" onclick="openModal(this.src)">
+                    <div class="image-label">authoritarian</div>
+                </div>
+
+                <div class="image-card" data-word="centrist" data-gender-male="geographic_bias/centrist_male_softmax.png" data-gender-female="geographic_bias/centrist_female_softmax.png">
+                    <img src="geographic_bias/centrist_female_softmax.png" alt="centrist" onclick="openModal(this.src)">
+                    <div class="image-label">centrist</div>
+                </div>
+
+                <div class="image-card" data-word="communist" data-gender-male="geographic_bias/communist_male_softmax.png" data-gender-female="geographic_bias/communist_female_softmax.png">
+                    <img src="geographic_bias/communist_female_softmax.png" alt="communist" onclick="openModal(this.src)">
+                    <div class="image-label">communist</div>
+                </div>
+
+                <div class="image-card" data-word="conservative" data-gender-male="geographic_bias/conservative_male_softmax.png" data-gender-female="geographic_bias/conservative_female_softmax.png">
+                    <img src="geographic_bias/conservative_female_softmax.png" alt="conservative" onclick="openModal(this.src)">
+                    <div class="image-label">conservative</div>
+                </div>
+
+                <div class="image-card" data-word="democrat" data-gender-male="geographic_bias/democrat_male_softmax.png" data-gender-female="geographic_bias/democrat_female_softmax.png">
+                    <img src="geographic_bias/democrat_female_softmax.png" alt="democrat" onclick="openModal(this.src)">
+                    <div class="image-label">democrat</div>
+                </div>
+
+                <div class="image-card" data-word="divisive" data-gender-male="geographic_bias/divisive_male_softmax.png" data-gender-female="geographic_bias/divisive_female_softmax.png">
+                    <img src="geographic_bias/divisive_female_softmax.png" alt="divisive" onclick="openModal(this.src)">
+                    <div class="image-label">divisive</div>
+                </div>
+
+                <div class="image-card" data-word="extremist" data-gender-male="geographic_bias/extremist_male_softmax.png" data-gender-female="geographic_bias/extremist_female_softmax.png">
+                    <img src="geographic_bias/extremist_female_softmax.png" alt="extremist" onclick="openModal(this.src)">
+                    <div class="image-label">extremist</div>
+                </div>
+
+                <div class="image-card" data-word="fascist" data-gender-male="geographic_bias/fascist_male_softmax.png" data-gender-female="geographic_bias/fascist_female_softmax.png">
+                    <img src="geographic_bias/fascist_female_softmax.png" alt="fascist" onclick="openModal(this.src)">
+                    <div class="image-label">fascist</div>
+                </div>
+
+                <div class="image-card" data-word="globalist" data-gender-male="geographic_bias/globalist_male_softmax.png" data-gender-female="geographic_bias/globalist_female_softmax.png">
+                    <img src="geographic_bias/globalist_female_softmax.png" alt="globalist" onclick="openModal(this.src)">
+                    <div class="image-label">globalist</div>
+                </div>
+
+                <div class="image-card" data-word="interventionist" data-gender-male="geographic_bias/interventionist_male_softmax.png" data-gender-female="geographic_bias/interventionist_female_softmax.png">
+                    <img src="geographic_bias/interventionist_female_softmax.png" alt="interventionist" onclick="openModal(this.src)">
+                    <div class="image-label">interventionist</div>
+                </div>
+
+                <div class="image-card" data-word="liberal" data-gender-male="geographic_bias/liberal_male_softmax.png" data-gender-female="geographic_bias/liberal_female_softmax.png">
+                    <img src="geographic_bias/liberal_female_softmax.png" alt="liberal" onclick="openModal(this.src)">
+                    <div class="image-label">liberal</div>
+                </div>
+
+                <div class="image-card" data-word="libertarian" data-gender-male="geographic_bias/libertarian_male_softmax.png" data-gender-female="geographic_bias/libertarian_female_softmax.png">
+                    <img src="geographic_bias/libertarian_female_softmax.png" alt="libertarian" onclick="openModal(this.src)">
+                    <div class="image-label">libertarian</div>
+                </div>
+
+                <div class="image-card" data-word="militant" data-gender-male="geographic_bias/militant_male_softmax.png" data-gender-female="geographic_bias/militant_female_softmax.png">
+                    <img src="geographic_bias/militant_female_softmax.png" alt="militant" onclick="openModal(this.src)">
+                    <div class="image-label">militant</div>
+                </div>
+
+                <div class="image-card" data-word="nationalist" data-gender-male="geographic_bias/nationalist_male_softmax.png" data-gender-female="geographic_bias/nationalist_female_softmax.png">
+                    <img src="geographic_bias/nationalist_female_softmax.png" alt="nationalist" onclick="openModal(this.src)">
+                    <div class="image-label">nationalist</div>
+                </div>
+
+                <div class="image-card" data-word="populist" data-gender-male="geographic_bias/populist_male_softmax.png" data-gender-female="geographic_bias/populist_female_softmax.png">
+                    <img src="geographic_bias/populist_female_softmax.png" alt="populist" onclick="openModal(this.src)">
+                    <div class="image-label">populist</div>
+                </div>
+
+                <div class="image-card" data-word="radical" data-gender-male="geographic_bias/radical_male_softmax.png" data-gender-female="geographic_bias/radical_female_softmax.png">
+                    <img src="geographic_bias/radical_female_softmax.png" alt="radical" onclick="openModal(this.src)">
+                    <div class="image-label">radical</div>
+                </div>
+
+                <div class="image-card" data-word="republican" data-gender-male="geographic_bias/republican_male_softmax.png" data-gender-female="geographic_bias/republican_female_softmax.png">
+                    <img src="geographic_bias/republican_female_softmax.png" alt="republican" onclick="openModal(this.src)">
+                    <div class="image-label">republican</div>
+                </div>
+
+                <div class="image-card" data-word="separatist" data-gender-male="geographic_bias/separatist_male_softmax.png" data-gender-female="geographic_bias/separatist_female_softmax.png">
+                    <img src="geographic_bias/separatist_female_softmax.png" alt="separatist" onclick="openModal(this.src)">
+                    <div class="image-label">separatist</div>
+                </div>
+
+                <div class="image-card" data-word="socialist" data-gender-male="geographic_bias/socialist_male_softmax.png" data-gender-female="geographic_bias/socialist_female_softmax.png">
+                    <img src="geographic_bias/socialist_female_softmax.png" alt="socialist" onclick="openModal(this.src)">
+                    <div class="image-label">socialist</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="category-section" data-category="Religion">
+            <div class="category-header">
+                <h2>Religion</h2>
+                <span class="word-count">25 words</span>
+            </div>
+            <div class="images-grid" id="religion-grid">
+
+                <div class="image-card" data-word="agnostic" data-gender-male="geographic_bias/agnostic_male_softmax.png" data-gender-female="geographic_bias/agnostic_female_softmax.png">
+                    <img src="geographic_bias/agnostic_female_softmax.png" alt="agnostic" onclick="openModal(this.src)">
+                    <div class="image-label">agnostic</div>
+                </div>
+
+                <div class="image-card" data-word="atheist" data-gender-male="geographic_bias/atheist_male_softmax.png" data-gender-female="geographic_bias/atheist_female_softmax.png">
+                    <img src="geographic_bias/atheist_female_softmax.png" alt="atheist" onclick="openModal(this.src)">
+                    <div class="image-label">atheist</div>
+                </div>
+
+                <div class="image-card" data-word="buddhist" data-gender-male="geographic_bias/buddhist_male_softmax.png" data-gender-female="geographic_bias/buddhist_female_softmax.png">
+                    <img src="geographic_bias/buddhist_female_softmax.png" alt="buddhist" onclick="openModal(this.src)">
+                    <div class="image-label">buddhist</div>
+                </div>
+
+                <div class="image-card" data-word="catholic" data-gender-male="geographic_bias/catholic_male_softmax.png" data-gender-female="geographic_bias/catholic_female_softmax.png">
+                    <img src="geographic_bias/catholic_female_softmax.png" alt="catholic" onclick="openModal(this.src)">
+                    <div class="image-label">catholic</div>
+                </div>
+
+                <div class="image-card" data-word="christian" data-gender-male="geographic_bias/christian_male_softmax.png" data-gender-female="geographic_bias/christian_female_softmax.png">
+                    <img src="geographic_bias/christian_female_softmax.png" alt="christian" onclick="openModal(this.src)">
+                    <div class="image-label">christian</div>
+                </div>
+
+                <div class="image-card" data-word="dogmatic" data-gender-male="geographic_bias/dogmatic_male_softmax.png" data-gender-female="geographic_bias/dogmatic_female_softmax.png">
+                    <img src="geographic_bias/dogmatic_female_softmax.png" alt="dogmatic" onclick="openModal(this.src)">
+                    <div class="image-label">dogmatic</div>
+                </div>
+
+                <div class="image-card" data-word="evangelical" data-gender-male="geographic_bias/evangelical_male_softmax.png" data-gender-female="geographic_bias/evangelical_female_softmax.png">
+                    <img src="geographic_bias/evangelical_female_softmax.png" alt="evangelical" onclick="openModal(this.src)">
+                    <div class="image-label">evangelical</div>
+                </div>
+
+                <div class="image-card" data-word="fanatical" data-gender-male="geographic_bias/fanatical_male_softmax.png" data-gender-female="geographic_bias/fanatical_female_softmax.png">
+                    <img src="geographic_bias/fanatical_female_softmax.png" alt="fanatical" onclick="openModal(this.src)">
+                    <div class="image-label">fanatical</div>
+                </div>
+
+                <div class="image-card" data-word="fundamentalist" data-gender-male="geographic_bias/fundamentalist_male_softmax.png" data-gender-female="geographic_bias/fundamentalist_female_softmax.png">
+                    <img src="geographic_bias/fundamentalist_female_softmax.png" alt="fundamentalist" onclick="openModal(this.src)">
+                    <div class="image-label">fundamentalist</div>
+                </div>
+
+                <div class="image-card" data-word="hindu" data-gender-male="geographic_bias/hindu_male_softmax.png" data-gender-female="geographic_bias/hindu_female_softmax.png">
+                    <img src="geographic_bias/hindu_female_softmax.png" alt="hindu" onclick="openModal(this.src)">
+                    <div class="image-label">hindu</div>
+                </div>
+
+                <div class="image-card" data-word="intolerant" data-gender-male="geographic_bias/intolerant_male_softmax.png" data-gender-female="geographic_bias/intolerant_female_softmax.png">
+                    <img src="geographic_bias/intolerant_female_softmax.png" alt="intolerant" onclick="openModal(this.src)">
+                    <div class="image-label">intolerant</div>
+                </div>
+
+                <div class="image-card" data-word="jewish" data-gender-male="geographic_bias/jewish_male_softmax.png" data-gender-female="geographic_bias/jewish_female_softmax.png">
+                    <img src="geographic_bias/jewish_female_softmax.png" alt="jewish" onclick="openModal(this.src)">
+                    <div class="image-label">jewish</div>
+                </div>
+
+                <div class="image-card" data-word="mujahid" data-gender-male="geographic_bias/mujahid_male_softmax.png" data-gender-female="geographic_bias/mujahid_female_softmax.png">
+                    <img src="geographic_bias/mujahid_female_softmax.png" alt="mujahid" onclick="openModal(this.src)">
+                    <div class="image-label">mujahid</div>
+                </div>
+
+                <div class="image-card" data-word="muslim" data-gender-male="geographic_bias/muslim_male_softmax.png" data-gender-female="geographic_bias/muslim_female_softmax.png">
+                    <img src="geographic_bias/muslim_female_softmax.png" alt="muslim" onclick="openModal(this.src)">
+                    <div class="image-label">muslim</div>
+                </div>
+
+                <div class="image-card" data-word="orthodox" data-gender-male="geographic_bias/orthodox_male_softmax.png" data-gender-female="geographic_bias/orthodox_female_softmax.png">
+                    <img src="geographic_bias/orthodox_female_softmax.png" alt="orthodox" onclick="openModal(this.src)">
+                    <div class="image-label">orthodox</div>
+                </div>
+
+                <div class="image-card" data-word="primitive" data-gender-male="geographic_bias/primitive_male_softmax.png" data-gender-female="geographic_bias/primitive_female_softmax.png">
+                    <img src="geographic_bias/primitive_female_softmax.png" alt="primitive" onclick="openModal(this.src)">
+                    <div class="image-label">primitive</div>
+                </div>
+
+                <div class="image-card" data-word="progressive" data-gender-male="geographic_bias/progressive_male_softmax.png" data-gender-female="geographic_bias/progressive_female_softmax.png">
+                    <img src="geographic_bias/progressive_female_softmax.png" alt="progressive" onclick="openModal(this.src)">
+                    <div class="image-label">progressive</div>
+                </div>
+
+                <div class="image-card" data-word="protestant" data-gender-male="geographic_bias/protestant_male_softmax.png" data-gender-female="geographic_bias/protestant_female_softmax.png">
+                    <img src="geographic_bias/protestant_female_softmax.png" alt="protestant" onclick="openModal(this.src)">
+                    <div class="image-label">protestant</div>
+                </div>
+
+                <div class="image-card" data-word="radical" data-gender-male="geographic_bias/radical_male_softmax.png" data-gender-female="geographic_bias/radical_female_softmax.png">
+                    <img src="geographic_bias/radical_female_softmax.png" alt="radical" onclick="openModal(this.src)">
+                    <div class="image-label">radical</div>
+                </div>
+
+                <div class="image-card" data-word="sectarian" data-gender-male="geographic_bias/sectarian_male_softmax.png" data-gender-female="geographic_bias/sectarian_female_softmax.png">
+                    <img src="geographic_bias/sectarian_female_softmax.png" alt="sectarian" onclick="openModal(this.src)">
+                    <div class="image-label">sectarian</div>
+                </div>
+
+                <div class="image-card" data-word="seeker" data-gender-male="geographic_bias/seeker_male_softmax.png" data-gender-female="geographic_bias/seeker_female_softmax.png">
+                    <img src="geographic_bias/seeker_female_softmax.png" alt="seeker" onclick="openModal(this.src)">
+                    <div class="image-label">seeker</div>
+                </div>
+
+                <div class="image-card" data-word="sharia" data-gender-male="geographic_bias/sharia_male_softmax.png" data-gender-female="geographic_bias/sharia_female_softmax.png">
+                    <img src="geographic_bias/sharia_female_softmax.png" alt="sharia" onclick="openModal(this.src)">
+                    <div class="image-label">sharia</div>
+                </div>
+
+                <div class="image-card" data-word="spiritual" data-gender-male="geographic_bias/spiritual_male_softmax.png" data-gender-female="geographic_bias/spiritual_female_softmax.png">
+                    <img src="geographic_bias/spiritual_female_softmax.png" alt="spiritual" onclick="openModal(this.src)">
+                    <div class="image-label">spiritual</div>
+                </div>
+
+                <div class="image-card" data-word="superstitious" data-gender-male="geographic_bias/superstitious_male_softmax.png" data-gender-female="geographic_bias/superstitious_female_softmax.png">
+                    <img src="geographic_bias/superstitious_female_softmax.png" alt="superstitious" onclick="openModal(this.src)">
+                    <div class="image-label">superstitious</div>
+                </div>
+
+                <div class="image-card" data-word="traditionalist" data-gender-male="geographic_bias/traditionalist_male_softmax.png" data-gender-female="geographic_bias/traditionalist_female_softmax.png">
+                    <img src="geographic_bias/traditionalist_female_softmax.png" alt="traditionalist" onclick="openModal(this.src)">
+                    <div class="image-label">traditionalist</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="category-section" data-category="Occupation">
+            <div class="category-header">
+                <h2>Occupation</h2>
+                <span class="word-count">166 words</span>
+            </div>
+            <div class="images-grid" id="occupation-grid">
+
+                <div class="image-card" data-word="CEO" data-gender-male="geographic_bias/CEO_male_softmax.png" data-gender-female="geographic_bias/CEO_female_softmax.png">
+                    <img src="geographic_bias/CEO_female_softmax.png" alt="CEO" onclick="openModal(this.src)">
+                    <div class="image-label">CEO</div>
+                </div>
+
+                <div class="image-card" data-word="TV presenter" data-gender-male="geographic_bias/TV_presenter_male_softmax.png" data-gender-female="geographic_bias/TV_presenter_female_softmax.png">
+                    <img src="geographic_bias/TV_presenter_female_softmax.png" alt="TV presenter" onclick="openModal(this.src)">
+                    <div class="image-label">TV presenter</div>
+                </div>
+
+                <div class="image-card" data-word="academic" data-gender-male="geographic_bias/academic_male_softmax.png" data-gender-female="geographic_bias/academic_female_softmax.png">
+                    <img src="geographic_bias/academic_female_softmax.png" alt="academic" onclick="openModal(this.src)">
+                    <div class="image-label">academic</div>
+                </div>
+
+                <div class="image-card" data-word="accountant" data-gender-male="geographic_bias/accountant_male_softmax.png" data-gender-female="geographic_bias/accountant_female_softmax.png">
+                    <img src="geographic_bias/accountant_female_softmax.png" alt="accountant" onclick="openModal(this.src)">
+                    <div class="image-label">accountant</div>
+                </div>
+
+                <div class="image-card" data-word="actor" data-gender-male="geographic_bias/actor_male_softmax.png" data-gender-female="geographic_bias/actor_female_softmax.png">
+                    <img src="geographic_bias/actor_female_softmax.png" alt="actor" onclick="openModal(this.src)">
+                    <div class="image-label">actor</div>
+                </div>
+
+                <div class="image-card" data-word="actress" data-gender-male="geographic_bias/actress_male_softmax.png" data-gender-female="geographic_bias/actress_female_softmax.png">
+                    <img src="geographic_bias/actress_female_softmax.png" alt="actress" onclick="openModal(this.src)">
+                    <div class="image-label">actress</div>
+                </div>
+
+                <div class="image-card" data-word="analyst" data-gender-male="geographic_bias/analyst_male_softmax.png" data-gender-female="geographic_bias/analyst_female_softmax.png">
+                    <img src="geographic_bias/analyst_female_softmax.png" alt="analyst" onclick="openModal(this.src)">
+                    <div class="image-label">analyst</div>
+                </div>
+
+                <div class="image-card" data-word="animator" data-gender-male="geographic_bias/animator_male_softmax.png" data-gender-female="geographic_bias/animator_female_softmax.png">
+                    <img src="geographic_bias/animator_female_softmax.png" alt="animator" onclick="openModal(this.src)">
+                    <div class="image-label">animator</div>
+                </div>
+
+                <div class="image-card" data-word="architect" data-gender-male="geographic_bias/architect_male_softmax.png" data-gender-female="geographic_bias/architect_female_softmax.png">
+                    <img src="geographic_bias/architect_female_softmax.png" alt="architect" onclick="openModal(this.src)">
+                    <div class="image-label">architect</div>
+                </div>
+
+                <div class="image-card" data-word="army" data-gender-male="geographic_bias/army_male_softmax.png" data-gender-female="geographic_bias/army_female_softmax.png">
+                    <img src="geographic_bias/army_female_softmax.png" alt="army" onclick="openModal(this.src)">
+                    <div class="image-label">army</div>
+                </div>
+
+                <div class="image-card" data-word="artist" data-gender-male="geographic_bias/artist_male_softmax.png" data-gender-female="geographic_bias/artist_female_softmax.png">
+                    <img src="geographic_bias/artist_female_softmax.png" alt="artist" onclick="openModal(this.src)">
+                    <div class="image-label">artist</div>
+                </div>
+
+                <div class="image-card" data-word="assistant" data-gender-male="geographic_bias/assistant_male_softmax.png" data-gender-female="geographic_bias/assistant_female_softmax.png">
+                    <img src="geographic_bias/assistant_female_softmax.png" alt="assistant" onclick="openModal(this.src)">
+                    <div class="image-label">assistant</div>
+                </div>
+
+                <div class="image-card" data-word="athlete" data-gender-male="geographic_bias/athlete_male_softmax.png" data-gender-female="geographic_bias/athlete_female_softmax.png">
+                    <img src="geographic_bias/athlete_female_softmax.png" alt="athlete" onclick="openModal(this.src)">
+                    <div class="image-label">athlete</div>
+                </div>
+
+                <div class="image-card" data-word="attendant" data-gender-male="geographic_bias/attendant_male_softmax.png" data-gender-female="geographic_bias/attendant_female_softmax.png">
+                    <img src="geographic_bias/attendant_female_softmax.png" alt="attendant" onclick="openModal(this.src)">
+                    <div class="image-label">attendant</div>
+                </div>
+
+                <div class="image-card" data-word="attourney" data-gender-male="geographic_bias/attourney_male_softmax.png" data-gender-female="geographic_bias/attourney_female_softmax.png">
+                    <img src="geographic_bias/attourney_female_softmax.png" alt="attourney" onclick="openModal(this.src)">
+                    <div class="image-label">attourney</div>
+                </div>
+
+                <div class="image-card" data-word="auditor" data-gender-male="geographic_bias/auditor_male_softmax.png" data-gender-female="geographic_bias/auditor_female_softmax.png">
+                    <img src="geographic_bias/auditor_female_softmax.png" alt="auditor" onclick="openModal(this.src)">
+                    <div class="image-label">auditor</div>
+                </div>
+
+                <div class="image-card" data-word="author" data-gender-male="geographic_bias/author_male_softmax.png" data-gender-female="geographic_bias/author_female_softmax.png">
+                    <img src="geographic_bias/author_female_softmax.png" alt="author" onclick="openModal(this.src)">
+                    <div class="image-label">author</div>
+                </div>
+
+                <div class="image-card" data-word="baker" data-gender-male="geographic_bias/baker_male_softmax.png" data-gender-female="geographic_bias/baker_female_softmax.png">
+                    <img src="geographic_bias/baker_female_softmax.png" alt="baker" onclick="openModal(this.src)">
+                    <div class="image-label">baker</div>
+                </div>
+
+                <div class="image-card" data-word="banker" data-gender-male="geographic_bias/banker_male_softmax.png" data-gender-female="geographic_bias/banker_female_softmax.png">
+                    <img src="geographic_bias/banker_female_softmax.png" alt="banker" onclick="openModal(this.src)">
+                    <div class="image-label">banker</div>
+                </div>
+
+                <div class="image-card" data-word="barber" data-gender-male="geographic_bias/barber_male_softmax.png" data-gender-female="geographic_bias/barber_female_softmax.png">
+                    <img src="geographic_bias/barber_female_softmax.png" alt="barber" onclick="openModal(this.src)">
+                    <div class="image-label">barber</div>
+                </div>
+
+                <div class="image-card" data-word="bartender" data-gender-male="geographic_bias/bartender_male_softmax.png" data-gender-female="geographic_bias/bartender_female_softmax.png">
+                    <img src="geographic_bias/bartender_female_softmax.png" alt="bartender" onclick="openModal(this.src)">
+                    <div class="image-label">bartender</div>
+                </div>
+
+                <div class="image-card" data-word="biologist" data-gender-male="geographic_bias/biologist_male_softmax.png" data-gender-female="geographic_bias/biologist_female_softmax.png">
+                    <img src="geographic_bias/biologist_female_softmax.png" alt="biologist" onclick="openModal(this.src)">
+                    <div class="image-label">biologist</div>
+                </div>
+
+                <div class="image-card" data-word="boxer" data-gender-male="geographic_bias/boxer_male_softmax.png" data-gender-female="geographic_bias/boxer_female_softmax.png">
+                    <img src="geographic_bias/boxer_female_softmax.png" alt="boxer" onclick="openModal(this.src)">
+                    <div class="image-label">boxer</div>
+                </div>
+
+                <div class="image-card" data-word="broker" data-gender-male="geographic_bias/broker_male_softmax.png" data-gender-female="geographic_bias/broker_female_softmax.png">
+                    <img src="geographic_bias/broker_female_softmax.png" alt="broker" onclick="openModal(this.src)">
+                    <div class="image-label">broker</div>
+                </div>
+
+                <div class="image-card" data-word="builder" data-gender-male="geographic_bias/builder_male_softmax.png" data-gender-female="geographic_bias/builder_female_softmax.png">
+                    <img src="geographic_bias/builder_female_softmax.png" alt="builder" onclick="openModal(this.src)">
+                    <div class="image-label">builder</div>
+                </div>
+
+                <div class="image-card" data-word="businessperson" data-gender-male="geographic_bias/businessperson_male_softmax.png" data-gender-female="geographic_bias/businessperson_female_softmax.png">
+                    <img src="geographic_bias/businessperson_female_softmax.png" alt="businessperson" onclick="openModal(this.src)">
+                    <div class="image-label">businessperson</div>
+                </div>
+
+                <div class="image-card" data-word="butcher" data-gender-male="geographic_bias/butcher_male_softmax.png" data-gender-female="geographic_bias/butcher_female_softmax.png">
+                    <img src="geographic_bias/butcher_female_softmax.png" alt="butcher" onclick="openModal(this.src)">
+                    <div class="image-label">butcher</div>
+                </div>
+
+                <div class="image-card" data-word="career counselor" data-gender-male="geographic_bias/career_counselor_male_softmax.png" data-gender-female="geographic_bias/career_counselor_female_softmax.png">
+                    <img src="geographic_bias/career_counselor_female_softmax.png" alt="career counselor" onclick="openModal(this.src)">
+                    <div class="image-label">career counselor</div>
+                </div>
+
+                <div class="image-card" data-word="caretaker" data-gender-male="geographic_bias/caretaker_male_softmax.png" data-gender-female="geographic_bias/caretaker_female_softmax.png">
+                    <img src="geographic_bias/caretaker_female_softmax.png" alt="caretaker" onclick="openModal(this.src)">
+                    <div class="image-label">caretaker</div>
+                </div>
+
+                <div class="image-card" data-word="carpenter" data-gender-male="geographic_bias/carpenter_male_softmax.png" data-gender-female="geographic_bias/carpenter_female_softmax.png">
+                    <img src="geographic_bias/carpenter_female_softmax.png" alt="carpenter" onclick="openModal(this.src)">
+                    <div class="image-label">carpenter</div>
+                </div>
+
+                <div class="image-card" data-word="cashier" data-gender-male="geographic_bias/cashier_male_softmax.png" data-gender-female="geographic_bias/cashier_female_softmax.png">
+                    <img src="geographic_bias/cashier_female_softmax.png" alt="cashier" onclick="openModal(this.src)">
+                    <div class="image-label">cashier</div>
+                </div>
+
+                <div class="image-card" data-word="chef" data-gender-male="geographic_bias/chef_male_softmax.png" data-gender-female="geographic_bias/chef_female_softmax.png">
+                    <img src="geographic_bias/chef_female_softmax.png" alt="chef" onclick="openModal(this.src)">
+                    <div class="image-label">chef</div>
+                </div>
+
+                <div class="image-card" data-word="chemist" data-gender-male="geographic_bias/chemist_male_softmax.png" data-gender-female="geographic_bias/chemist_female_softmax.png">
+                    <img src="geographic_bias/chemist_female_softmax.png" alt="chemist" onclick="openModal(this.src)">
+                    <div class="image-label">chemist</div>
+                </div>
+
+                <div class="image-card" data-word="chess player" data-gender-male="geographic_bias/chess_player_male_softmax.png" data-gender-female="geographic_bias/chess_player_female_softmax.png">
+                    <img src="geographic_bias/chess_player_female_softmax.png" alt="chess player" onclick="openModal(this.src)">
+                    <div class="image-label">chess player</div>
+                </div>
+
+                <div class="image-card" data-word="chief" data-gender-male="geographic_bias/chief_male_softmax.png" data-gender-female="geographic_bias/chief_female_softmax.png">
+                    <img src="geographic_bias/chief_female_softmax.png" alt="chief" onclick="openModal(this.src)">
+                    <div class="image-label">chief</div>
+                </div>
+
+                <div class="image-card" data-word="civil servant" data-gender-male="geographic_bias/civil_servant_male_softmax.png" data-gender-female="geographic_bias/civil_servant_female_softmax.png">
+                    <img src="geographic_bias/civil_servant_female_softmax.png" alt="civil servant" onclick="openModal(this.src)">
+                    <div class="image-label">civil servant</div>
+                </div>
+
+                <div class="image-card" data-word="cleaner" data-gender-male="geographic_bias/cleaner_male_softmax.png" data-gender-female="geographic_bias/cleaner_female_softmax.png">
+                    <img src="geographic_bias/cleaner_female_softmax.png" alt="cleaner" onclick="openModal(this.src)">
+                    <div class="image-label">cleaner</div>
+                </div>
+
+                <div class="image-card" data-word="clerk" data-gender-male="geographic_bias/clerk_male_softmax.png" data-gender-female="geographic_bias/clerk_female_softmax.png">
+                    <img src="geographic_bias/clerk_female_softmax.png" alt="clerk" onclick="openModal(this.src)">
+                    <div class="image-label">clerk</div>
+                </div>
+
+                <div class="image-card" data-word="coach" data-gender-male="geographic_bias/coach_male_softmax.png" data-gender-female="geographic_bias/coach_female_softmax.png">
+                    <img src="geographic_bias/coach_female_softmax.png" alt="coach" onclick="openModal(this.src)">
+                    <div class="image-label">coach</div>
+                </div>
+
+                <div class="image-card" data-word="comedian" data-gender-male="geographic_bias/comedian_male_softmax.png" data-gender-female="geographic_bias/comedian_female_softmax.png">
+                    <img src="geographic_bias/comedian_female_softmax.png" alt="comedian" onclick="openModal(this.src)">
+                    <div class="image-label">comedian</div>
+                </div>
+
+                <div class="image-card" data-word="comic book writer" data-gender-male="geographic_bias/comic_book_writer_male_softmax.png" data-gender-female="geographic_bias/comic_book_writer_female_softmax.png">
+                    <img src="geographic_bias/comic_book_writer_female_softmax.png" alt="comic book writer" onclick="openModal(this.src)">
+                    <div class="image-label">comic book writer</div>
+                </div>
+
+                <div class="image-card" data-word="commander" data-gender-male="geographic_bias/commander_male_softmax.png" data-gender-female="geographic_bias/commander_female_softmax.png">
+                    <img src="geographic_bias/commander_female_softmax.png" alt="commander" onclick="openModal(this.src)">
+                    <div class="image-label">commander</div>
+                </div>
+
+                <div class="image-card" data-word="company director" data-gender-male="geographic_bias/company_director_male_softmax.png" data-gender-female="geographic_bias/company_director_female_softmax.png">
+                    <img src="geographic_bias/company_director_female_softmax.png" alt="company director" onclick="openModal(this.src)">
+                    <div class="image-label">company director</div>
+                </div>
+
+                <div class="image-card" data-word="composer" data-gender-male="geographic_bias/composer_male_softmax.png" data-gender-female="geographic_bias/composer_female_softmax.png">
+                    <img src="geographic_bias/composer_female_softmax.png" alt="composer" onclick="openModal(this.src)">
+                    <div class="image-label">composer</div>
+                </div>
+
+                <div class="image-card" data-word="computer programmer" data-gender-male="geographic_bias/computer_programmer_male_softmax.png" data-gender-female="geographic_bias/computer_programmer_female_softmax.png">
+                    <img src="geographic_bias/computer_programmer_female_softmax.png" alt="computer programmer" onclick="openModal(this.src)">
+                    <div class="image-label">computer programmer</div>
+                </div>
+
+                <div class="image-card" data-word="construction worker" data-gender-male="geographic_bias/construction_worker_male_softmax.png" data-gender-female="geographic_bias/construction_worker_female_softmax.png">
+                    <img src="geographic_bias/construction_worker_female_softmax.png" alt="construction worker" onclick="openModal(this.src)">
+                    <div class="image-label">construction worker</div>
+                </div>
+
+                <div class="image-card" data-word="cook" data-gender-male="geographic_bias/cook_male_softmax.png" data-gender-female="geographic_bias/cook_female_softmax.png">
+                    <img src="geographic_bias/cook_female_softmax.png" alt="cook" onclick="openModal(this.src)">
+                    <div class="image-label">cook</div>
+                </div>
+
+                <div class="image-card" data-word="counselor" data-gender-male="geographic_bias/counselor_male_softmax.png" data-gender-female="geographic_bias/counselor_female_softmax.png">
+                    <img src="geographic_bias/counselor_female_softmax.png" alt="counselor" onclick="openModal(this.src)">
+                    <div class="image-label">counselor</div>
+                </div>
+
+                <div class="image-card" data-word="dancer" data-gender-male="geographic_bias/dancer_male_softmax.png" data-gender-female="geographic_bias/dancer_female_softmax.png">
+                    <img src="geographic_bias/dancer_female_softmax.png" alt="dancer" onclick="openModal(this.src)">
+                    <div class="image-label">dancer</div>
+                </div>
+
+                <div class="image-card" data-word="decorator" data-gender-male="geographic_bias/decorator_male_softmax.png" data-gender-female="geographic_bias/decorator_female_softmax.png">
+                    <img src="geographic_bias/decorator_female_softmax.png" alt="decorator" onclick="openModal(this.src)">
+                    <div class="image-label">decorator</div>
+                </div>
+
+                <div class="image-card" data-word="delivery man" data-gender-male="geographic_bias/delivery_man_male_softmax.png" data-gender-female="geographic_bias/delivery_man_female_softmax.png">
+                    <img src="geographic_bias/delivery_man_female_softmax.png" alt="delivery man" onclick="openModal(this.src)">
+                    <div class="image-label">delivery man</div>
+                </div>
+
+                <div class="image-card" data-word="dentist" data-gender-male="geographic_bias/dentist_male_softmax.png" data-gender-female="geographic_bias/dentist_female_softmax.png">
+                    <img src="geographic_bias/dentist_female_softmax.png" alt="dentist" onclick="openModal(this.src)">
+                    <div class="image-label">dentist</div>
+                </div>
+
+                <div class="image-card" data-word="designer" data-gender-male="geographic_bias/designer_male_softmax.png" data-gender-female="geographic_bias/designer_female_softmax.png">
+                    <img src="geographic_bias/designer_female_softmax.png" alt="designer" onclick="openModal(this.src)">
+                    <div class="image-label">designer</div>
+                </div>
+
+                <div class="image-card" data-word="detective" data-gender-male="geographic_bias/detective_male_softmax.png" data-gender-female="geographic_bias/detective_female_softmax.png">
+                    <img src="geographic_bias/detective_female_softmax.png" alt="detective" onclick="openModal(this.src)">
+                    <div class="image-label">detective</div>
+                </div>
+
+                <div class="image-card" data-word="diplomat" data-gender-male="geographic_bias/diplomat_male_softmax.png" data-gender-female="geographic_bias/diplomat_female_softmax.png">
+                    <img src="geographic_bias/diplomat_female_softmax.png" alt="diplomat" onclick="openModal(this.src)">
+                    <div class="image-label">diplomat</div>
+                </div>
+
+                <div class="image-card" data-word="director" data-gender-male="geographic_bias/director_male_softmax.png" data-gender-female="geographic_bias/director_female_softmax.png">
+                    <img src="geographic_bias/director_female_softmax.png" alt="director" onclick="openModal(this.src)">
+                    <div class="image-label">director</div>
+                </div>
+
+                <div class="image-card" data-word="doctor" data-gender-male="geographic_bias/doctor_male_softmax.png" data-gender-female="geographic_bias/doctor_female_softmax.png">
+                    <img src="geographic_bias/doctor_female_softmax.png" alt="doctor" onclick="openModal(this.src)">
+                    <div class="image-label">doctor</div>
+                </div>
+
+                <div class="image-card" data-word="drawer" data-gender-male="geographic_bias/drawer_male_softmax.png" data-gender-female="geographic_bias/drawer_female_softmax.png">
+                    <img src="geographic_bias/drawer_female_softmax.png" alt="drawer" onclick="openModal(this.src)">
+                    <div class="image-label">drawer</div>
+                </div>
+
+                <div class="image-card" data-word="economist" data-gender-male="geographic_bias/economist_male_softmax.png" data-gender-female="geographic_bias/economist_female_softmax.png">
+                    <img src="geographic_bias/economist_female_softmax.png" alt="economist" onclick="openModal(this.src)">
+                    <div class="image-label">economist</div>
+                </div>
+
+                <div class="image-card" data-word="editor" data-gender-male="geographic_bias/editor_male_softmax.png" data-gender-female="geographic_bias/editor_female_softmax.png">
+                    <img src="geographic_bias/editor_female_softmax.png" alt="editor" onclick="openModal(this.src)">
+                    <div class="image-label">editor</div>
+                </div>
+
+                <div class="image-card" data-word="electrician" data-gender-male="geographic_bias/electrician_male_softmax.png" data-gender-female="geographic_bias/electrician_female_softmax.png">
+                    <img src="geographic_bias/electrician_female_softmax.png" alt="electrician" onclick="openModal(this.src)">
+                    <div class="image-label">electrician</div>
+                </div>
+
+                <div class="image-card" data-word="engineer" data-gender-male="geographic_bias/engineer_male_softmax.png" data-gender-female="geographic_bias/engineer_female_softmax.png">
+                    <img src="geographic_bias/engineer_female_softmax.png" alt="engineer" onclick="openModal(this.src)">
+                    <div class="image-label">engineer</div>
+                </div>
+
+                <div class="image-card" data-word="entrepreneur" data-gender-male="geographic_bias/entrepreneur_male_softmax.png" data-gender-female="geographic_bias/entrepreneur_female_softmax.png">
+                    <img src="geographic_bias/entrepreneur_female_softmax.png" alt="entrepreneur" onclick="openModal(this.src)">
+                    <div class="image-label">entrepreneur</div>
+                </div>
+
+                <div class="image-card" data-word="executive" data-gender-male="geographic_bias/executive_male_softmax.png" data-gender-female="geographic_bias/executive_female_softmax.png">
+                    <img src="geographic_bias/executive_female_softmax.png" alt="executive" onclick="openModal(this.src)">
+                    <div class="image-label">executive</div>
+                </div>
+
+                <div class="image-card" data-word="farmer" data-gender-male="geographic_bias/farmer_male_softmax.png" data-gender-female="geographic_bias/farmer_female_softmax.png">
+                    <img src="geographic_bias/farmer_female_softmax.png" alt="farmer" onclick="openModal(this.src)">
+                    <div class="image-label">farmer</div>
+                </div>
+
+                <div class="image-card" data-word="film director" data-gender-male="geographic_bias/film_director_male_softmax.png" data-gender-female="geographic_bias/film_director_female_softmax.png">
+                    <img src="geographic_bias/film_director_female_softmax.png" alt="film director" onclick="openModal(this.src)">
+                    <div class="image-label">film director</div>
+                </div>
+
+                <div class="image-card" data-word="firefighter" data-gender-male="geographic_bias/firefighter_male_softmax.png" data-gender-female="geographic_bias/firefighter_female_softmax.png">
+                    <img src="geographic_bias/firefighter_female_softmax.png" alt="firefighter" onclick="openModal(this.src)">
+                    <div class="image-label">firefighter</div>
+                </div>
+
+                <div class="image-card" data-word="flight attendant" data-gender-male="geographic_bias/flight_attendant_male_softmax.png" data-gender-female="geographic_bias/flight_attendant_female_softmax.png">
+                    <img src="geographic_bias/flight_attendant_female_softmax.png" alt="flight attendant" onclick="openModal(this.src)">
+                    <div class="image-label">flight attendant</div>
+                </div>
+
+                <div class="image-card" data-word="football player" data-gender-male="geographic_bias/football_player_male_softmax.png" data-gender-female="geographic_bias/football_player_female_softmax.png">
+                    <img src="geographic_bias/football_player_female_softmax.png" alt="football player" onclick="openModal(this.src)">
+                    <div class="image-label">football player</div>
+                </div>
+
+                <div class="image-card" data-word="garbage collector" data-gender-male="geographic_bias/garbage_collector_male_softmax.png" data-gender-female="geographic_bias/garbage_collector_female_softmax.png">
+                    <img src="geographic_bias/garbage_collector_female_softmax.png" alt="garbage collector" onclick="openModal(this.src)">
+                    <div class="image-label">garbage collector</div>
+                </div>
+
+                <div class="image-card" data-word="geologist" data-gender-male="geographic_bias/geologist_male_softmax.png" data-gender-female="geographic_bias/geologist_female_softmax.png">
+                    <img src="geographic_bias/geologist_female_softmax.png" alt="geologist" onclick="openModal(this.src)">
+                    <div class="image-label">geologist</div>
+                </div>
+
+                <div class="image-card" data-word="guard" data-gender-male="geographic_bias/guard_male_softmax.png" data-gender-female="geographic_bias/guard_female_softmax.png">
+                    <img src="geographic_bias/guard_female_softmax.png" alt="guard" onclick="openModal(this.src)">
+                    <div class="image-label">guard</div>
+                </div>
+
+                <div class="image-card" data-word="guitarist" data-gender-male="geographic_bias/guitarist_male_softmax.png" data-gender-female="geographic_bias/guitarist_female_softmax.png">
+                    <img src="geographic_bias/guitarist_female_softmax.png" alt="guitarist" onclick="openModal(this.src)">
+                    <div class="image-label">guitarist</div>
+                </div>
+
+                <div class="image-card" data-word="hairdresser" data-gender-male="geographic_bias/hairdresser_male_softmax.png" data-gender-female="geographic_bias/hairdresser_female_softmax.png">
+                    <img src="geographic_bias/hairdresser_female_softmax.png" alt="hairdresser" onclick="openModal(this.src)">
+                    <div class="image-label">hairdresser</div>
+                </div>
+
+                <div class="image-card" data-word="handball player" data-gender-male="geographic_bias/handball_player_male_softmax.png" data-gender-female="geographic_bias/handball_player_female_softmax.png">
+                    <img src="geographic_bias/handball_player_female_softmax.png" alt="handball player" onclick="openModal(this.src)">
+                    <div class="image-label">handball player</div>
+                </div>
+
+                <div class="image-card" data-word="handyman" data-gender-male="geographic_bias/handyman_male_softmax.png" data-gender-female="geographic_bias/handyman_female_softmax.png">
+                    <img src="geographic_bias/handyman_female_softmax.png" alt="handyman" onclick="openModal(this.src)">
+                    <div class="image-label">handyman</div>
+                </div>
+
+                <div class="image-card" data-word="head teacher" data-gender-male="geographic_bias/head_teacher_male_softmax.png" data-gender-female="geographic_bias/head_teacher_female_softmax.png">
+                    <img src="geographic_bias/head_teacher_female_softmax.png" alt="head teacher" onclick="openModal(this.src)">
+                    <div class="image-label">head teacher</div>
+                </div>
+
+                <div class="image-card" data-word="historian" data-gender-male="geographic_bias/historian_male_softmax.png" data-gender-female="geographic_bias/historian_female_softmax.png">
+                    <img src="geographic_bias/historian_female_softmax.png" alt="historian" onclick="openModal(this.src)">
+                    <div class="image-label">historian</div>
+                </div>
+
+                <div class="image-card" data-word="homemaker" data-gender-male="geographic_bias/homemaker_male_softmax.png" data-gender-female="geographic_bias/homemaker_female_softmax.png">
+                    <img src="geographic_bias/homemaker_female_softmax.png" alt="homemaker" onclick="openModal(this.src)">
+                    <div class="image-label">homemaker</div>
+                </div>
+
+                <div class="image-card" data-word="housekeeper" data-gender-male="geographic_bias/housekeeper_male_softmax.png" data-gender-female="geographic_bias/housekeeper_female_softmax.png">
+                    <img src="geographic_bias/housekeeper_female_softmax.png" alt="housekeeper" onclick="openModal(this.src)">
+                    <div class="image-label">housekeeper</div>
+                </div>
+
+                <div class="image-card" data-word="illustrator" data-gender-male="geographic_bias/illustrator_male_softmax.png" data-gender-female="geographic_bias/illustrator_female_softmax.png">
+                    <img src="geographic_bias/illustrator_female_softmax.png" alt="illustrator" onclick="openModal(this.src)">
+                    <div class="image-label">illustrator</div>
+                </div>
+
+                <div class="image-card" data-word="janitor" data-gender-male="geographic_bias/janitor_male_softmax.png" data-gender-female="geographic_bias/janitor_female_softmax.png">
+                    <img src="geographic_bias/janitor_female_softmax.png" alt="janitor" onclick="openModal(this.src)">
+                    <div class="image-label">janitor</div>
+                </div>
+
+                <div class="image-card" data-word="jeweler" data-gender-male="geographic_bias/jeweler_male_softmax.png" data-gender-female="geographic_bias/jeweler_female_softmax.png">
+                    <img src="geographic_bias/jeweler_female_softmax.png" alt="jeweler" onclick="openModal(this.src)">
+                    <div class="image-label">jeweler</div>
+                </div>
+
+                <div class="image-card" data-word="journalist" data-gender-male="geographic_bias/journalist_male_softmax.png" data-gender-female="geographic_bias/journalist_female_softmax.png">
+                    <img src="geographic_bias/journalist_female_softmax.png" alt="journalist" onclick="openModal(this.src)">
+                    <div class="image-label">journalist</div>
+                </div>
+
+                <div class="image-card" data-word="judge" data-gender-male="geographic_bias/judge_male_softmax.png" data-gender-female="geographic_bias/judge_female_softmax.png">
+                    <img src="geographic_bias/judge_female_softmax.png" alt="judge" onclick="openModal(this.src)">
+                    <div class="image-label">judge</div>
+                </div>
+
+                <div class="image-card" data-word="juggler" data-gender-male="geographic_bias/juggler_male_softmax.png" data-gender-female="geographic_bias/juggler_female_softmax.png">
+                    <img src="geographic_bias/juggler_female_softmax.png" alt="juggler" onclick="openModal(this.src)">
+                    <div class="image-label">juggler</div>
+                </div>
+
+                <div class="image-card" data-word="laborer" data-gender-male="geographic_bias/laborer_male_softmax.png" data-gender-female="geographic_bias/laborer_female_softmax.png">
+                    <img src="geographic_bias/laborer_female_softmax.png" alt="laborer" onclick="openModal(this.src)">
+                    <div class="image-label">laborer</div>
+                </div>
+
+                <div class="image-card" data-word="lawyer" data-gender-male="geographic_bias/lawyer_male_softmax.png" data-gender-female="geographic_bias/lawyer_female_softmax.png">
+                    <img src="geographic_bias/lawyer_female_softmax.png" alt="lawyer" onclick="openModal(this.src)">
+                    <div class="image-label">lawyer</div>
+                </div>
+
+                <div class="image-card" data-word="lecturer" data-gender-male="geographic_bias/lecturer_male_softmax.png" data-gender-female="geographic_bias/lecturer_female_softmax.png">
+                    <img src="geographic_bias/lecturer_female_softmax.png" alt="lecturer" onclick="openModal(this.src)">
+                    <div class="image-label">lecturer</div>
+                </div>
+
+                <div class="image-card" data-word="lexicographer" data-gender-male="geographic_bias/lexicographer_male_softmax.png" data-gender-female="geographic_bias/lexicographer_female_softmax.png">
+                    <img src="geographic_bias/lexicographer_female_softmax.png" alt="lexicographer" onclick="openModal(this.src)">
+                    <div class="image-label">lexicographer</div>
+                </div>
+
+                <div class="image-card" data-word="librarian" data-gender-male="geographic_bias/librarian_male_softmax.png" data-gender-female="geographic_bias/librarian_female_softmax.png">
+                    <img src="geographic_bias/librarian_female_softmax.png" alt="librarian" onclick="openModal(this.src)">
+                    <div class="image-label">librarian</div>
+                </div>
+
+                <div class="image-card" data-word="library assistant" data-gender-male="geographic_bias/library_assistant_male_softmax.png" data-gender-female="geographic_bias/library_assistant_female_softmax.png">
+                    <img src="geographic_bias/library_assistant_female_softmax.png" alt="library assistant" onclick="openModal(this.src)">
+                    <div class="image-label">library assistant</div>
+                </div>
+
+                <div class="image-card" data-word="linguist" data-gender-male="geographic_bias/linguist_male_softmax.png" data-gender-female="geographic_bias/linguist_female_softmax.png">
+                    <img src="geographic_bias/linguist_female_softmax.png" alt="linguist" onclick="openModal(this.src)">
+                    <div class="image-label">linguist</div>
+                </div>
+
+                <div class="image-card" data-word="magician" data-gender-male="geographic_bias/magician_male_softmax.png" data-gender-female="geographic_bias/magician_female_softmax.png">
+                    <img src="geographic_bias/magician_female_softmax.png" alt="magician" onclick="openModal(this.src)">
+                    <div class="image-label">magician</div>
+                </div>
+
+                <div class="image-card" data-word="maid" data-gender-male="geographic_bias/maid_male_softmax.png" data-gender-female="geographic_bias/maid_female_softmax.png">
+                    <img src="geographic_bias/maid_female_softmax.png" alt="maid" onclick="openModal(this.src)">
+                    <div class="image-label">maid</div>
+                </div>
+
+                <div class="image-card" data-word="makeup artist" data-gender-male="geographic_bias/makeup_artist_male_softmax.png" data-gender-female="geographic_bias/makeup_artist_female_softmax.png">
+                    <img src="geographic_bias/makeup_artist_female_softmax.png" alt="makeup artist" onclick="openModal(this.src)">
+                    <div class="image-label">makeup artist</div>
+                </div>
+
+                <div class="image-card" data-word="manager" data-gender-male="geographic_bias/manager_male_softmax.png" data-gender-female="geographic_bias/manager_female_softmax.png">
+                    <img src="geographic_bias/manager_female_softmax.png" alt="manager" onclick="openModal(this.src)">
+                    <div class="image-label">manager</div>
+                </div>
+
+                <div class="image-card" data-word="mathematician" data-gender-male="geographic_bias/mathematician_male_softmax.png" data-gender-female="geographic_bias/mathematician_female_softmax.png">
+                    <img src="geographic_bias/mathematician_female_softmax.png" alt="mathematician" onclick="openModal(this.src)">
+                    <div class="image-label">mathematician</div>
+                </div>
+
+                <div class="image-card" data-word="mechanic" data-gender-male="geographic_bias/mechanic_male_softmax.png" data-gender-female="geographic_bias/mechanic_female_softmax.png">
+                    <img src="geographic_bias/mechanic_female_softmax.png" alt="mechanic" onclick="openModal(this.src)">
+                    <div class="image-label">mechanic</div>
+                </div>
+
+                <div class="image-card" data-word="midwife" data-gender-male="geographic_bias/midwife_male_softmax.png" data-gender-female="geographic_bias/midwife_female_softmax.png">
+                    <img src="geographic_bias/midwife_female_softmax.png" alt="midwife" onclick="openModal(this.src)">
+                    <div class="image-label">midwife</div>
+                </div>
+
+                <div class="image-card" data-word="miner" data-gender-male="geographic_bias/miner_male_softmax.png" data-gender-female="geographic_bias/miner_female_softmax.png">
+                    <img src="geographic_bias/miner_female_softmax.png" alt="miner" onclick="openModal(this.src)">
+                    <div class="image-label">miner</div>
+                </div>
+
+                <div class="image-card" data-word="model" data-gender-male="geographic_bias/model_male_softmax.png" data-gender-female="geographic_bias/model_female_softmax.png">
+                    <img src="geographic_bias/model_female_softmax.png" alt="model" onclick="openModal(this.src)">
+                    <div class="image-label">model</div>
+                </div>
+
+                <div class="image-card" data-word="mover" data-gender-male="geographic_bias/mover_male_softmax.png" data-gender-female="geographic_bias/mover_female_softmax.png">
+                    <img src="geographic_bias/mover_female_softmax.png" alt="mover" onclick="openModal(this.src)">
+                    <div class="image-label">mover</div>
+                </div>
+
+                <div class="image-card" data-word="musician" data-gender-male="geographic_bias/musician_male_softmax.png" data-gender-female="geographic_bias/musician_female_softmax.png">
+                    <img src="geographic_bias/musician_female_softmax.png" alt="musician" onclick="openModal(this.src)">
+                    <div class="image-label">musician</div>
+                </div>
+
+                <div class="image-card" data-word="nurse" data-gender-male="geographic_bias/nurse_male_softmax.png" data-gender-female="geographic_bias/nurse_female_softmax.png">
+                    <img src="geographic_bias/nurse_female_softmax.png" alt="nurse" onclick="openModal(this.src)">
+                    <div class="image-label">nurse</div>
+                </div>
+
+                <div class="image-card" data-word="opera singer" data-gender-male="geographic_bias/opera_singer_male_softmax.png" data-gender-female="geographic_bias/opera_singer_female_softmax.png">
+                    <img src="geographic_bias/opera_singer_female_softmax.png" alt="opera singer" onclick="openModal(this.src)">
+                    <div class="image-label">opera singer</div>
+                </div>
+
+                <div class="image-card" data-word="optician" data-gender-male="geographic_bias/optician_male_softmax.png" data-gender-female="geographic_bias/optician_female_softmax.png">
+                    <img src="geographic_bias/optician_female_softmax.png" alt="optician" onclick="openModal(this.src)">
+                    <div class="image-label">optician</div>
+                </div>
+
+                <div class="image-card" data-word="painter" data-gender-male="geographic_bias/painter_male_softmax.png" data-gender-female="geographic_bias/painter_female_softmax.png">
+                    <img src="geographic_bias/painter_female_softmax.png" alt="painter" onclick="openModal(this.src)">
+                    <div class="image-label">painter</div>
+                </div>
+
+                <div class="image-card" data-word="pensioner" data-gender-male="geographic_bias/pensioner_male_softmax.png" data-gender-female="geographic_bias/pensioner_female_softmax.png">
+                    <img src="geographic_bias/pensioner_female_softmax.png" alt="pensioner" onclick="openModal(this.src)">
+                    <div class="image-label">pensioner</div>
+                </div>
+
+                <div class="image-card" data-word="performing artist" data-gender-male="geographic_bias/performing_artist_male_softmax.png" data-gender-female="geographic_bias/performing_artist_female_softmax.png">
+                    <img src="geographic_bias/performing_artist_female_softmax.png" alt="performing artist" onclick="openModal(this.src)">
+                    <div class="image-label">performing artist</div>
+                </div>
+
+                <div class="image-card" data-word="personal assistant" data-gender-male="geographic_bias/personal_assistant_male_softmax.png" data-gender-female="geographic_bias/personal_assistant_female_softmax.png">
+                    <img src="geographic_bias/personal_assistant_female_softmax.png" alt="personal assistant" onclick="openModal(this.src)">
+                    <div class="image-label">personal assistant</div>
+                </div>
+
+                <div class="image-card" data-word="pharmacist" data-gender-male="geographic_bias/pharmacist_male_softmax.png" data-gender-female="geographic_bias/pharmacist_female_softmax.png">
+                    <img src="geographic_bias/pharmacist_female_softmax.png" alt="pharmacist" onclick="openModal(this.src)">
+                    <div class="image-label">pharmacist</div>
+                </div>
+
+                <div class="image-card" data-word="photographer" data-gender-male="geographic_bias/photographer_male_softmax.png" data-gender-female="geographic_bias/photographer_female_softmax.png">
+                    <img src="geographic_bias/photographer_female_softmax.png" alt="photographer" onclick="openModal(this.src)">
+                    <div class="image-label">photographer</div>
+                </div>
+
+                <div class="image-card" data-word="physician" data-gender-male="geographic_bias/physician_male_softmax.png" data-gender-female="geographic_bias/physician_female_softmax.png">
+                    <img src="geographic_bias/physician_female_softmax.png" alt="physician" onclick="openModal(this.src)">
+                    <div class="image-label">physician</div>
+                </div>
+
+                <div class="image-card" data-word="physicist" data-gender-male="geographic_bias/physicist_male_softmax.png" data-gender-female="geographic_bias/physicist_female_softmax.png">
+                    <img src="geographic_bias/physicist_female_softmax.png" alt="physicist" onclick="openModal(this.src)">
+                    <div class="image-label">physicist</div>
+                </div>
+
+                <div class="image-card" data-word="pianist" data-gender-male="geographic_bias/pianist_male_softmax.png" data-gender-female="geographic_bias/pianist_female_softmax.png">
+                    <img src="geographic_bias/pianist_female_softmax.png" alt="pianist" onclick="openModal(this.src)">
+                    <div class="image-label">pianist</div>
+                </div>
+
+                <div class="image-card" data-word="pilot" data-gender-male="geographic_bias/pilot_male_softmax.png" data-gender-female="geographic_bias/pilot_female_softmax.png">
+                    <img src="geographic_bias/pilot_female_softmax.png" alt="pilot" onclick="openModal(this.src)">
+                    <div class="image-label">pilot</div>
+                </div>
+
+                <div class="image-card" data-word="plumber" data-gender-male="geographic_bias/plumber_male_softmax.png" data-gender-female="geographic_bias/plumber_female_softmax.png">
+                    <img src="geographic_bias/plumber_female_softmax.png" alt="plumber" onclick="openModal(this.src)">
+                    <div class="image-label">plumber</div>
+                </div>
+
+                <div class="image-card" data-word="poet" data-gender-male="geographic_bias/poet_male_softmax.png" data-gender-female="geographic_bias/poet_female_softmax.png">
+                    <img src="geographic_bias/poet_female_softmax.png" alt="poet" onclick="openModal(this.src)">
+                    <div class="image-label">poet</div>
+                </div>
+
+                <div class="image-card" data-word="police officer" data-gender-male="geographic_bias/police_officer_male_softmax.png" data-gender-female="geographic_bias/police_officer_female_softmax.png">
+                    <img src="geographic_bias/police_officer_female_softmax.png" alt="police officer" onclick="openModal(this.src)">
+                    <div class="image-label">police officer</div>
+                </div>
+
+                <div class="image-card" data-word="policeman" data-gender-male="geographic_bias/policeman_male_softmax.png" data-gender-female="geographic_bias/policeman_female_softmax.png">
+                    <img src="geographic_bias/policeman_female_softmax.png" alt="policeman" onclick="openModal(this.src)">
+                    <div class="image-label">policeman</div>
+                </div>
+
+                <div class="image-card" data-word="politician" data-gender-male="geographic_bias/politician_male_softmax.png" data-gender-female="geographic_bias/politician_female_softmax.png">
+                    <img src="geographic_bias/politician_female_softmax.png" alt="politician" onclick="openModal(this.src)">
+                    <div class="image-label">politician</div>
+                </div>
+
+                <div class="image-card" data-word="porter" data-gender-male="geographic_bias/porter_male_softmax.png" data-gender-female="geographic_bias/porter_female_softmax.png">
+                    <img src="geographic_bias/porter_female_softmax.png" alt="porter" onclick="openModal(this.src)">
+                    <div class="image-label">porter</div>
+                </div>
+
+                <div class="image-card" data-word="priest" data-gender-male="geographic_bias/priest_male_softmax.png" data-gender-female="geographic_bias/priest_female_softmax.png">
+                    <img src="geographic_bias/priest_female_softmax.png" alt="priest" onclick="openModal(this.src)">
+                    <div class="image-label">priest</div>
+                </div>
+
+                <div class="image-card" data-word="printer" data-gender-male="geographic_bias/printer_male_softmax.png" data-gender-female="geographic_bias/printer_female_softmax.png">
+                    <img src="geographic_bias/printer_female_softmax.png" alt="printer" onclick="openModal(this.src)">
+                    <div class="image-label">printer</div>
+                </div>
+
+                <div class="image-card" data-word="prison officer" data-gender-male="geographic_bias/prison_officer_male_softmax.png" data-gender-female="geographic_bias/prison_officer_female_softmax.png">
+                    <img src="geographic_bias/prison_officer_female_softmax.png" alt="prison officer" onclick="openModal(this.src)">
+                    <div class="image-label">prison officer</div>
+                </div>
+
+                <div class="image-card" data-word="prisoner" data-gender-male="geographic_bias/prisoner_male_softmax.png" data-gender-female="geographic_bias/prisoner_female_softmax.png">
+                    <img src="geographic_bias/prisoner_female_softmax.png" alt="prisoner" onclick="openModal(this.src)">
+                    <div class="image-label">prisoner</div>
+                </div>
+
+                <div class="image-card" data-word="producer" data-gender-male="geographic_bias/producer_male_softmax.png" data-gender-female="geographic_bias/producer_female_softmax.png">
+                    <img src="geographic_bias/producer_female_softmax.png" alt="producer" onclick="openModal(this.src)">
+                    <div class="image-label">producer</div>
+                </div>
+
+                <div class="image-card" data-word="professor" data-gender-male="geographic_bias/professor_male_softmax.png" data-gender-female="geographic_bias/professor_female_softmax.png">
+                    <img src="geographic_bias/professor_female_softmax.png" alt="professor" onclick="openModal(this.src)">
+                    <div class="image-label">professor</div>
+                </div>
+
+                <div class="image-card" data-word="prosecutor" data-gender-male="geographic_bias/prosecutor_male_softmax.png" data-gender-female="geographic_bias/prosecutor_female_softmax.png">
+                    <img src="geographic_bias/prosecutor_female_softmax.png" alt="prosecutor" onclick="openModal(this.src)">
+                    <div class="image-label">prosecutor</div>
+                </div>
+
+                <div class="image-card" data-word="psychologist" data-gender-male="geographic_bias/psychologist_male_softmax.png" data-gender-female="geographic_bias/psychologist_female_softmax.png">
+                    <img src="geographic_bias/psychologist_female_softmax.png" alt="psychologist" onclick="openModal(this.src)">
+                    <div class="image-label">psychologist</div>
+                </div>
+
+                <div class="image-card" data-word="puppeteer" data-gender-male="geographic_bias/puppeteer_male_softmax.png" data-gender-female="geographic_bias/puppeteer_female_softmax.png">
+                    <img src="geographic_bias/puppeteer_female_softmax.png" alt="puppeteer" onclick="openModal(this.src)">
+                    <div class="image-label">puppeteer</div>
+                </div>
+
+                <div class="image-card" data-word="real-estate developer" data-gender-male="geographic_bias/real-estate_developer_male_softmax.png" data-gender-female="geographic_bias/real-estate_developer_female_softmax.png">
+                    <img src="geographic_bias/real-estate_developer_female_softmax.png" alt="real-estate developer" onclick="openModal(this.src)">
+                    <div class="image-label">real-estate developer</div>
+                </div>
+
+                <div class="image-card" data-word="realtor" data-gender-male="geographic_bias/realtor_male_softmax.png" data-gender-female="geographic_bias/realtor_female_softmax.png">
+                    <img src="geographic_bias/realtor_female_softmax.png" alt="realtor" onclick="openModal(this.src)">
+                    <div class="image-label">realtor</div>
+                </div>
+
+                <div class="image-card" data-word="receptionist" data-gender-male="geographic_bias/receptionist_male_softmax.png" data-gender-female="geographic_bias/receptionist_female_softmax.png">
+                    <img src="geographic_bias/receptionist_female_softmax.png" alt="receptionist" onclick="openModal(this.src)">
+                    <div class="image-label">receptionist</div>
+                </div>
+
+                <div class="image-card" data-word="researcher" data-gender-male="geographic_bias/researcher_male_softmax.png" data-gender-female="geographic_bias/researcher_female_softmax.png">
+                    <img src="geographic_bias/researcher_female_softmax.png" alt="researcher" onclick="openModal(this.src)">
+                    <div class="image-label">researcher</div>
+                </div>
+
+                <div class="image-card" data-word="sailor" data-gender-male="geographic_bias/sailor_male_softmax.png" data-gender-female="geographic_bias/sailor_female_softmax.png">
+                    <img src="geographic_bias/sailor_female_softmax.png" alt="sailor" onclick="openModal(this.src)">
+                    <div class="image-label">sailor</div>
+                </div>
+
+                <div class="image-card" data-word="salesperson" data-gender-male="geographic_bias/salesperson_male_softmax.png" data-gender-female="geographic_bias/salesperson_female_softmax.png">
+                    <img src="geographic_bias/salesperson_female_softmax.png" alt="salesperson" onclick="openModal(this.src)">
+                    <div class="image-label">salesperson</div>
+                </div>
+
+                <div class="image-card" data-word="scientist" data-gender-male="geographic_bias/scientist_male_softmax.png" data-gender-female="geographic_bias/scientist_female_softmax.png">
+                    <img src="geographic_bias/scientist_female_softmax.png" alt="scientist" onclick="openModal(this.src)">
+                    <div class="image-label">scientist</div>
+                </div>
+
+                <div class="image-card" data-word="secretary" data-gender-male="geographic_bias/secretary_male_softmax.png" data-gender-female="geographic_bias/secretary_female_softmax.png">
+                    <img src="geographic_bias/secretary_female_softmax.png" alt="secretary" onclick="openModal(this.src)">
+                    <div class="image-label">secretary</div>
+                </div>
+
+                <div class="image-card" data-word="sheriff" data-gender-male="geographic_bias/sheriff_male_softmax.png" data-gender-female="geographic_bias/sheriff_female_softmax.png">
+                    <img src="geographic_bias/sheriff_female_softmax.png" alt="sheriff" onclick="openModal(this.src)">
+                    <div class="image-label">sheriff</div>
+                </div>
+
+                <div class="image-card" data-word="shop assistant" data-gender-male="geographic_bias/shop_assistant_male_softmax.png" data-gender-female="geographic_bias/shop_assistant_female_softmax.png">
+                    <img src="geographic_bias/shop_assistant_female_softmax.png" alt="shop assistant" onclick="openModal(this.src)">
+                    <div class="image-label">shop assistant</div>
+                </div>
+
+                <div class="image-card" data-word="sign language interpreter" data-gender-male="geographic_bias/sign_language_interpreter_male_softmax.png" data-gender-female="geographic_bias/sign_language_interpreter_female_softmax.png">
+                    <img src="geographic_bias/sign_language_interpreter_female_softmax.png" alt="sign language interpreter" onclick="openModal(this.src)">
+                    <div class="image-label">sign language interpreter</div>
+                </div>
+
+                <div class="image-card" data-word="singer" data-gender-male="geographic_bias/singer_male_softmax.png" data-gender-female="geographic_bias/singer_female_softmax.png">
+                    <img src="geographic_bias/singer_female_softmax.png" alt="singer" onclick="openModal(this.src)">
+                    <div class="image-label">singer</div>
+                </div>
+
+                <div class="image-card" data-word="sociologist" data-gender-male="geographic_bias/sociologist_male_softmax.png" data-gender-female="geographic_bias/sociologist_female_softmax.png">
+                    <img src="geographic_bias/sociologist_female_softmax.png" alt="sociologist" onclick="openModal(this.src)">
+                    <div class="image-label">sociologist</div>
+                </div>
+
+                <div class="image-card" data-word="software developer" data-gender-male="geographic_bias/software_developer_male_softmax.png" data-gender-female="geographic_bias/software_developer_female_softmax.png">
+                    <img src="geographic_bias/software_developer_female_softmax.png" alt="software developer" onclick="openModal(this.src)">
+                    <div class="image-label">software developer</div>
+                </div>
+
+                <div class="image-card" data-word="soldier" data-gender-male="geographic_bias/soldier_male_softmax.png" data-gender-female="geographic_bias/soldier_female_softmax.png">
+                    <img src="geographic_bias/soldier_female_softmax.png" alt="soldier" onclick="openModal(this.src)">
+                    <div class="image-label">soldier</div>
+                </div>
+
+                <div class="image-card" data-word="solicitor" data-gender-male="geographic_bias/solicitor_male_softmax.png" data-gender-female="geographic_bias/solicitor_female_softmax.png">
+                    <img src="geographic_bias/solicitor_female_softmax.png" alt="solicitor" onclick="openModal(this.src)">
+                    <div class="image-label">solicitor</div>
+                </div>
+
+                <div class="image-card" data-word="supervisor" data-gender-male="geographic_bias/supervisor_male_softmax.png" data-gender-female="geographic_bias/supervisor_female_softmax.png">
+                    <img src="geographic_bias/supervisor_female_softmax.png" alt="supervisor" onclick="openModal(this.src)">
+                    <div class="image-label">supervisor</div>
+                </div>
+
+                <div class="image-card" data-word="surgeon" data-gender-male="geographic_bias/surgeon_male_softmax.png" data-gender-female="geographic_bias/surgeon_female_softmax.png">
+                    <img src="geographic_bias/surgeon_female_softmax.png" alt="surgeon" onclick="openModal(this.src)">
+                    <div class="image-label">surgeon</div>
+                </div>
+
+                <div class="image-card" data-word="swimmer" data-gender-male="geographic_bias/swimmer_male_softmax.png" data-gender-female="geographic_bias/swimmer_female_softmax.png">
+                    <img src="geographic_bias/swimmer_female_softmax.png" alt="swimmer" onclick="openModal(this.src)">
+                    <div class="image-label">swimmer</div>
+                </div>
+
+                <div class="image-card" data-word="tailor" data-gender-male="geographic_bias/tailor_male_softmax.png" data-gender-female="geographic_bias/tailor_female_softmax.png">
+                    <img src="geographic_bias/tailor_female_softmax.png" alt="tailor" onclick="openModal(this.src)">
+                    <div class="image-label">tailor</div>
+                </div>
+
+                <div class="image-card" data-word="teacher" data-gender-male="geographic_bias/teacher_male_softmax.png" data-gender-female="geographic_bias/teacher_female_softmax.png">
+                    <img src="geographic_bias/teacher_female_softmax.png" alt="teacher" onclick="openModal(this.src)">
+                    <div class="image-label">teacher</div>
+                </div>
+
+                <div class="image-card" data-word="telephone operator" data-gender-male="geographic_bias/telephone_operator_male_softmax.png" data-gender-female="geographic_bias/telephone_operator_female_softmax.png">
+                    <img src="geographic_bias/telephone_operator_female_softmax.png" alt="telephone operator" onclick="openModal(this.src)">
+                    <div class="image-label">telephone operator</div>
+                </div>
+
+                <div class="image-card" data-word="telephonist" data-gender-male="geographic_bias/telephonist_male_softmax.png" data-gender-female="geographic_bias/telephonist_female_softmax.png">
+                    <img src="geographic_bias/telephonist_female_softmax.png" alt="telephonist" onclick="openModal(this.src)">
+                    <div class="image-label">telephonist</div>
+                </div>
+
+                <div class="image-card" data-word="tennis player" data-gender-male="geographic_bias/tennis_player_male_softmax.png" data-gender-female="geographic_bias/tennis_player_female_softmax.png">
+                    <img src="geographic_bias/tennis_player_female_softmax.png" alt="tennis player" onclick="openModal(this.src)">
+                    <div class="image-label">tennis player</div>
+                </div>
+
+                <div class="image-card" data-word="theologian" data-gender-male="geographic_bias/theologian_male_softmax.png" data-gender-female="geographic_bias/theologian_female_softmax.png">
+                    <img src="geographic_bias/theologian_female_softmax.png" alt="theologian" onclick="openModal(this.src)">
+                    <div class="image-label">theologian</div>
+                </div>
+
+                <div class="image-card" data-word="translator" data-gender-male="geographic_bias/translator_male_softmax.png" data-gender-female="geographic_bias/translator_female_softmax.png">
+                    <img src="geographic_bias/translator_female_softmax.png" alt="translator" onclick="openModal(this.src)">
+                    <div class="image-label">translator</div>
+                </div>
+
+                <div class="image-card" data-word="travel agent" data-gender-male="geographic_bias/travel_agent_male_softmax.png" data-gender-female="geographic_bias/travel_agent_female_softmax.png">
+                    <img src="geographic_bias/travel_agent_female_softmax.png" alt="travel agent" onclick="openModal(this.src)">
+                    <div class="image-label">travel agent</div>
+                </div>
+
+                <div class="image-card" data-word="trucker" data-gender-male="geographic_bias/trucker_male_softmax.png" data-gender-female="geographic_bias/trucker_female_softmax.png">
+                    <img src="geographic_bias/trucker_female_softmax.png" alt="trucker" onclick="openModal(this.src)">
+                    <div class="image-label">trucker</div>
+                </div>
+
+                <div class="image-card" data-word="umpire" data-gender-male="geographic_bias/umpire_male_softmax.png" data-gender-female="geographic_bias/umpire_female_softmax.png">
+                    <img src="geographic_bias/umpire_female_softmax.png" alt="umpire" onclick="openModal(this.src)">
+                    <div class="image-label">umpire</div>
+                </div>
+
+                <div class="image-card" data-word="vet" data-gender-male="geographic_bias/vet_male_softmax.png" data-gender-female="geographic_bias/vet_female_softmax.png">
+                    <img src="geographic_bias/vet_female_softmax.png" alt="vet" onclick="openModal(this.src)">
+                    <div class="image-label">vet</div>
+                </div>
+
+                <div class="image-card" data-word="waiter" data-gender-male="geographic_bias/waiter_male_softmax.png" data-gender-female="geographic_bias/waiter_female_softmax.png">
+                    <img src="geographic_bias/waiter_female_softmax.png" alt="waiter" onclick="openModal(this.src)">
+                    <div class="image-label">waiter</div>
+                </div>
+
+                <div class="image-card" data-word="waitress" data-gender-male="geographic_bias/waitress_male_softmax.png" data-gender-female="geographic_bias/waitress_female_softmax.png">
+                    <img src="geographic_bias/waitress_female_softmax.png" alt="waitress" onclick="openModal(this.src)">
+                    <div class="image-label">waitress</div>
+                </div>
+
+                <div class="image-card" data-word="web designer" data-gender-male="geographic_bias/web_designer_male_softmax.png" data-gender-female="geographic_bias/web_designer_female_softmax.png">
+                    <img src="geographic_bias/web_designer_female_softmax.png" alt="web designer" onclick="openModal(this.src)">
+                    <div class="image-label">web designer</div>
+                </div>
+
+                <div class="image-card" data-word="writer" data-gender-male="geographic_bias/writer_male_softmax.png" data-gender-female="geographic_bias/writer_female_softmax.png">
+                    <img src="geographic_bias/writer_female_softmax.png" alt="writer" onclick="openModal(this.src)">
+                    <div class="image-label">writer</div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        let currentGender = 'female';
+        let currentCategory = 'all';
+        let allCards = document.querySelectorAll('.image-card');
+
+        function setGender(gender) {
+            currentGender = gender;
+
+            document.querySelectorAll('.gender-toggle button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            allCards.forEach(card => {
+                const img = card.querySelector('img');
+                const newSrc = card.getAttribute('data-gender-' + gender);
+                if (newSrc) {
+                    img.src = newSrc;
+                    img.onerror = function() {
+                        card.style.display = 'none';
+                    };
+                    img.onload = function() {
+                        if (currentCategory === 'all' || card.closest('.category-section').getAttribute('data-category') === currentCategory) {
+                            card.style.display = 'block';
+                        }
+                    };
+                }
+            });
+
+            updateVisibleCount();
+        }
+
+        function filterCategory(category) {
+            currentCategory = category;
+
+            document.querySelectorAll('.category-filter button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.category-section').forEach(section => {
+                if (category === 'all' || section.getAttribute('data-category') === category) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+
+            updateVisibleCount();
+        }
+
+        function filterBySearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            allCards.forEach(card => {
+                const word = card.getAttribute('data-word').toLowerCase();
+                const section = card.closest('.category-section');
+                const categoryMatch = currentCategory === 'all' || section.getAttribute('data-category') === currentCategory;
+
+                if (word.includes(searchTerm) && categoryMatch) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            updateVisibleCount();
+        }
+
+        function updateVisibleCount() {
+            setTimeout(() => {
+                let count = 0;
+                allCards.forEach(card => {
+                    if (card.style.display !== 'none' && !card.closest('.category-section').classList.contains('hidden')) {
+                        count++;
+                    }
+                });
+                document.getElementById('visibleCount').textContent = count;
+            }, 100);
+        }
+
+        function openModal(src) {
+            document.getElementById('imageModal').style.display = 'block';
+            document.getElementById('modalImage').src = src;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        updateVisibleCount();
+    </script>
+</body>
+</html>
