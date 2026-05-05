@@ -4,1346 +4,1857 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TerritoCat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Libre+Franklin:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+
         :root {
-            --primary: #1B4965;
-            --secondary: #2E8B9E;
-            --accent: #A23B72;
-            --success: #2D6A4F;
-            --light: #F5F5F5;
-            --border: #E0E0E0;
-            --text: #2C2C2C;
-            --text-light: #666;
+            --primary:      #1A3A4F;
+            --primary-dark: #0F2535;
+            --secondary:    #2A7A8C;
+            --accent:       #B8490A;
+            --success:      #2A5C3F;
+            --danger:       #8C1A1A;
+            --light:        #F4F1EC;
+            --parchment:    #EDE8DF;
+            --border:       #C8C0B0;
+            --border-light: #DDD8CE;
+            --text:         #1C1A16;
+            --text-mid:     #4A4438;
+            --text-light:   #7A7060;
+            --white:        #FAFAF8;
         }
-        
+
         html, body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Libre Franklin', sans-serif;
+            font-weight: 400;
             height: 100%;
             background: var(--light);
             color: var(--text);
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
-        
+
         #app { height: 100%; display: flex; flex-direction: column; }
         .screen { display: none; height: 100%; flex-direction: column; }
         .screen.active { display: flex; }
-        
+
+        /* ── HEADER ─────────────────────────────────────── */
         .header {
-            background: var(--primary);
-            color: white;
-            padding: 16px;
+            background: var(--primary-dark);
+            color: #E8E2D8;
+            padding: 0 16px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-bottom: 2px solid var(--secondary);
+            flex-shrink: 0;
         }
-        
+
         .header-back {
             cursor: pointer;
-            font-size: 16px;
+            font-size: 12px;
             font-weight: 600;
-            padding: 4px 8px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 6px 0;
             border: none;
             background: transparent;
-            color: white;
+            color: #A8B8C0;
+            transition: color 0.15s;
         }
-        
-        .header-title { flex: 1; text-align: center; font-size: 16px; font-weight: 600; }
-        .header-right { width: 30px; }
-        
+
+        .header-back:hover { color: #E8E2D8; background: transparent; }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: #E8E2D8;
+        }
+
+        .header-right { width: 60px; text-align: right; }
+
+        /* ── CONTENT ─────────────────────────────────────── */
         .content {
             flex: 1;
             overflow-y: auto;
-            padding: 16px;
+            padding: 20px 16px;
             background: var(--light);
         }
-        
+
+        /* ── BUTTONS ─────────────────────────────────────── */
         button {
             background: var(--primary);
-            color: white;
+            color: #E8E2D8;
             border: none;
-            padding: 12px 16px;
-            border-radius: 2px;
-            font-size: 14px;
+            padding: 11px 16px;
+            border-radius: 0;
+            font-family: 'Libre Franklin', sans-serif;
+            font-size: 12px;
             font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.15s, color 0.15s;
         }
-        
-        button:hover { background: var(--secondary); }
-        button.secondary { background: var(--text-light); }
-        button.secondary:hover { background: var(--text); }
-        button.success { background: var(--success); }
-        button.success:hover { background: #1d4d3d; }
-        button.danger { background: #C41E3A; }
-        button.danger:hover { background: #A01830; }
-        
+
+        button:hover { background: var(--secondary); color: #fff; }
+
+        button.secondary {
+            background: transparent;
+            color: var(--text-mid);
+            border: 1px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: var(--parchment);
+            color: var(--text);
+            border-color: var(--text-mid);
+        }
+
+        button.success { background: var(--success); color: #E8F0EB; }
+        button.success:hover { background: #1d4032; }
+
+        button.danger { background: var(--danger); color: #F0E0E0; }
+        button.danger:hover { background: #6a1212; }
+
+        /* ── INPUTS ─────────────────────────────────────── */
         input, textarea {
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
+            padding: 10px 12px;
+            margin: 6px 0;
             border: 1px solid var(--border);
-            border-radius: 2px;
+            background: var(--white);
+            border-radius: 0;
             font-size: 14px;
-            font-family: inherit;
+            font-family: 'Libre Franklin', sans-serif;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s;
         }
-        
-        h1 { font-size: 24px; margin-bottom: 12px; }
-        h2 { font-size: 18px; margin-bottom: 12px; }
-        h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-        
+
+        input:focus, textarea:focus {
+            border-color: var(--secondary);
+            background: #fff;
+        }
+
+        /* ── TYPOGRAPHY ─────────────────────────────────── */
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--primary-dark);
+        }
+
+        h3 {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        /* ── CARD ─────────────────────────────────────── */
         .card {
-            background: white;
-            padding: 12px;
+            background: var(--white);
+            padding: 14px;
             margin: 8px 0;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-light);
+            border-top: 2px solid var(--primary);
         }
-        
+
+        /* ── TAB BAR ─────────────────────────────────── */
         .tab-bar {
             display: flex;
-            gap: 0;
-            background: var(--primary);
-            border-top: 1px solid var(--border);
+            background: var(--primary-dark);
+            border-top: 2px solid var(--secondary);
+            flex-shrink: 0;
         }
-        
+
         .tab-btn {
             flex: 1;
-            background: var(--text-light);
-            color: white;
+            background: transparent;
+            color: #8AA0AA;
             border: none;
-            padding: 12px;
+            padding: 13px;
             cursor: pointer;
             font-weight: 600;
             border-radius: 0;
             margin: 0;
-            font-size: 12px;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: color 0.15s, background 0.15s;
+            border-right: 1px solid rgba(255,255,255,0.06);
         }
-        
-        .tab-btn.active { background: var(--secondary); }
-        .tab-btn:hover { background: var(--secondary); }
-        
-        .error-msg { color: #C41E3A; font-weight: 600; margin: 8px 0; }
-        .success-msg { color: var(--success); font-weight: 600; margin: 8px 0; }
-        
+
+        .tab-btn:last-child { border-right: none; }
+        .tab-btn.active { color: #E8E2D8; background: rgba(42,122,140,0.25); }
+        .tab-btn:hover { color: #E8E2D8; background: rgba(255,255,255,0.06); }
+
+        /* ── STATUS MESSAGES ─────────────────────────── */
+        .error-msg {
+            color: var(--danger);
+            font-size: 12px;
+            font-weight: 600;
+            margin: 8px 0;
+            letter-spacing: 0.02em;
+        }
+
+        .success-msg {
+            color: var(--success);
+            font-size: 12px;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+
+        /* ── RADIO GROUP ─────────────────────────────── */
         .radio-group { margin: 12px 0; }
-        .radio-group label { display: block; margin: 8px 0; cursor: pointer; }
-        
-        .map-container { flex: 1; background: white; }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-mid);
+        }
+
+        /* ── MAP ─────────────────────────────────────── */
+        .map-container { flex: 1; background: var(--white); position: relative; }
         #map { width: 100%; height: 100%; }
-        
+        .leaflet-control { display: none !important; }
+
+        /* ── MODAL ───────────────────────────────────── */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
+            inset: 0;
+            background: rgba(15, 25, 35, 0.6);
             z-index: 1000;
             justify-content: center;
             align-items: flex-end;
             flex-direction: column;
+            backdrop-filter: blur(2px);
         }
-        
+
         .modal.active { display: flex; }
-        
-        .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
-        
+        .modal-overlay { position: absolute; inset: 0; }
+
         .modal-content {
-            background: white;
+            background: var(--white);
             width: 100%;
-            max-height: 80vh;
-            padding: 16px;
+            max-height: 82vh;
+            padding: 20px 16px;
             overflow-y: auto;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+            border-top: 3px solid var(--secondary);
             position: relative;
             z-index: 1001;
         }
-        
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .modal-close { background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--text); padding: 0; }
-        
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .modal-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--primary-dark);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--text-light);
+            padding: 0;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 300;
+        }
+
+        .modal-close:hover { color: var(--text); background: transparent; }
+
+        /* ── LIST ITEMS ──────────────────────────────── */
         .list-item {
-            background: white;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid var(--border);
+            background: var(--white);
+            padding: 13px 14px;
+            margin: 4px 0;
+            border: 1px solid var(--border-light);
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.12s, border-color 0.12s;
         }
-        
-        .list-item:hover { background: var(--light); }
-        
+
+        .list-item:hover {
+            background: var(--parchment);
+            border-color: var(--border);
+        }
+
+        /* ── STATS ROW ───────────────────────────────── */
         .stats-row {
             display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-bottom: 18px;
         }
-        
+
         .stat-box {
             flex: 1;
-            background: white;
-            border: 1px solid var(--border);
-            padding: 12px;
+            background: var(--primary-dark);
+            padding: 14px 12px;
             text-align: center;
+            border: 1px solid var(--primary);
         }
-        
-        .stat-value { font-size: 24px; font-weight: 700; color: var(--secondary); }
-        .stat-label { font-size: 12px; color: var(--text-light); margin-top: 4px; }
-        
+
+        .stat-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #8AA0AA;
+            margin-top: 5px;
+        }
+
+        /* ── RANKING ─────────────────────────────────── */
         .ranking-item {
             display: flex;
-            justify-content: space-between;
-            padding: 12px;
-            margin: 4px 0;
-            background: white;
-            border: 1px solid var(--border);
+            align-items: center;
+            padding: 12px 14px;
+            margin: 3px 0;
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            gap: 12px;
         }
-        
+
         .ranking-position {
-            font-size: 12px;
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
             font-weight: 700;
-            min-width: 24px;
+            min-width: 28px;
+            color: var(--text-light);
+            text-align: right;
+        }
+
+        .ranking-name { flex: 1; }
+        .ranking-name .name { font-weight: 600; font-size: 13px; color: var(--text); }
+        .ranking-name .title-tag {
+            font-size: 11px;
+            color: var(--secondary);
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            margin-top: 2px;
+        }
+
+        .ranking-stats {
+            font-size: 11px;
+            text-align: right;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* ── WELCOME ─────────────────────────────────── */
+        .welcome-hero {
+            padding: 44px 20px 32px;
+            text-align: center;
+            background: var(--primary-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px);
+            pointer-events: none;
+        }
+
+        .welcome-wordmark {
+            font-family: 'Playfair Display', serif;
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: 0.02em;
+            position: relative;
+        }
+
+        .welcome-wordmark span {
             color: var(--secondary);
         }
-        
-        .ranking-name { flex: 1; margin: 0 12px; font-weight: 500; }
-        .ranking-stats { font-size: 12px; text-align: right; color: var(--text-light); }
-        
-        .version { text-align: center; font-size: 12px; color: var(--text-light); margin-top: 24px; }
-        
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 8px;
+
+        .welcome-tagline {
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #8AA0AA;
+            margin-top: 6px;
+            position: relative;
+        }
+
+        .welcome-divider {
+            width: 40px;
+            height: 2px;
+            background: var(--secondary);
+            margin: 18px auto;
+            position: relative;
+        }
+
+        /* ── INFO BOX ─────────────────────────────────── */
+        .info-box {
+            background: var(--parchment);
+            border-left: 3px solid var(--secondary);
+            padding: 11px 13px;
             margin: 12px 0;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-mid);
         }
-        
-        .gallery-item {
-            aspect-ratio: 1;
+
+        /* ── BADGES ───────────────────────────────────── */
+        .pending-badge {
+            display: inline-block;
+            background: var(--parchment);
             border: 1px solid var(--border);
-            overflow: hidden;
-            cursor: pointer;
-            background: var(--light);
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-light);
         }
-        
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-        
+
+        .conquered-badge {
+            display: inline-block;
+            background: #E6F0EB;
+            border: 1px solid #A8C8B4;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--success);
+        }
+
+        /* ── CONQUEST CARDS ───────────────────────────── */
+        .conquest-card {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-left: 3px solid var(--success);
+            padding: 13px 14px;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.12s;
+        }
+
+        .conquest-card:hover { background: var(--parchment); }
+        .conquest-card.unconquered { border-left-color: var(--border-light); background: var(--light); }
+
+        /* ── CONQUEST BUTTON ──────────────────────────── */
         .conquest-button {
             background: var(--success);
-            font-size: 16px;
-            padding: 16px;
-            width: 100%;
-            margin-top: 16px;
-        }
-        
-        .conquest-button:hover { background: #1d4d3d; }
-        
-        .distance-alert {
-            background: #FFF3CD;
-            border: 1px solid #FFE69C;
-            padding: 12px;
-            margin: 12px 0;
-            font-size: 13px;
-            color: #856404;
-        }
-        
-        .conquest-status {
-            background: #D4EDDA;
-            border: 1px solid #C3E6CB;
-            padding: 12px;
-            margin: 12px 0;
-            font-size: 13px;
-            color: #155724;
-            text-align: center;
+            color: #E6F0EB;
+            font-size: 12px;
             font-weight: 600;
-        }
-        
-        .camera-input { display: none; }
-        
-        .photo-preview {
-            width: 100%;
-            max-height: 400px;
-            object-fit: contain;
-            margin: 16px 0;
-            border: 1px solid var(--border);
-        }
-        
-        .camera-button {
-            background: var(--secondary);
-            width: 100%;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
             padding: 14px;
-            font-size: 14px;
+            width: 100%;
+            margin-top: 14px;
         }
-        
-        .camera-button:hover { background: #1B4965; }
-        
-        .leaflet-control { display: none !important; }
-        
+
+        .conquest-button:hover { background: #1d4032; color: #fff; }
+
+        /* ── ALERT BOXES ──────────────────────────────── */
+        .distance-alert {
+            background: #FBF6E8;
+            border: 1px solid #E0CFA0;
+            border-left: 3px solid #B89040;
+            padding: 11px 13px;
+            margin: 12px 0;
+            font-size: 12px;
+            color: #7A6020;
+            line-height: 1.5;
+        }
+
+        .conquest-status {
+            background: #E6F0EB;
+            border: 1px solid #A8C8B4;
+            border-left: 3px solid var(--success);
+            padding: 11px 13px;
+            margin: 12px 0;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: var(--success);
+            text-align: center;
+        }
+
+        /* ── GALLERY ──────────────────────────────────── */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+            gap: 6px;
+            margin: 10px 0;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+            cursor: pointer;
+            background: var(--parchment);
+        }
+
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ── COMPASS ──────────────────────────────────── */
         .compass-btn {
             position: absolute;
             bottom: 20px;
             right: 12px;
-            background: white;
+            background: var(--white);
             border: 1px solid var(--border);
             width: 40px;
             height: 40px;
-            border-radius: 2px;
             cursor: pointer;
             font-size: 16px;
             z-index: 100;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
             padding: 0;
+            letter-spacing: 0;
+            text-transform: none;
+            font-weight: 400;
         }
-        
-        .compass-btn:hover { background: var(--light); }
-        
-        .welcome-hero {
-            text-align: center;
-            padding: 40px 16px;
-        }
-        
-        .welcome-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-        
-        .welcome-subtitle {
-            font-size: 14px;
-            color: var(--text-light);
-            margin-bottom: 40px;
-        }
-        
-        .info-box {
-            background: white;
-            border-left: 3px solid var(--secondary);
-            padding: 12px;
-            margin: 12px 0;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        
+
+        .compass-btn:hover { background: var(--parchment); color: var(--text); }
+
+        /* ── INPUT ROW ────────────────────────────────── */
         .input-row {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin: 8px 0;
+            margin: 6px 0;
         }
-        
+
         .input-row input { flex: 1; margin: 0; }
-        .copy-btn { padding: 10px 12px; font-size: 13px; margin: 0; }
-        
+        .copy-btn { padding: 10px 14px; font-size: 11px; margin: 0; flex-shrink: 0; }
+
+        /* ── FORM LABELS ──────────────────────────────── */
+        .field-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-top: 16px;
+            margin-bottom: 2px;
+        }
+
+        /* ── CAMERA ───────────────────────────────────── */
+        .camera-input { display: none; }
+
+        .camera-button {
+            background: var(--secondary);
+            color: #fff;
+            width: 100%;
+            padding: 13px;
+            font-size: 12px;
+        }
+
+        .camera-button:hover { background: var(--primary); }
+
+        /* ── POINT DISTANCE ───────────────────────────── */
         .point-distance {
             display: inline-block;
-            background: var(--light);
-            padding: 4px 8px;
-            border-radius: 2px;
-            font-size: 12px;
+            background: var(--parchment);
+            border: 1px solid var(--border-light);
+            padding: 3px 8px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--secondary);
+            letter-spacing: 0.04em;
         }
-        
-        .conquest-card {
-            background: white;
-            border-left: 4px solid var(--success);
-            padding: 12px;
-            margin: 8px 0;
-            cursor: pointer;
-            transition: box-shadow 0.2s;
-        }
-        
-        .conquest-card:hover { box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .conquest-card.unconquered { border-left-color: var(--border); background: #FAFAFA; }
-        
-        .pending-badge {
-            display: inline-block;
-            background: #E8E8E8;
-            padding: 2px 6px;
-            border-radius: 2px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-light);
-        }
-        
-        .conquered-badge {
-            display: inline-block;
-            background: #D4EDDA;
-            padding: 2px 6px;
-            border-radius: 2px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #155724;
-        }
-        
+
+        /* ── TITLE BADGE ──────────────────────────────── */
         .title-badge {
             display: block;
-            background: linear-gradient(135deg, #1B4965 0%, #2E8B9E 100%);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 2px;
-            font-size: 12px;
+            background: var(--primary-dark);
+            color: #A8C4CC;
+            padding: 10px 14px;
+            font-size: 11px;
             font-weight: 600;
-            margin-top: 8px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 10px;
             text-align: center;
+            border: 1px solid var(--primary);
         }
-        
-        .camera-icon {
-            display: inline-block;
-            font-size: 16px;
-            margin-right: 8px;
+
+        /* ── VERSION ──────────────────────────────────── */
+        .version {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-light);
+            letter-spacing: 0.06em;
+            margin-top: 28px;
         }
-        
+
+        /* ── PHOTO MODAL ──────────────────────────────── */
         .photo-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
+            inset: 0;
+            background: rgba(15, 25, 35, 0.6);
             z-index: 2000;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
+            backdrop-filter: blur(2px);
         }
-        
+
         .photo-modal.active { display: flex; }
-        
-        .photo-modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
-        
+        .photo-modal-overlay { position: absolute; inset: 0; }
+
         .photo-modal-content {
-            background: white;
-            width: 100%;
-            max-width: 500px;
+            background: var(--white);
+            width: calc(100% - 32px);
+            max-width: 480px;
             max-height: 80vh;
-            padding: 16px;
+            padding: 18px;
             overflow-y: auto;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+            border-top: 3px solid var(--secondary);
             position: relative;
             z-index: 2001;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
-        
+
         .photo-modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
         }
-        
+
         .photo-modal-close {
             background: transparent;
             border: none;
             font-size: 24px;
             cursor: pointer;
-            color: var(--text);
+            color: var(--text-light);
             padding: 0;
+            font-weight: 300;
+            text-transform: none;
+            letter-spacing: 0;
         }
-        
+
+        .photo-modal-close:hover { color: var(--text); background: transparent; }
+
         .photo-modal-image {
             width: 100%;
             max-height: 400px;
             object-fit: contain;
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-light);
         }
+
+        /* ── SECTION DIVIDER ──────────────────────────── */
+        .section-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin: 20px 0 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        /* ── SCROLLBAR ────────────────────────────────── */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-light); }
+
+        /* ── LOCATION STATUS BAR ──────────────────────── */
+        .loc-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .loc-bar.unknown  { background: #2A2A2A; color: #888; }
+        .loc-bar.waiting  { background: #1A3A4F; color: #8AA0AA; }
+        .loc-bar.ok       { background: var(--success); color: #E6F0EB; }
+        .loc-bar.error    { background: var(--danger); color: #F0E0E0; }
+        .loc-bar.denied   { background: #5A3A00; color: #F0D080; }
+        .loc-bar.insecure { background: #5A3A00; color: #F0D080; }
+
+        .loc-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .loc-bar.unknown  .loc-dot { background: #666; }
+        .loc-bar.waiting  .loc-dot { background: #8AA0AA; animation: pulse 1.2s infinite; }
+        .loc-bar.ok       .loc-dot { background: #A8E6BC; animation: pulse 2.5s infinite; }
+        .loc-bar.error    .loc-dot { background: #F0A0A0; }
+        .loc-bar.denied   .loc-dot { background: #F0D080; }
+        .loc-bar.insecure .loc-dot { background: #F0D080; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .loc-retry {
+            margin-left: auto;
+            background: rgba(255,255,255,0.15);
+            color: inherit;
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 3px 10px;
+            font-size: 10px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .loc-retry:hover { background: rgba(255,255,255,0.25); }
+
+        /* ── LOCATION PERMISSION PROMPT ───────────────── */
+        .loc-prompt {
+            background: var(--parchment);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--secondary);
+            padding: 14px;
+            margin: 0 0 14px;
+            display: none;
+        }
+
+        .loc-prompt.visible { display: block; }
+        .loc-prompt-title {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-mid);
+            margin-bottom: 6px;
+        }
+
+        .loc-prompt p { font-size: 13px; color: var(--text-mid); line-height: 1.6; margin-bottom: 12px; }
+
+        .loc-prompt-denied {
+            background: #FBF0D8;
+            border-left-color: #B89040;
+            display: none;
+        }
+
+        .loc-prompt-denied.visible { display: block; }
     </style>
 </head>
 <body>
-    <div id="app">
-        <!-- Welcome Screen -->
-        <div id="welcomeScreen" class="screen active center">
-            <div class="header"></div>
-            <div class="content" style="display: flex; flex-direction: column; justify-content: space-between; padding: 0;">
-                <div class="welcome-hero">
-                    <div class="welcome-title">TerritoCat</div>
-                    <div class="welcome-subtitle">Descobreix el patrimoni històric de Catalunya</div>
-                    <div style="font-size: 48px; margin: 20px 0; opacity: 0.3;">▲</div>
-                </div>
-                <div style="padding: 16px; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px;">
-                    <button onclick="goToNewUser()" style="padding: 14px; font-size: 14px;">Crear compte nou</button>
-                    <button onclick="goToExistingUser()" class="secondary" style="padding: 14px; font-size: 14px;">Accedir amb codi</button>
-                </div>
-                <div class="version">TerritoCat v1.0 - juny 2025</div>
-            </div>
+<div id="app">
+
+    <!-- ══════════════════════════════════════ WELCOME -->
+    <div id="welcomeScreen" class="screen active">
+        <div class="welcome-hero">
+            <div class="welcome-wordmark">Territo<span>Cat</span></div>
+            <div class="welcome-tagline">Patrimoni Històric de Catalunya</div>
+            <div class="welcome-divider"></div>
         </div>
 
-        <!-- New User Screen -->
-        <div id="newUserScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="backScreen()">Enrere</button>
-                <div class="header-title">Nou compte</div>
-                <div class="header-right"></div>
+        <div class="content" style="display: flex; flex-direction: column; justify-content: space-between; padding-top: 28px;">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="info-box" style="margin-bottom: 16px;">
+                    Explora els punts d'interès patrimonialment rellevants de Catalunya. Conquesta comarques, acumula punts i ascendeix al rànquing.
+                </div>
+                <button onclick="goToNewUser()" style="padding: 14px;">Crear compte nou</button>
+                <button onclick="goToExistingUser()" class="secondary" style="padding: 14px;">Accedir amb codi</button>
             </div>
-            <div class="content">
-                <h2>Crea el teu compte</h2>
-                <div class="info-box">Necessites un nom per começar. Es generarà un codi únic per accedir.</div>
-                
-                <label style="font-size: 12px; font-weight: 600; color: var(--text-light);">El teu nom</label>
-                <input type="text" id="userName" placeholder="Escriu el teu nom" />
-                
-                <label style="font-size: 12px; font-weight: 600; color: var(--text-light); margin-top: 16px;">El teu identificador (no el comparteixis)</label>
-                <div class="input-row">
-                    <input type="text" id="generatedCode" readonly style="background: var(--light);" />
-                    <button class="copy-btn" onclick="copyCode()">Copiar</button>
-                </div>
-                
-                <div style="margin-top: 20px; margin-bottom: 12px;">
-                    <h3>Consentiment de fotografies</h3>
-                    <div class="info-box">Les fotos que facis s'utilitzaran per enriquir el patrimoni visual de Catalunya i altres usuaris podran veure-les.</div>
-                </div>
-                
+            <div class="version">TerritoCat · v1.0 · juny 2025</div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ NEW USER -->
+    <div id="newUserScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="backScreen()">← Enrere</button>
+            <div class="header-title">Nou compte</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="content">
+            <h2>Crea el teu compte</h2>
+            <div class="info-box">Necessites un nom per começar. Es generarà un codi únic per accedir des de qualsevol dispositiu.</div>
+
+            <label class="field-label">El teu nom</label>
+            <input type="text" id="userName" placeholder="Escriu el teu nom" />
+
+            <label class="field-label" style="margin-top: 18px;">Identificador d'accés (no el comparteixis)</label>
+            <div class="input-row">
+                <input type="text" id="generatedCode" readonly style="background: var(--parchment); font-family: monospace; letter-spacing: 2px;" />
+                <button class="copy-btn" onclick="copyCode()">Copiar</button>
+            </div>
+
+            <div style="margin-top: 22px;">
+                <div class="section-label">Consentiment de fotografies</div>
+                <div class="info-box">Les fotos que facis s'empraran per enriquir el patrimoni visual de Catalunya i podran ser vistes per altres usuaris.</div>
+
                 <div class="radio-group">
-                    <label><input type="radio" name="acceptance" value="yes" /> Sí, acepto compartir fotos</label>
-                    <label><input type="radio" name="acceptance" value="no" checked /> No, preferisc no participar</label>
+                    <label><input type="radio" name="acceptance" value="yes" /> Sí, accepto compartir les fotografies</label>
+                    <label><input type="radio" name="acceptance" value="no" checked /> No, prefereixo no participar-hi</label>
                 </div>
-                
-                <div id="errorMsg" class="error-msg"></div>
-                
-                <button onclick="createUser()" style="width: 100%; margin-top: 24px; padding: 14px;">Crear compte</button>
             </div>
-        </div>
 
-        <!-- Existing User Screen -->
-        <div id="existingUserScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="backScreen()">Enrere</button>
-                <div class="header-title">Accedir</div>
-                <div class="header-right"></div>
-            </div>
-            <div class="content" style="display: flex; flex-direction: column; justify-content: center;">
-                <h2>Accedeix al teu compte</h2>
-                <div class="info-box">Introdueix el codi que vas rebre quan vas crear el compte.</div>
-                <label style="font-size: 12px; font-weight: 600; color: var(--text-light);">Codi d'accés</label>
-                <input type="text" id="existingCode" placeholder="XXXX-XXXX-XXXX" style="letter-spacing: 2px;" />
-                <div id="existingErrorMsg" class="error-msg"></div>
-                <button onclick="loginUser()" style="width: 100%; margin-top: 24px; padding: 14px;">Accedir</button>
-            </div>
-        </div>
-
-        <!-- Game Screen -->
-        <div id="gameScreen" class="screen">
-            <div class="header">
-                <div style="width: 30px;"></div>
-                <div class="header-title">TerritoCat</div>
-                <button class="header-back" style="padding: 0; width: auto;" onclick="goToSettings()">⚙</button>
-            </div>
-            <div class="content" style="padding-bottom: 70px;">
-                <div class="stats-row">
-                    <div class="stat-box">
-                        <div class="stat-value" id="comarcasCount">0</div>
-                        <div class="stat-label">Comarques</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value" id="puntsCount">0</div>
-                        <div class="stat-label">Punts</div>
-                    </div>
-                </div>
-                
-                <div class="card" style="background: var(--light); border: none; box-shadow: none;">
-                    <h3>Descobreix Catalunya</h3>
-                    <p style="font-size: 13px; color: var(--text-light); margin: 8px 0; line-height: 1.6;">
-                        Visita els punts històrics del mapa. Quan estiguis a prop, captura una foto i conquereix el punt. Completa els 5 punts d'una comarca per marcar-la com a conquerida.
-                    </p>
-                </div>
-                
-                <button onclick="goToMap()" style="width: 100%; padding: 14px; margin-top: 16px; margin-bottom: 8px;">Obrir Mapa</button>
-                <button onclick="goToCollection()" class="secondary" style="width: 100%; padding: 14px; margin-bottom: 8px;">Veure Col·lecció</button>
-                <button onclick="goToRanking()" class="secondary" style="width: 100%; padding: 14px;">Veure Rànquing</button>
-            </div>
-            <div class="tab-bar">
-                <button class="tab-btn active" onclick="switchTab('game')">Joc</button>
-                <button class="tab-btn" onclick="switchTab('collection')">Col·lecció</button>
-                <button class="tab-btn" onclick="switchTab('ranking')">Rànquing</button>
-            </div>
-        </div>
-
-        <!-- Map Screen -->
-        <div id="mapScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="switchTab('game')">Joc</button>
-                <div class="header-title">Mapa</div>
-                <div class="header-right" style="cursor: pointer;" onclick="openComarcaSearch()">▼</div>
-            </div>
-            <div id="map" class="map-container"></div>
-            <button class="compass-btn" onclick="recenterMap()">📍</button>
-        </div>
-
-        <!-- Collection Screen -->
-        <div id="collectionScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="switchTab('game')">Joc</button>
-                <div class="header-title">Col·lecció</div>
-                <div class="header-right"></div>
-            </div>
-            <div class="content" style="padding-bottom: 70px;">
-                <div class="stats-row">
-                    <div class="stat-box">
-                        <div class="stat-value" id="collComarcas">0</div>
-                        <div class="stat-label">Conquerides</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value" id="collPunts">0</div>
-                        <div class="stat-label">Punts</div>
-                    </div>
-                </div>
-                <div id="comarcasList"></div>
-            </div>
-        </div>
-
-        <!-- Comarca Detail Screen -->
-        <div id="comarcaDetailScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="backToCollection()">Enrere</button>
-                <div class="header-title" id="comarcaDetailTitle">Comarca</div>
-                <div class="header-right"></div>
-            </div>
-            <div class="content" style="padding-bottom: 70px;">
-                <div id="puntsList"></div>
-            </div>
-        </div>
-
-        <!-- Ranking Screen -->
-        <div id="rankingScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="switchTab('game')">Joc</button>
-                <div class="header-title">Rànquing</div>
-                <div class="header-right"></div>
-            </div>
-            <div class="content" style="padding-bottom: 70px;">
-                <div id="rankingList"></div>
-                <div id="myRanking" style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);"></div>
-            </div>
-        </div>
-
-        <!-- Settings Screen -->
-        <div id="settingsScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="backToSettings()">Enrere</button>
-                <div class="header-title">Configuració</div>
-                <div class="header-right"></div>
-            </div>
-            <div class="content">
-                <h3 style="margin-top: 0;">Informació</h3>
-                <div class="list-item" onclick="goToAbout()" style="cursor: pointer;">
-                    <span>Sobre TerritoCat</span>
-                    <span style="color: var(--text-light);">›</span>
-                </div>
-                <div class="list-item" onclick="goToLegal()" style="cursor: pointer;">
-                    <span>Privacitat i dades</span>
-                    <span style="color: var(--text-light);">›</span>
-                </div>
-                <div class="list-item" onclick="goToInstructions()" style="cursor: pointer;">
-                    <span>Com funciona</span>
-                    <span style="color: var(--text-light);">›</span>
-                </div>
-                <div class="list-item" onclick="goToIdentifier()" style="cursor: pointer;">
-                    <span>El meu codi d'accés</span>
-                    <span style="color: var(--text-light);">›</span>
-                </div>
-                
-                <h3 style="margin-top: 24px;">Compte</h3>
-                <div class="list-item danger" onclick="confirmLogout()" style="cursor: pointer;">
-                    <span>Tancar sessió</span>
-                    <span style="color: #C41E3A;">›</span>
-                </div>
-                
-                <div class="version">TerritoCat v1.0 - juny 2025</div>
-            </div>
-        </div>
-
-        <!-- About Screen -->
-        <div id="aboutScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="backToSettings()">Enrere</button>
-                <div class="header-title">Sobre TerritoCat</div>
-                <div class="header-right"></div>
-            </div>
-            <div class="content">
-                <h3>Qui som</h3>
-                <p style="font-size: 13px; line-height: 1.6;">Sóc Àlex Fernández Rascón, estudiant d'Enginyeria Informàtica a la Universitat Autònoma de Barcelona. Aquest projecte, TerritoCat, és el meu Treball de Fi de Grau (TFG) desenvolupat conjuntament amb el Centre de Visió per Computador (CVC).</p>
-                <h3 style="margin-top: 20px;">Objectiu</h3>
-                <p style="font-size: 13px; line-height: 1.6;">Crear una aplicació interactiva per redescobrir el patrimoni històric de Catalunya mitjançant la gamificació, permetent als usuaris conquerir punts històrics i comarques amb la seva ubicació i fotografies.</p>
-            </div>
-        </div>
-
-        <!-- Legal Screen -->
-        <div id="legalScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="backToSettings()">Enrere</button>
-                <div class="header-title">Privacitat i dades</div>
-                <div class="header-right"></div>
-            </div>
-            <div class="content">
-                <h3>Ubicació</h3>
-                <p style="font-size: 13px; line-height: 1.6;">S'utilitza exclusivament per mostrar punts històrics propers i oferir una experiència interactiva basada en el territori.</p>
-                <h3 style="margin-top: 16px;">Dades personals</h3>
-                <p style="font-size: 13px; line-height: 1.6;">No es comparteixen amb tercers i es mantenen segures dins del sistema.</p>
-                <h3 style="margin-top: 16px;">Fotografies</h3>
-                <p style="font-size: 13px; line-height: 1.6;">S'utilitzen per enriquir la xarxa visual de patrimoni de Catalunya. Els permisos sempre són voluntaris i pots desactivar-los en qualsevol moment.</p>
-            </div>
-        </div>
-
-        <!-- Instructions Screen -->
-        <div id="instructionsScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="backToSettings()">Enrere</button>
-                <div class="header-title">Com funciona</div>
-                <div class="header-right"></div>
-            </div>
-            <div class="content">
-                <h3>Exploració</h3>
-                <p style="font-size: 13px; line-height: 1.6;">Explora Catalunya visitant punts històrics del mapa. Els punts es mostren amb colors: gris (lluny), blau (a prop), verd (conquerit).</p>
-                <h3 style="margin-top: 16px;">Conquesta</h3>
-                <p style="font-size: 13px; line-height: 1.6;">Quando estiguis a menys de 25 metres d'un punt, podràs fer una fotografia i conquerir-lo.</p>
-                <h3 style="margin-top: 16px;">Col·lecció</h3>
-                <p style="font-size: 13px; line-height: 1.6;">Consulta la teva col·lecció per veure el teu avenç. Conquereix tots els punts d'una comarca per marcar-la com a completa.</p>
-                <h3 style="margin-top: 16px;">Rànquing</h3>
-                <p style="font-size: 13px; line-height: 1.6;">Competeix amb altres exploradors per aconseguir la millor posició. Més comarques i punts = més posició!</p>
-            </div>
-        </div>
-
-        <!-- Identifier Screen -->
-        <div id="identifierScreen" class="screen">
-            <div class="header">
-                <button class="header-back" onclick="backToSettings()">Enrere</button>
-                <div class="header-title">Codi d'accés</div>
-                <div class="header-right"></div>
-            </div>
-            <div class="content" style="display: flex; flex-direction: column; justify-content: center;">
-                <p style="font-size: 13px; color: var(--text-light); margin-bottom: 16px;">Usa aquest codi per accedir des d'altres dispositius. No el comparteixis!</p>
-                <div style="font-size: 18px; font-weight: 700; letter-spacing: 1px; margin: 24px 0; padding: 16px; background: var(--light); border: 1px solid var(--border); text-align: center;" id="displayCode">XXXX-XXXX-XXXX</div>
-                <button onclick="copyDisplayCode()" style="width: 100%; padding: 12px;">Copiar codi</button>
-            </div>
+            <div id="errorMsg" class="error-msg"></div>
+            <button onclick="createUser()" style="width: 100%; margin-top: 24px; padding: 14px;">Crear compte</button>
         </div>
     </div>
 
-    <!-- Modal for point details -->
-    <div id="pointModal" class="modal">
-        <div class="modal-overlay" onclick="closePointModal()"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="pointModalTitle" style="margin: 0;">Punt</h3>
-                <button class="modal-close" onclick="closePointModal()">×</button>
+    <!-- ══════════════════════════════════════ EXISTING USER -->
+    <div id="existingUserScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="backScreen()">← Enrere</button>
+            <div class="header-title">Accedir</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="content" style="display: flex; flex-direction: column; justify-content: center;">
+            <h2>Accedeix al teu compte</h2>
+            <div class="info-box">Introdueix el codi que vas rebre quan vas crear el compte.</div>
+            <label class="field-label">Codi d'accés</label>
+            <input type="text" id="existingCode" placeholder="XXXX-XXXX-XXXX" style="letter-spacing: 2px; font-family: monospace;" />
+            <div id="existingErrorMsg" class="error-msg"></div>
+            <button onclick="loginUser()" style="width: 100%; margin-top: 24px; padding: 14px;">Accedir</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ GAME -->
+    <div id="gameScreen" class="screen">
+        <div class="header">
+            <div style="width: 60px;"></div>
+            <div class="header-title">TerritoCat</div>
+            <button class="header-back" style="padding: 0; width: auto; font-size: 16px;" onclick="goToSettings()">&#9881;</button>
+        </div>
+        <div class="content" style="padding-bottom: 74px;">
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-value" id="comarcasCount">0</div>
+                    <div class="stat-label">Comarques</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="puntsCount">0</div>
+                    <div class="stat-label">Punts</div>
+                </div>
             </div>
-            <p id="pointModalDesc" style="font-size: 13px; color: var(--text-light); margin: 0 0 12px 0;"></p>
-            
-            <div id="pointModalHistoricPhotos"></div>
-            <div id="pointModalUserPhotos"></div>
-            <div id="pointModalMyPhoto"></div>
-            <div id="pointModalStatus"></div>
-            <div id="pointModalAction"></div>
-        </div>
-    </div>
 
-    <!-- Modal for full image -->
-    <div id="imageModal" class="modal" onclick="closeImageModal()">
-        <div class="modal-overlay"></div>
-        <div class="modal-content" style="padding: 0; max-height: 100vh;">
-            <img id="fullImage" style="width: 100%; height: auto;" />
-        </div>
-    </div>
-
-    <!-- Camera input -->
-    <input type="file" id="cameraInput" class="camera-input" accept="image/*" capture="environment" onchange="handlePhotoCapture(event)" />
-
-    <!-- Photo Detail Modal -->
-    <div id="photoDetailModal" class="photo-modal">
-        <div class="photo-modal-overlay" onclick="closePhotoDetailModal()"></div>
-        <div class="photo-modal-content">
-            <div class="photo-modal-header">
-                <h3 id="photoDetailTitle" style="margin: 0;">Fotografia</h3>
-                <button class="photo-modal-close" onclick="closePhotoDetailModal()">×</button>
+            <!-- Location permission prompts -->
+            <div class="loc-prompt" id="locPromptAsk">
+                <div class="loc-prompt-title">Ubicació necessària</div>
+                <p>Per descobrir punts propers i conquerir-los, l'aplicació necessita accés a la teva ubicació.</p>
+                <button onclick="requestLocation()" style="width:100%; padding: 12px;">Permetre la ubicació</button>
             </div>
-            <img id="photoDetailImage" class="photo-modal-image" />
+            <div class="loc-prompt loc-prompt-denied" id="locPromptDenied">
+                <div class="loc-prompt-title" style="color: #7A5010;">Ubicació denegada</div>
+                <p>Has denegat el permís d'ubicació. Ves a la <strong>configuració del navegador</strong> &rarr; Permisos del lloc web &rarr; Ubicació i permet l'accés. Després recarrega l'app.</p>
+            </div>
+            <div class="loc-prompt" id="locPromptHttps" style="border-left-color: #B89040; background: #FBF0D8; display:none;">
+                <div class="loc-prompt-title" style="color: #7A5010;">Connexió no segura (HTTP)</div>
+                <p>Els navegadors mòbils bloquegen la geolocalització en pàgines HTTP. Serveix l'app per <strong>HTTPS</strong> perquè la ubicació funcioni.</p>
+            </div>
+
+            <div class="card">
+                <h3>Com jugar</h3>
+                <p style="font-size: 13px; color: var(--text-mid); line-height: 1.7;">
+                    Visita els punts del mapa. Quan siguis a menys de 25 metres, fes una foto per conquerir-lo. Completa els cinc punts d'una comarca per marcar-la com a conquerida.
+                </p>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
+                <button onclick="goToMap()" style="padding: 14px;">Obrir mapa</button>
+                <button onclick="goToCollection()" class="secondary" style="padding: 14px;">Veure col·lecció</button>
+                <button onclick="goToRanking()" class="secondary" style="padding: 14px;">Veure rànquing</button>
+            </div>
+        </div>
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('game', event)">Inici</button>
+            <button class="tab-btn" onclick="switchTab('collection', event)">Col·lecció</button>
+            <button class="tab-btn" onclick="switchTab('ranking', event)">Rànquing</button>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <script>
-        const API_BASE = 'http://158.109.8.116:8501';
-        
-        let state = {
-            userCode: localStorage.getItem('userCode') || null,
-            userName: localStorage.getItem('userName') || null,
-            currentScreen: null,
-            currentPosition: null,
-            map: null,
-            mapMarkers: [],
-            conquests: [],
-            allPunts: [],
-            currentComarca: null,
-            selectedPoint: null,
-            captureMode: false,
-            photoBase64: null
-        };
-        
-        function initApp() {
-            if (state.userCode) {
+    <!-- ══════════════════════════════════════ MAP -->
+    <div id="mapScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="switchTab('game', {target: document.querySelector('.tab-btn')})">← Inici</button>
+            <div class="header-title">Mapa</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="loc-bar unknown" id="locBar">
+            <div class="loc-dot"></div>
+            <span id="locBarText">Ubicació desconeguda</span>
+            <button class="loc-retry" id="locRetryBtn" onclick="requestLocation()" style="display:none;">Reintentar</button>
+        </div>
+        <div id="map" class="map-container"></div>
+        <button class="compass-btn" onclick="recenterMap()">&#8982;</button>
+    </div>
+
+    <!-- ══════════════════════════════════════ COLLECTION -->
+    <div id="collectionScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="switchTab('game', {target: document.querySelector('.tab-btn')})">← Inici</button>
+            <div class="header-title">Col·lecció</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="content" style="padding-bottom: 74px;">
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-value" id="collComarcas">0</div>
+                    <div class="stat-label">Conquerides</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="collPunts">0</div>
+                    <div class="stat-label">Punts totals</div>
+                </div>
+            </div>
+            <div id="comarcasList"></div>
+        </div>
+        <div class="tab-bar">
+            <button class="tab-btn" onclick="switchTab('game', event)">Inici</button>
+            <button class="tab-btn active" onclick="switchTab('collection', event)">Col·lecció</button>
+            <button class="tab-btn" onclick="switchTab('ranking', event)">Rànquing</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ COMARCA DETAIL -->
+    <div id="comarcaDetailScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="backToCollection()">← Enrere</button>
+            <div class="header-title" id="comarcaDetailTitle">Comarca</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="content" style="padding-bottom: 74px;">
+            <div id="puntsList"></div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ RANKING -->
+    <div id="rankingScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="switchTab('game', {target: document.querySelector('.tab-btn')})">← Inici</button>
+            <div class="header-title">Rànquing</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="content" style="padding-bottom: 74px;">
+            <div id="rankingList"></div>
+            <div id="myRanking" style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-light);"></div>
+        </div>
+        <div class="tab-bar">
+            <button class="tab-btn" onclick="switchTab('game', event)">Inici</button>
+            <button class="tab-btn" onclick="switchTab('collection', event)">Col·lecció</button>
+            <button class="tab-btn active" onclick="switchTab('ranking', event)">Rànquing</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ SETTINGS -->
+    <div id="settingsScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="backToSettings()">← Enrere</button>
+            <div class="header-title">Configuració</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="content">
+            <div class="section-label">Informació</div>
+            <div class="list-item" onclick="goToAbout()">
+                <span>Sobre TerritoCat</span>
+                <span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span>
+            </div>
+            <div class="list-item" onclick="goToLegal()">
+                <span>Privacitat i dades</span>
+                <span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span>
+            </div>
+            <div class="list-item" onclick="goToInstructions()">
+                <span>Com funciona</span>
+                <span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span>
+            </div>
+            <div class="list-item" onclick="goToIdentifier()">
+                <span>El meu codi d'accés</span>
+                <span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span>
+            </div>
+
+            <div class="section-label">Compte</div>
+            <div class="list-item" onclick="confirmLogout()" style="color: var(--danger);">
+                <span>Tancar sessió</span>
+                <span style="font-size: 18px; line-height: 1;">›</span>
+            </div>
+
+            <div class="version">TerritoCat · v1.0 · juny 2025</div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ ABOUT -->
+    <div id="aboutScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="backToSettings()">← Enrere</button>
+            <div class="header-title">Sobre TerritoCat</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="content">
+            <div class="section-label">Qui som</div>
+            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Sóc Àlex Fernández Rascón, estudiant d'Enginyeria Informàtica a la Universitat Autònoma de Barcelona. TerritoCat és el meu Treball de Fi de Grau (TFG), desenvolupat conjuntament amb el Centre de Visió per Computador (CVC).</p>
+
+            <div class="section-label" style="margin-top: 22px;">Objectiu</div>
+            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Crear una aplicació interactiva per redescobrir el patrimoni cultural i arquitectònic de Catalunya, a través de la gamificació basada en ubicació i fotografia.</p>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ LEGAL -->
+    <div id="legalScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="backToSettings()">← Enrere</button>
+            <div class="header-title">Privacitat i dades</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="content">
+            <div class="section-label">Ubicació</div>
+            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">S'utilitza exclusivament per mostrar punts d'interès propers i oferir l'experiència basada en territori.</p>
+
+            <div class="section-label" style="margin-top: 22px;">Dades personals</div>
+            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">No es comparteixen amb tercers i es mantenen de forma segura dins el sistema.</p>
+
+            <div class="section-label" style="margin-top: 22px;">Fotografies</div>
+            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Les fotos s'utilitzen per enriquir la xarxa visual del patrimoni català. La participació és sempre voluntària i pots revocar-ne el consentiment en qualsevol moment des de la configuració.</p>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ INSTRUCTIONS -->
+    <div id="instructionsScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="backToSettings()">← Enrere</button>
+            <div class="header-title">Com funciona</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="content">
+            <div class="section-label">Exploració</div>
+            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Explora Catalunya visitant els punts marcats al mapa. Els colors indiquen l'estat: gris (llunyà), blau (proper), verd (conquerit).</p>
+
+            <div class="section-label" style="margin-top: 22px;">Conquesta</div>
+            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Quan estiguis a menys de 25 metres d'un punt, podràs fer-hi una fotografia i conquerir-lo. La geolocalització ha d'estar activada.</p>
+
+            <div class="section-label" style="margin-top: 22px;">Col·lecció</div>
+            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Consulta el teu progrés per comarca. Cal conquerir els cinc punts d'una comarca per marcar-la com a completa.</p>
+
+            <div class="section-label" style="margin-top: 22px;">Rànquing</div>
+            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Competeix amb altres exploradors. Cada comarca i cada punt sumen posicions i t'atorguen un títol basat en la llegenda catalana.</p>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ IDENTIFIER -->
+    <div id="identifierScreen" class="screen">
+        <div class="header">
+            <button class="header-back" onclick="backToSettings()">← Enrere</button>
+            <div class="header-title">Codi d'accés</div>
+            <div class="header-right"></div>
+        </div>
+        <div class="content" style="display: flex; flex-direction: column; justify-content: center;">
+            <p style="font-size: 13px; color: var(--text-mid); margin-bottom: 16px; line-height: 1.6;">Utilitza aquest codi per accedir des d'altres dispositius. Guarda'l en un lloc segur i no el comparteixis.</p>
+            <div style="font-family: monospace; font-size: 20px; font-weight: 700; letter-spacing: 3px; padding: 20px; background: var(--primary-dark); color: var(--white); text-align: center; border: 1px solid var(--primary); margin: 16px 0;" id="displayCode">XXXX-XXXX-XXXX</div>
+            <button onclick="copyDisplayCode()" style="width: 100%; padding: 13px;">Copiar codi</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════ POINT MODAL -->
+<div id="pointModal" class="modal">
+    <div class="modal-overlay" onclick="closePointModal()"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="pointModalTitle">Punt</h3>
+            <button class="modal-close" onclick="closePointModal()">&#215;</button>
+        </div>
+        <p id="pointModalDesc" style="font-size: 13px; color: var(--text-mid); margin: 0 0 10px; line-height: 1.6;"></p>
+
+        <div id="pointModalHistoricPhotos"></div>
+        <div id="pointModalUserPhotos"></div>
+        <div id="pointModalMyPhoto"></div>
+        <div id="pointModalStatus"></div>
+        <div id="pointModalAction"></div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════ IMAGE MODAL -->
+<div id="imageModal" class="modal" onclick="closeImageModal()">
+    <div class="modal-overlay"></div>
+    <div class="modal-content" style="padding: 0; max-height: 100vh;">
+        <img id="fullImage" style="width: 100%; height: auto;" />
+    </div>
+</div>
+
+<!-- Camera input -->
+<input type="file" id="cameraInput" class="camera-input" accept="image/*" capture="environment" onchange="handlePhotoCapture(event)" />
+
+<!-- ══════════════════════════════════════ PHOTO DETAIL MODAL -->
+<div id="photoDetailModal" class="photo-modal">
+    <div class="photo-modal-overlay" onclick="closePhotoDetailModal()"></div>
+    <div class="photo-modal-content">
+        <div class="photo-modal-header">
+            <h3 id="photoDetailTitle" style="font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--primary-dark);">Fotografia</h3>
+            <button class="photo-modal-close" onclick="closePhotoDetailModal()">&#215;</button>
+        </div>
+        <img id="photoDetailImage" class="photo-modal-image" />
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+    const API_BASE = 'http://158.109.8.116:8501';
+
+    let state = {
+        userCode: localStorage.getItem('userCode') || null,
+        userName: localStorage.getItem('userName') || null,
+        currentScreen: null,
+        currentPosition: null,
+        map: null,
+        mapMarkers: [],
+        conquests: [],
+        allPunts: [],
+        currentComarca: null,
+        selectedPoint: null,
+        captureMode: false,
+        photoBase64: null
+    };
+
+    function initApp() {
+        if (state.userCode) {
+            showScreen('gameScreen');
+            updateStats();
+            // Check geo support immediately so the prompt is shown
+            if (!navigator.geolocation) {
+                geoState = 'error';
+            } else if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                geoState = 'insecure';
+            } else {
+                geoState = 'unknown';
+            }
+            updateGameScreenPrompts();
+        } else {
+            showScreen('welcomeScreen');
+        }
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        state.currentScreen = screenId;
+    }
+
+    function backScreen() {
+        if (state.currentScreen === 'newUserScreen' || state.currentScreen === 'existingUserScreen') {
+            showScreen('welcomeScreen');
+        }
+    }
+
+    // Navigation
+    function goToNewUser() { showScreen('newUserScreen'); generateCode(); }
+    function goToExistingUser() { showScreen('existingUserScreen'); }
+
+    function goToMap() {
+        showScreen('mapScreen');
+        setTimeout(() => {
+            if (!state.map) initMap();
+            else {
+                // Map already exists — refresh data; also retry location if not active
+                loadMapData();
+                if (geoState === 'unknown' || geoState === 'error') requestLocation();
+            }
+        }, 100);
+    }
+
+    function goToCollection() {
+        showScreen('collectionScreen');
+        loadComarques();
+    }
+
+    function goToRanking() {
+        showScreen('rankingScreen');
+        loadRanking();
+    }
+
+    function goToSettings() { showScreen('settingsScreen'); }
+    function backToSettings() { showScreen('settingsScreen'); }
+    function goToAbout() { showScreen('aboutScreen'); }
+    function goToLegal() { showScreen('legalScreen'); }
+    function goToInstructions() { showScreen('instructionsScreen'); }
+    function goToIdentifier() {
+        document.getElementById('displayCode').textContent = state.userCode;
+        showScreen('identifierScreen');
+    }
+    function backToCollection() { showScreen('collectionScreen'); }
+
+    function switchTab(tab, e) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        if (e && e.target) e.target.classList.add('active');
+        if (tab === 'game') showScreen('gameScreen');
+        else if (tab === 'collection') goToCollection();
+        else if (tab === 'ranking') goToRanking();
+    }
+
+    // Auth
+    function generateCode() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const seg = () => Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+        document.getElementById('generatedCode').value = `${seg()}-${seg()}-${seg()}`;
+    }
+
+    function copyCode() {
+        navigator.clipboard.writeText(document.getElementById('generatedCode').value);
+        alert('Codi copiat!');
+    }
+
+    function copyDisplayCode() {
+        navigator.clipboard.writeText(state.userCode);
+        alert('Codi copiat!');
+    }
+
+    async function createUser() {
+        const name = document.getElementById('userName').value.trim();
+        const code = document.getElementById('generatedCode').value;
+        const accepted = document.querySelector('input[name="acceptance"]:checked').value === 'yes';
+
+        document.getElementById('errorMsg').textContent = '';
+        if (!name) { document.getElementById('errorMsg').textContent = 'Introdueix un nom.'; return; }
+        if (!accepted) { document.getElementById('errorMsg').textContent = 'Has d\'acceptar les condicions per participar.'; return; }
+
+        try {
+            const res = await fetch(`${API_BASE}/nou_usuari`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({nom: name, codi_usuari: code})
+            });
+            if (res.ok) {
+                localStorage.setItem('userCode', code);
+                localStorage.setItem('userName', name);
+                state.userCode = code;
+                state.userName = name;
                 showScreen('gameScreen');
                 updateStats();
+                updateGameScreenPrompts();
             } else {
-                showScreen('welcomeScreen');
+                document.getElementById('errorMsg').textContent = 'Error en crear el compte.';
             }
+        } catch (e) {
+            document.getElementById('errorMsg').textContent = 'Error de connexió.';
         }
-        
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            state.currentScreen = screenId;
+    }
+
+    async function loginUser() {
+        const code = document.getElementById('existingCode').value.trim();
+        document.getElementById('existingErrorMsg').textContent = '';
+
+        if (!code.match(/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) {
+            document.getElementById('existingErrorMsg').textContent = 'Format incorrecte (XXXX-XXXX-XXXX).';
+            return;
         }
-        
-        function backScreen() {
-            if (state.currentScreen === 'newUserScreen' || state.currentScreen === 'existingUserScreen') {
-                showScreen('welcomeScreen');
+
+        try {
+            const res = await fetch(`${API_BASE}/existeix_usuari/${code}`);
+            const data = await res.json();
+            if (data.existeix) {
+                localStorage.setItem('userCode', code);
+                state.userCode = code;
+                showScreen('gameScreen');
+                updateStats();
+                updateGameScreenPrompts();
+            } else {
+                document.getElementById('existingErrorMsg').textContent = 'Codi no trobat.';
             }
+        } catch (e) {
+            document.getElementById('existingErrorMsg').textContent = 'Error de connexió.';
         }
-        
-        // Navigation
-        function goToNewUser() { showScreen('newUserScreen'); generateCode(); }
-        function goToExistingUser() { showScreen('existingUserScreen'); }
-        function goToMap() {
-            showScreen('mapScreen');
-            setTimeout(() => {
-                if (!state.map) initMap();
-                loadMapData();
-            }, 100);
+    }
+
+    function confirmLogout() {
+        if (confirm('Vols tancar la sessió?')) {
+            localStorage.clear();
+            state.userCode = null;
+            state.userName = null;
+            showScreen('welcomeScreen');
         }
-        function goToCollection() {
-            showScreen('collectionScreen');
-            loadComarques();
+    }
+
+    // ─── GEOLOCATION ─────────────────────────────────────────────────────
+    const GEO_OPTIONS = {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 5000
+    };
+
+    let geoWatchId = null;
+    let geoState = 'unknown'; // unknown | waiting | ok | error | denied | insecure
+
+    function setLocBarState(s, text) {
+        geoState = s;
+        const bar  = document.getElementById('locBar');
+        const span = document.getElementById('locBarText');
+        const btn  = document.getElementById('locRetryBtn');
+        if (!bar) return;
+        bar.className = 'loc-bar ' + s;
+        span.textContent = text;
+        btn.style.display = (s === 'error' || s === 'denied') ? 'block' : 'none';
+    }
+
+    function updateGameScreenPrompts() {
+        const ask     = document.getElementById('locPromptAsk');
+        const denied  = document.getElementById('locPromptDenied');
+        const https   = document.getElementById('locPromptHttps');
+        if (!ask) return;
+        ask.classList.remove('visible');
+        denied.classList.remove('visible');
+        if (https) https.style.display = 'none';
+
+        if (geoState === 'insecure') {
+            if (https) https.style.display = 'block';
+        } else if (geoState === 'denied') {
+            denied.classList.add('visible');
+        } else if (geoState === 'unknown' || geoState === 'error') {
+            ask.classList.add('visible');
         }
-        function goToRanking() {
-            showScreen('rankingScreen');
-            loadRanking();
-        }
-        function goToSettings() { showScreen('settingsScreen'); }
-        function backToSettings() { showScreen('settingsScreen'); }
-        function goToAbout() { showScreen('aboutScreen'); }
-        function goToLegal() { showScreen('legalScreen'); }
-        function goToInstructions() { showScreen('instructionsScreen'); }
-        function goToIdentifier() {
-            document.getElementById('displayCode').textContent = state.userCode;
-            showScreen('identifierScreen');
-        }
-        function backToCollection() { showScreen('collectionScreen'); }
-        
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            if (tab === 'game') showScreen('gameScreen');
-            else if (tab === 'collection') goToCollection();
-            else if (tab === 'ranking') goToRanking();
-        }
-        
-        // Auth
-        function generateCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            const segment = () => Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-            document.getElementById('generatedCode').value = `${segment()}-${segment()}-${segment()}`;
-        }
-        
-        function copyCode() {
-            navigator.clipboard.writeText(document.getElementById('generatedCode').value);
-            alert('Codi copiat!');
-        }
-        
-        function copyDisplayCode() {
-            navigator.clipboard.writeText(state.userCode);
-            alert('Codi copiat!');
-        }
-        
-        async function createUser() {
-            const name = document.getElementById('userName').value.trim();
-            const code = document.getElementById('generatedCode').value;
-            const accepted = document.querySelector('input[name="acceptance"]:checked').value === 'yes';
-            
-            document.getElementById('errorMsg').textContent = '';
-            if (!name) {
-                document.getElementById('errorMsg').textContent = 'Introdueix un nom.';
-                return;
-            }
-            if (!accepted) {
-                document.getElementById('errorMsg').textContent = 'Has d\'acceptar les condicions.';
-                return;
-            }
-            
-            try {
-                const res = await fetch(`${API_BASE}/nou_usuari`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nom: name, codi_usuari: code })
-                });
-                
-                if (res.ok) {
-                    localStorage.setItem('userCode', code);
-                    localStorage.setItem('userName', name);
-                    state.userCode = code;
-                    state.userName = name;
-                    showScreen('gameScreen');
-                    updateStats();
-                } else {
-                    document.getElementById('errorMsg').textContent = 'Error creant l\'usuari.';
-                }
-            } catch (e) {
-                document.getElementById('errorMsg').textContent = 'Error de connexió.';
-            }
-        }
-        
-        async function loginUser() {
-            const code = document.getElementById('existingCode').value.trim();
-            document.getElementById('existingErrorMsg').textContent = '';
-            
-            if (!code.match(/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) {
-                document.getElementById('existingErrorMsg').textContent = 'Format incorrecte.';
-                return;
-            }
-            
-            try {
-                const res = await fetch(`${API_BASE}/existeix_usuari/${code}`);
-                const data = await res.json();
-                
-                if (data.existeix) {
-                    localStorage.setItem('userCode', code);
-                    state.userCode = code;
-                    showScreen('gameScreen');
-                    updateStats();
-                } else {
-                    document.getElementById('existingErrorMsg').textContent = 'Codi no existent.';
-                }
-            } catch (e) {
-                document.getElementById('existingErrorMsg').textContent = 'Error de connexió.';
-            }
-        }
-        
-        function confirmLogout() {
-            if (confirm('Tancar sessió?')) {
-                localStorage.clear();
-                state.userCode = null;
-                state.userName = null;
-                showScreen('welcomeScreen');
-            }
-        }
-        
-        // Map
-        function initMap() {
-            state.map = L.map('map').setView([41.9973, 2.8235], 10);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
-                subdomains: ['a', 'b', 'c', 'd'],
-                maxZoom: 19
-            }).addTo(state.map);
-            
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    state.currentPosition = [pos.coords.latitude, pos.coords.longitude];
-                    state.map.setView(state.currentPosition, 17);
-                });
-            }
-        }
-        
-        async function loadMapData() {
-            try {
-                const [punts, conquests] = await Promise.all([
-                    fetch(`${API_BASE}/punts`).then(r => r.json()),
-                    fetch(`${API_BASE}/conquestes_punts/${state.userCode}`).then(r => r.json())
-                ]);
-                
-                state.allPunts = punts;
-                state.conquests = conquests;
-                
-                state.mapMarkers.forEach(m => state.map.removeLayer(m));
-                state.mapMarkers = [];
-                
-                const DISTANCE_THRESHOLD = 0.0225; // ~2.5 km
-                
-                punts.forEach(punt => {
-                    const coords = punt.coordenades.coordinates;
-                    const lat = coords[1];
-                    const lng = coords[0];
-                    const isConquered = conquests.includes(punt.nom);
-                    
-                    let color = '#666';
-                    if (isConquered) {
-                        color = '#2D6A4F';
-                    } else if (state.currentPosition) {
-                        const dist = Math.hypot(lat - state.currentPosition[0], lng - state.currentPosition[1]);
-                        if (dist < DISTANCE_THRESHOLD) {
-                            color = '#2E8B9E';
-                        }
-                    }
-                    
-                    const marker = L.circleMarker([lat, lng], {
-                        radius: 6,
-                        fillColor: color,
-                        color: color,
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.8
-                    }).addTo(state.map);
-                    
-                    marker.on('click', () => showPointModal(punt, isConquered));
-                    state.mapMarkers.push(marker);
-                });
-            } catch (e) {
-                console.error('Error loading map data:', e);
-            }
-        }
-        
-        function recenterMap() {
-            if (state.currentPosition) {
+        // 'waiting' and 'ok' → no prompt shown
+    }
+
+    function handleLocationSuccess(pos) {
+        const prev = state.currentPosition;
+        state.currentPosition = [pos.coords.latitude, pos.coords.longitude];
+        setLocBarState('ok', 'Ubicació activa · ±' + Math.round(pos.coords.accuracy) + ' m');
+        updateGameScreenPrompts();
+
+        // Re-center map on first fix, or if we moved significantly
+        if (state.map) {
+            if (!prev) {
                 state.map.setView(state.currentPosition, 17);
+                loadMapData(); // refresh marker colours with real position
+            } else {
+                const moved = Math.hypot(
+                    state.currentPosition[0] - prev[0],
+                    state.currentPosition[1] - prev[1]
+                );
+                if (moved > 0.0001) loadMapData(); // ~11 m threshold
             }
         }
-        
-        function openComarcaSearch() {
-            alert('Funció de cerca (a implementar)');
+    }
+
+    function handleLocationError(err) {
+        // err.code: 1=PERMISSION_DENIED 2=UNAVAILABLE 3=TIMEOUT
+        if (err.code === 1) {
+            setLocBarState('denied', 'Permís denegat — revisa la configuració');
+        } else if (err.code === 2) {
+            setLocBarState('error', 'Senyal GPS no disponible — reintenta');
+        } else {
+            setLocBarState('error', 'Temps d\'espera esgotat — reintenta');
         }
-        
-        // Collection
-        async function loadComarques() {
-            try {
-                const comarques = await fetch(`${API_BASE}/comarques`).then(r => r.json());
-                const conquests = await fetch(`${API_BASE}/punts_conquerits_comarca/${state.userCode}`).then(r => r.json());
-                const resum = await fetch(`${API_BASE}/resum_conquestes/${state.userCode}`).then(r => r.json());
-                
-                document.getElementById('collComarcas').textContent = resum.comarques_conquerides || 0;
-                document.getElementById('collPunts').textContent = resum.punts_conquerits || 0;
-                
-                // Sort: conquered first (descending by count), then unconquered
-                const sorted = comarques.sort((a, b) => {
-                    const countA = conquests[a.nom] || 0;
-                    const countB = conquests[b.nom] || 0;
-                    const conqueredA = countA >= 5;
-                    const conqueredB = countB >= 5;
-                    
-                    if (conqueredA && !conqueredB) return -1;
-                    if (!conqueredA && conqueredB) return 1;
-                    if (countA !== countB) return countB - countA;
-                    return a.nom.localeCompare(b.nom);
-                });
-                
-                const html = sorted.map(c => {
-                    const count = conquests[c.nom] || 0;
-                    const conquered = count >= 5;
-                    return `
-                        <div class="list-item" onclick="openComarcaDetail('${c.nom}')" style="cursor: pointer; background: ${conquered ? '#D4EDDA' : 'white'};">
-                            <span style="font-weight: ${conquered ? '600' : '400'}">${c.nom}</span>
-                            <span style="color: var(--text-light); font-weight: 600;">${conquered ? 'Conquerida' : count + '/5'}</span>
-                        </div>
-                    `;
-                }).join('');
-                
-                document.getElementById('comarcasList').innerHTML = html;
-            } catch (e) {
-                console.error('Error loading comarques:', e);
-            }
+        updateGameScreenPrompts();
+    }
+
+    function requestLocation() {
+        if (!navigator.geolocation) {
+            setLocBarState('error', 'Geolocalització no disponible en aquest navegador');
+            updateGameScreenPrompts();
+            return;
         }
-        
-        async function openComarcaDetail(comarca) {
-            state.currentComarca = comarca;
-            document.getElementById('comarcaDetailTitle').textContent = comarca;
-            
-            try {
-                const [punts, conquests] = await Promise.all([
-                    fetch(`${API_BASE}/punts_comarca/${encodeURIComponent(comarca)}`).then(r => r.json()),
-                    fetch(`${API_BASE}/conquestes_punts/${state.userCode}`).then(r => r.json())
-                ]);
-                
-                // Sort: conquered first, then unconquered
-                const sorted = punts.sort((a, b) => {
-                    const conqueredA = conquests.includes(a.nom);
-                    const conqueredB = conquests.includes(b.nom);
-                    if (conqueredA && !conqueredB) return -1;
-                    if (!conqueredA && conqueredB) return 1;
-                    return a.nom.localeCompare(b.nom);
-                });
-                
-                const html = sorted.map(p => {
-                    const conquered = conquests.includes(p.nom);
-                    return `
-                        <div class="conquest-card ${conquered ? '' : 'unconquered'}" onclick="showPointDetailsModal('${p.nom}')">
-                            <div style="display: flex; justify-content: space-between; align-items: start;">
-                                <div style="flex: 1;">
-                                    <h3 style="margin: 0 0 4px 0; font-size: 14px;">
-                                        ${conquered ? '<span class="camera-icon">📸</span>' : ''}${p.nom}
-                                    </h3>
-                                    <p style="font-size: 12px; color: var(--text-light); margin: 0; line-height: 1.5;">${p.descripcio || ''}</p>
-                                </div>
-                                <div style="margin-left: 12px;">
-                                    ${conquered ? '<span class="conquered-badge">Conquerit</span>' : '<span class="pending-badge">Pendent</span>'}
-                                </div>
+
+        // Warn if HTTP (most mobile browsers block geo on non-secure origins)
+        if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            setLocBarState('insecure', 'Connexió HTTP — la ubicació pot estar bloquejada');
+            updateGameScreenPrompts();
+            // still attempt; some HTTP contexts (LAN testing) work
+        }
+
+        setLocBarState('waiting', 'Sol·licitant ubicació…');
+        updateGameScreenPrompts();
+
+        // Stop any existing watcher before starting a new one
+        if (geoWatchId !== null) {
+            navigator.geolocation.clearWatch(geoWatchId);
+            geoWatchId = null;
+        }
+
+        geoWatchId = navigator.geolocation.watchPosition(
+            handleLocationSuccess,
+            handleLocationError,
+            GEO_OPTIONS
+        );
+    }
+
+    // Map
+    function initMap() {
+        state.map = L.map('map', {zoomControl: false}).setView([41.9973, 2.8235], 10);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+            subdomains: ['a', 'b', 'c', 'd'],
+            maxZoom: 19
+        }).addTo(state.map);
+
+        // Start watching if geolocation is available
+        requestLocation();
+    }
+
+    async function loadMapData() {
+        try {
+            const [punts, conquests] = await Promise.all([
+                fetch(`${API_BASE}/punts`).then(r => r.json()),
+                fetch(`${API_BASE}/conquestes_punts/${state.userCode}`).then(r => r.json())
+            ]);
+
+            state.allPunts = punts;
+            state.conquests = conquests;
+
+            state.mapMarkers.forEach(m => state.map.removeLayer(m));
+            state.mapMarkers = [];
+
+            const DIST = 0.0225;
+
+            punts.forEach(punt => {
+                const [lng, lat] = punt.coordenades.coordinates;
+                const isConquered = conquests.includes(punt.nom);
+
+                let color = '#8A8070';
+                if (isConquered) {
+                    color = '#2A5C3F';
+                } else if (state.currentPosition) {
+                    const d = Math.hypot(lat - state.currentPosition[0], lng - state.currentPosition[1]);
+                    if (d < DIST) color = '#2A7A8C';
+                }
+
+                const marker = L.circleMarker([lat, lng], {
+                    radius: 6,
+                    fillColor: color,
+                    color: '#FAFAF8',
+                    weight: 1.5,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                }).addTo(state.map);
+
+                marker.on('click', () => showPointModal(punt, isConquered));
+                state.mapMarkers.push(marker);
+            });
+        } catch (e) {
+            console.error('Error loading map:', e);
+        }
+    }
+
+    function recenterMap() {
+        if (state.currentPosition) {
+            state.map.setView(state.currentPosition, 17);
+        } else {
+            requestLocation();
+        }
+    }
+
+    // Also call updateGameScreenPrompts after login transitions
+    async function createUser() {
+        try {
+            const [comarques, conquests, resum] = await Promise.all([
+                fetch(`${API_BASE}/comarques`).then(r => r.json()),
+                fetch(`${API_BASE}/punts_conquerits_comarca/${state.userCode}`).then(r => r.json()),
+                fetch(`${API_BASE}/resum_conquestes/${state.userCode}`).then(r => r.json())
+            ]);
+
+            document.getElementById('collComarcas').textContent = resum.comarques_conquerides || 0;
+            document.getElementById('collPunts').textContent = resum.punts_conquerits || 0;
+
+            const sorted = comarques.sort((a, b) => {
+                const cA = conquests[a.nom] || 0, cB = conquests[b.nom] || 0;
+                const qA = cA >= 5, qB = cB >= 5;
+                if (qA && !qB) return -1;
+                if (!qA && qB) return 1;
+                if (cA !== cB) return cB - cA;
+                return a.nom.localeCompare(b.nom);
+            });
+
+            document.getElementById('comarcasList').innerHTML = sorted.map(c => {
+                const count = conquests[c.nom] || 0;
+                const done = count >= 5;
+                return `
+                    <div class="list-item" onclick="openComarcaDetail('${c.nom}')"
+                         style="background: ${done ? '#E6F0EB' : 'var(--white)'}; border-left: 3px solid ${done ? 'var(--success)' : 'var(--border-light)'};">
+                        <span style="font-weight: ${done ? 600 : 400}; font-size: 13px;">${c.nom}</span>
+                        <span class="${done ? 'conquered-badge' : 'pending-badge'}">${done ? 'Conquerida' : count + ' / 5'}</span>
+                    </div>`;
+            }).join('');
+        } catch (e) {
+            console.error('Error loading comarques:', e);
+        }
+    }
+
+    async function openComarcaDetail(comarca) {
+        state.currentComarca = comarca;
+        document.getElementById('comarcaDetailTitle').textContent = comarca;
+
+        try {
+            const [punts, conquests] = await Promise.all([
+                fetch(`${API_BASE}/punts_comarca/${encodeURIComponent(comarca)}`).then(r => r.json()),
+                fetch(`${API_BASE}/conquestes_punts/${state.userCode}`).then(r => r.json())
+            ]);
+
+            const sorted = punts.sort((a, b) => {
+                const cA = conquests.includes(a.nom), cB = conquests.includes(b.nom);
+                if (cA && !cB) return -1;
+                if (!cA && cB) return 1;
+                return a.nom.localeCompare(b.nom);
+            });
+
+            document.getElementById('puntsList').innerHTML = sorted.map(p => {
+                const conquered = conquests.includes(p.nom);
+                return `
+                    <div class="conquest-card ${conquered ? '' : 'unconquered'}" onclick="showPointDetailsModal('${p.nom}')">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">${p.nom}</div>
+                                <div style="font-size: 12px; color: var(--text-mid); line-height: 1.5;">${p.descripcio || ''}</div>
+                            </div>
+                            <div style="flex-shrink: 0;">
+                                <span class="${conquered ? 'conquered-badge' : 'pending-badge'}">${conquered ? 'Conquerit' : 'Pendent'}</span>
                             </div>
                         </div>
-                    `;
-                }).join('');
-                
-                document.getElementById('puntsList').innerHTML = html;
-                showScreen('comarcaDetailScreen');
-            } catch (e) {
-                console.error('Error loading comarca detail:', e);
-            }
-        }
-        
-        // Ranking titles
-        const CATALAN_TITLES = [
-            { min: 90, title: 'Truita amb suc', emoji: '🥞', desc: 'A simple, beloved dish. Humble beginnings.' },
-            { min: 80, title: 'Caganer', emoji: '💩', desc: 'A quirky but essential figure. Low-tier trickster.' },
-            { min: 70, title: 'Patufet', emoji: '🌱', desc: 'Tiny in size, big in spirit.' },
-            { min: 60, title: 'Aitana Bonmatí', emoji: '🏃', desc: 'The GOAT' },
-            { min: 50, title: 'El Timbaler del Bruc', emoji: '🥁', desc: 'Uses psychological warfare and percussion!' },
-            { min: 40, title: 'La Mulassa', emoji: '🐴', desc: 'Majestic parade beast; large and sturdy.' },
-            { min: 30, title: 'La Rosa de Sant Jordi', emoji: '🐉', desc: 'Una floreta' },
-            { min: 20, title: 'El Comte Arnau', emoji: '👻', desc: 'Cursed eternal rider. Spectral power.' },
-            { min: 10, title: 'Santa Jordina', emoji: '⚔️', desc: 'Dragon-slayer, patron saint of valor.' },
-            { min: 0, title: 'Almogàver', emoji: '⚔️', desc: 'Ets llegendari/a!' },
+                    </div>`;
+            }).join('');
 
-        ];
-        
-        function getTitleByPercentile(position, totalPlayers) {
-            if (totalPlayers === 0) return CATALAN_TITLES[0];
-            const percentile = (position / totalPlayers) * 100;
-            for (let i = CATALAN_TITLES.length - 1; i >= 0; i--) {
-                if (percentile >= CATALAN_TITLES[i].min) {
-                    return CATALAN_TITLES[i];
-                }
-            }
-            return CATALAN_TITLES[0];
+            showScreen('comarcaDetailScreen');
+        } catch (e) {
+            console.error('Error loading comarca detail:', e);
         }
-        
-        // Ranking
-        async function loadRanking() {
-            try {
-                const ranking = await fetch(`${API_BASE}/ranking`).then(r => r.json());
-                const totalPlayers = ranking.length;
-                
-                const html = ranking.map((u, idx) => {
-                    const pos = idx + 1;
-                    const title = getTitleByPercentile(pos, totalPlayers);
+    }
+
+    // ─── RANKING TITLES ──────────────────────────────────────────────────
+    // Titles are ordered from WORST (high percentile) to BEST (low percentile)
+    const CATALAN_TITLES = [
+        {
+            min: 90,
+            title: 'Truita amb suc',
+            desc: 'El plat més humil de la cuina catalana. Ous, patata, brou — res més. Un inici modest.'
+        },
+        {
+            min: 80,
+            title: 'El Caganer',
+            desc: 'Figura irreverent del pessebre català des del segle XVII. Symbolo d\'allò imprevisible i humà.'
+        },
+        {
+            min: 70,
+            title: 'En Patufet',
+            desc: 'El personatge més petit del folklore català, tan menut que cabia sota una fulla de col. Gegant d\'esperit.'
+        },
+        {
+            min: 60,
+            title: 'Aitana Bonmatí',
+            desc: 'Migcampista del FC Barcelona i la selecció espanyola, dues vegades Guanyadora de la Pilota d\'Or (2023, 2024). La millor del món.'
+        },
+        {
+            min: 50,
+            title: 'El Timbaler del Bruc',
+            desc: 'Segons la llegenda, un noi de Santpedor va fer fugir les tropes napoleòniques el 1808 fent ressonar el seu timbal entre les muntanyes de Montserrat.'
+        },
+        {
+            min: 40,
+            title: 'La Mulassa',
+            desc: 'Bèstia de foc del bestiari festiu català. Figura imponent de les festes majors, símbol de força i tradició popular.'
+        },
+        {
+            min: 30,
+            title: 'La Rosa de Sant Jordi',
+            desc: 'El 23 d\'abril Catalunya s\'omple de roses i llibres. Símbol de cultura, amor i identitat catalana per excel·lència.'
+        },
+        {
+            min: 20,
+            title: 'El Comte Arnau',
+            desc: 'El mite literari català per excel·lència. Condemnat a cavalcar per l\'eternitat sobre un cavall de foc pels seus pecats. Nascut d\'una balada del Ripollès al segle XVI.'
+        },
+        {
+            min: 10,
+            title: 'Sant Jordi',
+            desc: 'Patró de Catalunya. Cavaller que va vèncer el drac per salvar la princesa. La seva sang es va convertir en roses. Celebrat cada 23 d\'abril.'
+        },
+        {
+            min: 0,
+            title: 'Almogàver',
+            desc: 'L\'elit dels guerrers medievals catalans. Mercenaris temuts arreu de la Mediterrània, des de Sicília fins a Bizanci. El seu crit de guerra: "Desperta, ferro!"'
+        }
+    ];
+
+    function getTitleByPercentile(position, totalPlayers) {
+        if (totalPlayers === 0) return CATALAN_TITLES[0];
+        const pct = (position / totalPlayers) * 100;
+        for (let i = CATALAN_TITLES.length - 1; i >= 0; i--) {
+            if (pct >= CATALAN_TITLES[i].min) return CATALAN_TITLES[i];
+        }
+        return CATALAN_TITLES[0];
+    }
+
+    // Ranking
+    async function loadRanking() {
+        try {
+            const ranking = await fetch(`${API_BASE}/ranking`).then(r => r.json());
+            const total = ranking.length;
+
+            const medalColors = ['#B8860B', '#8A8A8A', '#8C5A2A'];
+
+            document.getElementById('rankingList').innerHTML = `
+                <div class="section-label">Classificació general</div>
+                ${ranking.map((u, i) => {
+                    const pos = i + 1;
+                    const t = getTitleByPercentile(pos, total);
+                    const isMedal = pos <= 3;
                     return `
-                        <div class="ranking-item" style="background: ${pos <= 3 ? 'var(--light)' : 'white'};">
-                            <div class="ranking-position">${pos}</div>
+                        <div class="ranking-item" style="${isMedal ? 'border-left: 3px solid ' + medalColors[i] + '; background: var(--parchment);' : ''}">
+                            <div class="ranking-position" style="${isMedal ? 'color:' + medalColors[i] : ''}">${pos}</div>
                             <div class="ranking-name">
-                                <div style="font-weight: 600;">${u.nom}</div>
-                                <div style="font-size: 11px; color: var(--text-light); margin-top: 2px;">${title.emoji} ${title.title}</div>
+                                <div class="name">${u.nom}</div>
+                                <div class="title-tag">${t.title}</div>
                             </div>
                             <div class="ranking-stats">
                                 <div>${u.comarques} comarques</div>
                                 <div>${u.punts} punts</div>
                             </div>
+                        </div>`;
+                }).join('')}`;
+
+            const myIdx = ranking.findIndex(u => u.codi_usuari === state.userCode);
+            if (myIdx !== -1) {
+                const me = ranking[myIdx];
+                const mt = getTitleByPercentile(myIdx + 1, total);
+                document.getElementById('myRanking').innerHTML = `
+                    <div class="section-label">La teva posició</div>
+                    <div class="ranking-item" style="border: 1px solid var(--secondary); border-left: 3px solid var(--secondary); background: #EAF4F6;">
+                        <div class="ranking-position" style="color: var(--secondary);">${myIdx + 1}</div>
+                        <div class="ranking-name">
+                            <div class="name" style="color: var(--primary-dark);">${me.nom}</div>
+                            <div class="title-tag">${mt.title}</div>
                         </div>
-                    `;
-                }).join('');
-                
-                document.getElementById('rankingList').innerHTML = html;
-                
-                const myPos = ranking.findIndex(u => u.codi_usuari === state.userCode);
-                if (myPos !== -1) {
-                    const me = ranking[myPos];
-                    const myTitle = getTitleByPercentile(myPos + 1, totalPlayers);
-                    document.getElementById('myRanking').innerHTML = `
-                        <h3 style="margin-top: 0;">La teva posició</h3>
-                        <div class="ranking-item" style="background: #D1ECF1; border: 1px solid #BEE5EB;">
-                            <div class="ranking-position" style="color: #0C5460;">${myPos + 1}</div>
-                            <div class="ranking-name" style="color: #0C5460;">
-                                <div style="font-weight: 600;">${me.nom}</div>
-                                <div style="font-size: 11px; margin-top: 2px; font-weight: 600;">${myTitle.emoji} ${myTitle.title}</div>
-                            </div>
-                            <div class="ranking-stats" style="color: #0C5460;">
-                                <div>${me.comarques} comarques</div>
-                                <div>${me.punts} punts</div>
-                            </div>
+                        <div class="ranking-stats" style="color: var(--text-mid);">
+                            <div>${me.comarques} comarques</div>
+                            <div>${me.punts} punts</div>
                         </div>
-                        <div class="title-badge">${myTitle.emoji} ${myTitle.title} 🏆</div>
-                    `;
+                    </div>
+                    <div class="title-badge">${mt.title.toUpperCase()}</div>
+                    <p style="font-size: 12px; color: var(--text-light); margin-top: 10px; line-height: 1.6;">${mt.desc}</p>`;
+            }
+        } catch (e) {
+            console.error('Error loading ranking:', e);
+        }
+    }
+
+    // Stats
+    async function updateStats() {
+        try {
+            const resum = await fetch(`${API_BASE}/resum_conquestes/${state.userCode}`).then(r => r.json());
+            document.getElementById('comarcasCount').textContent = resum.comarques_conquerides || 0;
+            document.getElementById('puntsCount').textContent = resum.punts_conquerits || 0;
+        } catch (e) {
+            console.error('Error updating stats:', e);
+        }
+    }
+
+    // Point modal
+    async function showPointModal(punt, isConquered) {
+        state.selectedPoint = punt;
+        document.getElementById('pointModalTitle').textContent = punt.nom;
+        document.getElementById('pointModalDesc').textContent = punt.descripcio || '';
+
+        const DIST = 0.0225;
+        let distance = null;
+        if (state.currentPosition) {
+            const [lng, lat] = punt.coordenades.coordinates;
+            distance = Math.hypot(lat - state.currentPosition[0], lng - state.currentPosition[1]);
+        }
+        const isNear = distance !== null && distance < DIST;
+
+        // Historic photos
+        const historicPhotos = punt.foto_urls || [];
+        if (historicPhotos.length > 0 && (isNear || isConquered)) {
+            let html = '<div class="section-label">Fotografies patrimonials</div><div class="gallery-grid">';
+            historicPhotos.forEach(url => {
+                html += `<div class="gallery-item" onclick="showFullImage('${url}')"><img src="${url}" /></div>`;
+            });
+            html += '</div>';
+            document.getElementById('pointModalHistoricPhotos').innerHTML = html;
+        } else {
+            document.getElementById('pointModalHistoricPhotos').innerHTML = '';
+        }
+
+        if (isConquered) {
+            loadUserPhotosForPoint(punt.nom);
+        } else {
+            document.getElementById('pointModalUserPhotos').innerHTML = '';
+            document.getElementById('pointModalMyPhoto').innerHTML = '';
+        }
+
+        let actionHtml = '';
+        if (isConquered) {
+            document.getElementById('pointModalStatus').innerHTML = '<div class="conquest-status">Punt conquerit</div>';
+        } else if (isNear) {
+            actionHtml = `<button class="conquest-button" onclick="capturePhoto('${punt.nom}')">Capturar foto i conquerir</button>`;
+            document.getElementById('pointModalStatus').innerHTML = '';
+        } else {
+            actionHtml = `<div class="distance-alert">Has d'estar a menys de 25 metres del punt per poder conquerir-lo.</div>`;
+            document.getElementById('pointModalStatus').innerHTML = '';
+        }
+
+        document.getElementById('pointModalAction').innerHTML = actionHtml;
+        document.getElementById('pointModal').classList.add('active');
+    }
+
+    function showPointDetailsModal(puntNom) {
+        const punt = state.allPunts.find(p => p.nom === puntNom);
+        if (punt) showPointModal(punt, state.conquests.includes(puntNom));
+    }
+
+    function closePointModal() {
+        document.getElementById('pointModal').classList.remove('active');
+    }
+
+    function showFullImage(url) {
+        document.getElementById('fullImage').src = url;
+        document.getElementById('imageModal').classList.add('active');
+    }
+
+    function closeImageModal() {
+        document.getElementById('imageModal').classList.remove('active');
+    }
+
+    function capturePhoto(puntNom) {
+        state.selectedPoint = puntNom;
+        state.captureMode = true;
+        document.getElementById('cameraInput').click();
+    }
+
+    async function handlePhotoCapture(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+            const base64 = ev.target.result;
+            state.photoBase64 = base64;
+
+            try {
+                const ok = await fetch(`${API_BASE}/conquerir_punt`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        codi_usuari: state.userCode,
+                        punt_id: state.selectedPoint,
+                        foto_base64: base64
+                    })
+                }).then(r => r.ok);
+
+                if (ok) {
+                    alert('Punt conquerit!');
+                    closePointModal();
+                    updateStats();
+                    if (state.map) loadMapData();
+                } else {
+                    alert('Error en conquerir el punt.');
                 }
             } catch (e) {
-                console.error('Error loading ranking:', e);
+                alert('Error: ' + e.message);
             }
-        }
-        
-        // Stats
-        async function updateStats() {
-            try {
-                const resum = await fetch(`${API_BASE}/resum_conquestes/${state.userCode}`).then(r => r.json());
-                document.getElementById('comarcasCount').textContent = resum.comarques_conquerides || 0;
-                document.getElementById('puntsCount').textContent = resum.punts_conquerits || 0;
-            } catch (e) {
-                console.error('Error updating stats:', e);
-            }
-        }
-        
-        // Point modal
-        async function showPointModal(punt, isConquered) {
-            state.selectedPoint = punt;
-            document.getElementById('pointModalTitle').textContent = punt.nom;
-            document.getElementById('pointModalDesc').textContent = punt.descripcio || '';
-            
-            const DISTANCE_THRESHOLD = 0.0225;
-            let distance = null;
-            if (state.currentPosition) {
-                const coords = punt.coordenades.coordinates;
-                const lat = coords[1];
-                const lng = coords[0];
-                distance = Math.hypot(lat - state.currentPosition[0], lng - state.currentPosition[1]);
-            }
-            
-            const isNear = distance !== null && distance < DISTANCE_THRESHOLD;
-            
-            // Historic photos
-            const historicPhotos = punt.foto_urls || [];
-            if (historicPhotos.length > 0 && (isNear || isConquered)) {
-                let html = '<h3>Fotografies històriques</h3><div class="gallery-grid">';
-                historicPhotos.forEach(url => {
-                    html += `<div class="gallery-item" onclick="showFullImage('${url}')"><img src="${url}" onload="this.parentElement.style.background=\'white\'" /></div>`;
-                });
-                html += '</div>';
-                document.getElementById('pointModalHistoricPhotos').innerHTML = html;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    async function loadUserPhotosForPoint(puntNom) {
+        try {
+            const allPhotos = await fetch(`${API_BASE}/fotografies`).then(r => r.json());
+            const userPhoto  = allPhotos.find(f => f.punt_id === puntNom && f.tipus === 'usuari' && f.codi_usuari === state.userCode);
+            const otherPhotos = allPhotos.filter(f => f.punt_id === puntNom && f.tipus === 'usuari' && f.codi_usuari !== state.userCode);
+
+            if (userPhoto?.foto_base64) {
+                document.getElementById('pointModalMyPhoto').innerHTML = `
+                    <div class="section-label">La teva fotografia</div>
+                    <div style="text-align:center;">
+                        <img src="${userPhoto.foto_base64}"
+                             onclick="showPhotoDetailModal('${puntNom}', '${userPhoto.foto_base64}')"
+                             style="max-width:100%; max-height:260px; object-fit:contain; cursor:pointer; border:1px solid var(--border-light);" />
+                    </div>`;
             } else {
-                document.getElementById('pointModalHistoricPhotos').innerHTML = '';
-            }
-            
-            // Load user photos
-            if (isConquered) {
-                loadUserPhotosForPoint(punt.nom);
-            } else {
-                document.getElementById('pointModalUserPhotos').innerHTML = '';
                 document.getElementById('pointModalMyPhoto').innerHTML = '';
             }
-            
-            // Status or capture button
-            let actionHtml = '';
-            if (isConquered) {
-                document.getElementById('pointModalStatus').innerHTML = '<div class="conquest-status">Punt conquerit!</div>';
-            } else if (isNear) {
-                actionHtml = `<button class="conquest-button" onclick="capturePhoto('${punt.nom}')">Capturar foto i conquerir</button>`;
-            } else {
-                actionHtml = `<div class="distance-alert">Has d'estar a menys de 25 metres del punt per conquerir-lo.</div>`;
-            }
-            
-            document.getElementById('pointModalAction').innerHTML = actionHtml;
-            document.getElementById('pointModalStatus').innerHTML = isConquered ? '<div class="conquest-status">Punt conquerit!</div>' : '';
-            
-            document.getElementById('pointModal').classList.add('active');
-        }
-        
-        function showPointDetailsModal(puntNom) {
-            const punt = state.allPunts.find(p => p.nom === puntNom);
-            if (punt) {
-                const isConquered = state.conquests.includes(puntNom);
-                showPointModal(punt, isConquered);
-            }
-        }
-        
-        function closePointModal() {
-            document.getElementById('pointModal').classList.remove('active');
-        }
-        
-        function showFullImage(url) {
-            document.getElementById('fullImage').src = url;
-            document.getElementById('imageModal').classList.add('active');
-        }
-        
-        function closeImageModal() {
-            document.getElementById('imageModal').classList.remove('active');
-        }
-        
-        function capturePhoto(puntNom) {
-            state.selectedPoint = puntNom;
-            state.captureMode = true;
-            document.getElementById('cameraInput').click();
-        }
-        
-        async function handlePhotoCapture(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                const base64 = ev.target.result;
-                state.photoBase64 = base64;
-                
-                try {
-                    const success = await fetch(`${API_BASE}/conquerir_punt`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            codi_usuari: state.userCode,
-                            punt_id: state.selectedPoint,
-                            foto_base64: base64
-                        })
-                    }).then(r => r.ok);
-                    
-                    if (success) {
-                        alert('Punt conquerit!');
-                        closePointModal();
-                        updateStats();
-                        loadComarques();
-                        if (state.map) loadMapData();
-                    } else {
-                        alert('Error conquerint el punt');
+
+            if (otherPhotos.length > 0) {
+                let html = '<div class="section-label">Fotografies d\'altres usuaris</div><div class="gallery-grid">';
+                otherPhotos.forEach(photo => {
+                    if (photo.foto_base64) {
+                        html += `<div class="gallery-item" onclick="showPhotoDetailModal('', '${photo.foto_base64}')"><img src="${photo.foto_base64}" /></div>`;
                     }
-                } catch (e) {
-                    alert('Error: ' + e.message);
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-        
-        // Load user photos for a specific point
-        async function loadUserPhotosForPoint(puntNom) {
-            try {
-                const allPhotos = await fetch(`${API_BASE}/fotografies`).then(r => r.json());
-                
-                const userPhoto = allPhotos.find(f => f.punt_id === puntNom && f.tipus === 'usuari' && f.codi_usuari === state.userCode);
-                const otherPhotos = allPhotos.filter(f => f.punt_id === puntNom && f.tipus === 'usuari' && f.codi_usuari !== state.userCode);
-                
-                // User's photo
-                if (userPhoto && userPhoto.foto_base64) {
-                    let html = '<h3>La teva fotografia</h3><div style="text-align: center;"><img src="' + userPhoto.foto_base64 + '" onclick="showPhotoDetailModal(\'' + puntNom + '\', \'' + userPhoto.foto_base64 + '\')" style="max-width: 100%; max-height: 300px; object-fit: contain; cursor: pointer; border: 1px solid var(--border); padding: 4px;" /></div>';
-                    document.getElementById('pointModalMyPhoto').innerHTML = html;
-                } else {
-                    document.getElementById('pointModalMyPhoto').innerHTML = '';
-                }
-                
-                // Other users' photos
-                if (otherPhotos.length > 0) {
-                    let html = '<h3>Fotografies d\'altres usuaris</h3><div class="gallery-grid">';
-                    otherPhotos.forEach(photo => {
-                        if (photo.foto_base64) {
-                            html += `<div class="gallery-item" onclick="showPhotoDetailModal('', '${photo.foto_base64}')"><img src="${photo.foto_base64}" onload="this.parentElement.style.background=\'white\'" /></div>`;
-                        }
-                    });
-                    html += '</div>';
-                    document.getElementById('pointModalUserPhotos').innerHTML = html;
-                } else {
-                    document.getElementById('pointModalUserPhotos').innerHTML = '';
-                }
-            } catch (e) {
-                console.error('Error loading user photos:', e);
+                });
+                html += '</div>';
+                document.getElementById('pointModalUserPhotos').innerHTML = html;
+            } else {
+                document.getElementById('pointModalUserPhotos').innerHTML = '';
             }
+        } catch (e) {
+            console.error('Error loading user photos:', e);
         }
-        
-        // Photo detail modal
-        function showPhotoDetailModal(puntNom, imageUrl) {
-            document.getElementById('photoDetailTitle').textContent = puntNom || 'Fotografia';
-            document.getElementById('photoDetailImage').src = imageUrl;
-            document.getElementById('photoDetailModal').classList.add('active');
-        }
-        
-        function closePhotoDetailModal() {
-            document.getElementById('photoDetailModal').classList.remove('active');
-        }
-        
-        window.addEventListener('load', initApp);
-    </script>
+    }
+
+    function showPhotoDetailModal(puntNom, imageUrl) {
+        document.getElementById('photoDetailTitle').textContent = puntNom || 'Fotografia';
+        document.getElementById('photoDetailImage').src = imageUrl;
+        document.getElementById('photoDetailModal').classList.add('active');
+    }
+
+    function closePhotoDetailModal() {
+        document.getElementById('photoDetailModal').classList.remove('active');
+    }
+
+    window.addEventListener('load', initApp);
+</script>
 </body>
 </html>
