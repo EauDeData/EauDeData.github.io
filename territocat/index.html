@@ -26,6 +26,12 @@
             --text-mid:     #4A4438;
             --text-light:   #7A7060;
             --white:        #FAFAF8;
+
+            /* map marker colours */
+            --marker-far:   #8A8070;
+            --marker-near:  #2A7A8C;
+            --marker-done:  #2A5C3F;
+            --marker-user:  #B8490A;
         }
 
         html, body {
@@ -243,7 +249,154 @@
         /* ── MAP ─────────────────────────────────────── */
         .map-container { flex: 1; background: var(--white); position: relative; }
         #map { width: 100%; height: 100%; }
-        .leaflet-control { display: none !important; }
+
+        /* hide only the attribution/zoom default leaflet UI */
+        .leaflet-control-zoom,
+        .leaflet-control-attribution { display: none !important; }
+
+        /* ── CUSTOM SVG MARKERS ──────────────────────── */
+        /* Animated pulse ring for near markers */
+        @keyframes markerPulse {
+            0%   { transform: scale(1);   opacity: 0.7; }
+            60%  { transform: scale(1.9); opacity: 0; }
+            100% { transform: scale(1.9); opacity: 0; }
+        }
+
+        /* User position blinking dot */
+        @keyframes userBlink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.35; }
+        }
+
+        /* ── MAP HUD OVERLAY ─────────────────────────── */
+        /* Floating stats panel top-left of map */
+        #mapHud {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            pointer-events: none;
+        }
+
+        .hud-pill {
+            background: rgba(15, 37, 53, 0.82);
+            backdrop-filter: blur(6px);
+            color: #E8E2D8;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 5px 10px;
+            border-left: 2px solid var(--secondary);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .hud-pill span { color: #6EC6D8; margin-right: 4px; font-family: 'Playfair Display', serif; font-size: 14px; }
+
+        /* Near-points banner at bottom of map */
+        #nearBanner {
+            position: absolute;
+            bottom: 68px;
+            left: 0; right: 0;
+            z-index: 500;
+            padding: 0 12px;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        .near-banner-inner {
+            background: rgba(42, 92, 63, 0.90);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(168, 230, 188, 0.35);
+            color: #C8F0D8;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .near-banner-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #6ADFA8;
+            flex-shrink: 0;
+            animation: userBlink 1.4s ease-in-out infinite;
+        }
+
+        #nearBanner.hidden { display: none; }
+
+        /* ── MAP CONTROL BUTTONS ─────────────────────── */
+        .map-ctrl-col {
+            position: absolute;
+            bottom: 20px;
+            right: 12px;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .map-ctrl-btn {
+            background: var(--white);
+            border: 1px solid var(--border);
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+            padding: 0;
+            letter-spacing: 0;
+            text-transform: none;
+            font-weight: 400;
+            color: var(--text-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: all;
+        }
+
+        .map-ctrl-btn:hover { background: var(--parchment); color: var(--text); }
+
+        /* ── MAP LEGEND ──────────────────────────────── */
+        #mapLegend {
+            position: absolute;
+            bottom: 20px;
+            left: 12px;
+            z-index: 500;
+            background: rgba(15, 37, 53, 0.80);
+            backdrop-filter: blur(6px);
+            padding: 8px 12px;
+            pointer-events: none;
+        }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: #A0B4BC;
+            margin: 4px 0;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
 
         /* ── MODAL ───────────────────────────────────── */
         .modal {
@@ -420,9 +573,7 @@
             position: relative;
         }
 
-        .welcome-wordmark span {
-            color: var(--secondary);
-        }
+        .welcome-wordmark span { color: var(--secondary); }
 
         .welcome-tagline {
             font-size: 12px;
@@ -549,27 +700,6 @@
         }
 
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* ── COMPASS ──────────────────────────────────── */
-        .compass-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 12px;
-            background: var(--white);
-            border: 1px solid var(--border);
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            font-size: 16px;
-            z-index: 100;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-            padding: 0;
-            letter-spacing: 0;
-            text-transform: none;
-            font-weight: 400;
-        }
-
-        .compass-btn:hover { background: var(--parchment); color: var(--text); }
 
         /* ── INPUT ROW ────────────────────────────────── */
         .input-row {
@@ -801,6 +931,50 @@
         }
 
         .loc-prompt-denied.visible { display: block; }
+
+        /* ── CUSTOM LEAFLET MARKER STYLES ─────────────── */
+        .custom-marker-wrap {
+            position: relative;
+            width: 32px;
+            height: 32px;
+            /* centred on lat/lng */
+        }
+
+        /* pulsing ring behind near markers */
+        .marker-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            animation: markerPulse 2s ease-out infinite;
+            opacity: 0;
+        }
+
+        .marker-core {
+            position: absolute;
+            inset: 6px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.7);
+        }
+
+        /* user dot */
+        .user-dot-outer {
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            background: rgba(184, 73, 10, 0.25);
+            border: 2px solid rgba(184, 73, 10, 0.4);
+        }
+
+        .user-dot-inner {
+            position: absolute;
+            inset: 9px;
+            border-radius: 50%;
+            background: var(--marker-user);
+            border: 2px solid #fff;
+            animation: userBlink 2.8s ease-in-out infinite;
+            box-shadow: 0 0 6px rgba(184,73,10,0.6);
+        }
     </style>
 </head>
 <body>
@@ -944,8 +1118,40 @@
             <span id="locBarText">Ubicació desconeguda</span>
             <button class="loc-retry" id="locRetryBtn" onclick="requestLocation()" style="display:none;">Reintentar</button>
         </div>
-        <div id="map" class="map-container"></div>
-        <button class="compass-btn" onclick="recenterMap()">&#8982;</button>
+
+        <!-- Map fills remaining height -->
+        <div class="map-container">
+            <div id="map"></div>
+
+            <!-- HUD: top-left stats -->
+            <div id="mapHud">
+                <div class="hud-pill"><span id="hudNear">—</span> propers</div>
+                <div class="hud-pill"><span id="hudDone">—</span> conquerits</div>
+            </div>
+
+            <!-- Bottom: "X punts a tocar" banner -->
+            <div id="nearBanner" class="hidden">
+                <div class="near-banner-inner">
+                    <div class="near-banner-dot"></div>
+                    <span id="nearBannerText"></span>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div id="mapLegend">
+                <div class="legend-row"><div class="legend-dot" style="background:#8A8070;"></div>Llunyà</div>
+                <div class="legend-row"><div class="legend-dot" style="background:#2A7A8C;"></div>Proper (&lt;25 m)</div>
+                <div class="legend-row"><div class="legend-dot" style="background:#2A5C3F;"></div>Conquerit</div>
+                <div class="legend-row"><div class="legend-dot" style="background:#B8490A;"></div>La teva posició</div>
+            </div>
+
+            <!-- Controls: recenter + zoom -->
+            <div class="map-ctrl-col">
+                <button class="map-ctrl-btn" onclick="recenterMap()" title="Centrar">&#8982;</button>
+                <button class="map-ctrl-btn" onclick="state.map && state.map.zoomIn()" title="Zoom +">+</button>
+                <button class="map-ctrl-btn" onclick="state.map && state.map.zoomOut()" title="Zoom −">−</button>
+            </div>
+        </div>
     </div>
 
     <!-- ══════════════════════════════════════ COLLECTION -->
@@ -1158,6 +1364,9 @@
 <script>
     const API_BASE = 'https://dagdemos.cvc.uab.es:8501';
 
+    // conquest radius in degrees (~25m at latitude 41°)
+    const CONQUEST_DEG = 0.000225; // ≈ 25 m
+
     let state = {
         userCode: localStorage.getItem('userCode') || null,
         userName: localStorage.getItem('userName') || null,
@@ -1165,6 +1374,8 @@
         currentPosition: null,
         map: null,
         mapMarkers: [],
+        userMarker: null,       // user position marker layer group
+        radiusCircle: null,     // conquest radius circle
         conquests: [],
         allPunts: [],
         currentComarca: null,
@@ -1219,7 +1430,7 @@
 
     function goToCollection() {
         showScreen('collectionScreen');
-        loadComarques();  // ← was incorrectly calling createUser() before
+        loadComarques();
     }
 
     function goToRanking() {
@@ -1263,7 +1474,6 @@
         alert('Codi copiat!');
     }
 
-    // ─── CREATE USER (only defined once) ─────────────────────────────────
     async function createUser() {
         const name = document.getElementById('userName').value.trim();
         const code = document.getElementById('generatedCode').value;
@@ -1336,7 +1546,7 @@
     const GEO_OPTIONS = { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 };
 
     let geoWatchId = null;
-    let geoState = 'unknown'; // unknown | waiting | ok | error | denied | insecure
+    let geoState = 'unknown';
 
     function setLocBarState(s, text) {
         geoState = s;
@@ -1373,7 +1583,9 @@
         setLocBarState('ok', 'Ubicació activa · ±' + Math.round(pos.coords.accuracy) + ' m');
         updateGameScreenPrompts();
 
+        // Update user marker + radius circle on map
         if (state.map) {
+            updateUserMarker();
             if (!prev) {
                 state.map.setView(state.currentPosition, 17);
                 loadMapData();
@@ -1428,14 +1640,49 @@
     // ─── MAP ──────────────────────────────────────────────────────────────
     function initMap() {
         state.map = L.map('map', {zoomControl: false}).setView([41.9973, 2.8235], 10);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             subdomains: ['a', 'b', 'c', 'd'],
             maxZoom: 19
         }).addTo(state.map);
         requestLocation();
     }
 
+    // ── User position marker (custom SVG dot + accuracy halo) ─────────────
+    function updateUserMarker() {
+        if (!state.map || !state.currentPosition) return;
+        const [lat, lng] = state.currentPosition;
+
+        // Remove old layers
+        if (state.userMarker) state.map.removeLayer(state.userMarker);
+        if (state.radiusCircle) state.map.removeLayer(state.radiusCircle);
+
+        // Conquest radius circle — subtle dashed ring
+        state.radiusCircle = L.circle([lat, lng], {
+            radius: 25,                          // metres
+            color: '#2A7A8C',
+            weight: 1.5,
+            opacity: 0.55,
+            fillColor: '#2A7A8C',
+            fillOpacity: 0.07,
+            dashArray: '4 5'
+        }).addTo(state.map);
+
+        // User dot icon (larger, animated)
+        const userIcon = L.divIcon({
+            className: '',
+            html: `<div style="position:relative;width:28px;height:28px;">
+                     <div style="position:absolute;inset:0;border-radius:50%;background:rgba(184,73,10,0.18);border:1.5px solid rgba(184,73,10,0.4);"></div>
+                     <div style="position:absolute;inset:8px;border-radius:50%;background:#B8490A;border:2px solid #fff;box-shadow:0 0 7px rgba(184,73,10,0.7);animation:userBlink 2.8s ease-in-out infinite;"></div>
+                   </div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+        });
+
+        state.userMarker = L.marker([lat, lng], {icon: userIcon, zIndexOffset: 900}).addTo(state.map);
+    }
+
     async function loadMapData() {
+        if (!state.map) return;
         try {
             const [punts, conquests] = await Promise.all([
                 fetch(`${API_BASE}/punts`).then(r => r.json()),
@@ -1445,35 +1692,66 @@
             state.allPunts = punts;
             state.conquests = conquests;
 
+            // Remove old point markers (but keep user marker)
             state.mapMarkers.forEach(m => state.map.removeLayer(m));
             state.mapMarkers = [];
 
-            const DIST = 0.0225;
+            let nearCount = 0;
+            const doneCount = conquests.length;
 
             punts.forEach(punt => {
                 const [lng, lat] = punt.coordenades.coordinates;
                 const isConquered = conquests.includes(punt.nom);
+                let isNear = false;
 
                 let color = '#8A8070';
                 if (isConquered) {
                     color = '#2A5C3F';
                 } else if (state.currentPosition) {
                     const d = Math.hypot(lat - state.currentPosition[0], lng - state.currentPosition[1]);
-                    if (d < DIST) color = '#2A7A8C';
+                    if (d < CONQUEST_DEG) { color = '#2A7A8C'; isNear = true; nearCount++; }
                 }
 
-                const marker = L.circleMarker([lat, lng], {
-                    radius: 6,
-                    fillColor: color,
-                    color: '#FAFAF8',
-                    weight: 1.5,
-                    opacity: 1,
-                    fillOpacity: 0.9
-                }).addTo(state.map);
+                // Build larger touch-friendly marker (22px core, 44px touch target)
+                const ring = isNear
+                    ? `<div style="position:absolute;inset:-6px;border-radius:50%;border:2px solid ${color};animation:markerPulse 2s ease-out infinite;"></div>`
+                    : '';
 
+                const icon = L.divIcon({
+                    className: '',
+                    html: `<div style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
+                             ${ring}
+                             <div style="width:22px;height:22px;border-radius:50%;background:${color};border:2.5px solid rgba(250,250,248,0.9);box-shadow:0 1px 5px rgba(0,0,0,0.28);"></div>
+                           </div>`,
+                    iconSize: [44, 44],
+                    iconAnchor: [22, 22],
+                    popupAnchor: [0, -22]
+                });
+
+                const marker = L.marker([lat, lng], {icon}).addTo(state.map);
                 marker.on('click', () => showPointModal(punt, isConquered));
                 state.mapMarkers.push(marker);
             });
+
+            // Update HUD
+            document.getElementById('hudNear').textContent = nearCount;
+            document.getElementById('hudDone').textContent = doneCount;
+
+            // Near banner
+            const banner = document.getElementById('nearBanner');
+            if (nearCount > 0) {
+                document.getElementById('nearBannerText').textContent =
+                    nearCount === 1
+                        ? '1 punt a menys de 25 m — obre\'l al mapa!'
+                        : `${nearCount} punts a menys de 25 m — a conquerir!`;
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+
+            // Re-draw user marker on top
+            updateUserMarker();
+
         } catch (e) {
             console.error('Error loading map:', e);
         }
@@ -1488,8 +1766,6 @@
     }
 
     // ─── COLLECTION / COMARQUES ───────────────────────────────────────────
-    // NOTE: This was previously named createUser() by mistake, causing the
-    // real createUser() to be silently overwritten. Now correctly named.
     async function loadComarques() {
         try {
             const [comarques, conquests, resum] = await Promise.all([
@@ -1569,16 +1845,16 @@
 
     // ─── RANKING TITLES ───────────────────────────────────────────────────
     const CATALAN_TITLES = [
-        { min: 90, title: 'Truita amb suc',     desc: 'El plat més humil de la cuina catalana. Ous, patata, brou — res més. Un inici modest.' },
-        { min: 80, title: 'El Caganer',          desc: 'Figura irreverent del pessebre català des del segle XVII. Symbolo d\'allò imprevisible i humà.' },
-        { min: 70, title: 'En Patufet',          desc: 'El personatge més petit del folklore català, tan menut que cabia sota una fulla de col. Gegant d\'esperit.' },
-        { min: 60, title: 'Aitana Bonmatí',      desc: 'Migcampista del FC Barcelona i la selecció espanyola, dues vegades Guanyadora de la Pilota d\'Or (2023, 2024). La millor del món.' },
-        { min: 50, title: 'El Timbaler del Bruc',desc: 'Segons la llegenda, un noi de Santpedor va fer fugir les tropes napoleòniques el 1808 fent ressonar el seu timbal entre les muntanyes de Montserrat.' },
-        { min: 40, title: 'La Mulassa',          desc: 'Bèstia de foc del bestiari festiu català. Figura imponent de les festes majors, símbol de força i tradició popular.' },
+        { min: 90, title: 'Truita amb suc',      desc: 'El plat més humil de la cuina catalana. Ous, patata, brou — res més. Un inici modest.' },
+        { min: 80, title: 'El Caganer',           desc: 'Figura irreverent del pessebre català des del segle XVII. Symbolo d\'allò imprevisible i humà.' },
+        { min: 70, title: 'En Patufet',           desc: 'El personatge més petit del folklore català, tan menut que cabia sota una fulla de col. Gegant d\'esperit.' },
+        { min: 60, title: 'Aitana Bonmatí',       desc: 'Migcampista del FC Barcelona i la selecció espanyola, dues vegades Guanyadora de la Pilota d\'Or (2023, 2024). La millor del món.' },
+        { min: 50, title: 'El Timbaler del Bruc', desc: 'Segons la llegenda, un noi de Santpedor va fer fugir les tropes napoleòniques el 1808 fent ressonar el seu timbal entre les muntanyes de Montserrat.' },
+        { min: 40, title: 'La Mulassa',           desc: 'Bèstia de foc del bestiari festiu català. Figura imponent de les festes majors, símbol de força i tradició popular.' },
         { min: 30, title: 'La Rosa de Sant Jordi',desc: 'El 23 d\'abril Catalunya s\'omple de roses i llibres. Símbol de cultura, amor i identitat catalana per excel·lència.' },
-        { min: 20, title: 'El Comte Arnau',      desc: 'El mite literari català per excel·lència. Condemnat a cavalcar per l\'eternitat sobre un cavall de foc pels seus pecats. Nascut d\'una balada del Ripollès al segle XVI.' },
-        { min: 10, title: 'Sant Jordi',          desc: 'Patró de Catalunya. Cavaller que va vèncer el drac per salvar la princesa. La seva sang es va convertir en roses. Celebrat cada 23 d\'abril.' },
-        { min: 0,  title: 'Almogàver',           desc: 'L\'elit dels guerrers medievals catalans. Mercenaris temuts arreu de la Mediterrània, des de Sicília fins a Bizanci. El seu crit de guerra: "Desperta, ferro!"' }
+        { min: 20, title: 'El Comte Arnau',       desc: 'El mite literari català per excel·lència. Condemnat a cavalcar per l\'eternitat sobre un cavall de foc pels seus pecats.' },
+        { min: 10, title: 'Sant Jordi',           desc: 'Patró de Catalunya. Cavaller que va vèncer el drac per salvar la princesa. La seva sang es va convertir en roses. Celebrat cada 23 d\'abril.' },
+        { min: 0,  title: 'Almogàver',            desc: 'L\'elit dels guerrers medievals catalans. Mercenaris temuts arreu de la Mediterrània, des de Sicília fins a Bizanci. El seu crit de guerra: "Desperta, ferro!"' }
     ];
 
     function getTitleByPercentile(position, totalPlayers) {
@@ -1659,13 +1935,14 @@
         document.getElementById('pointModalTitle').textContent = punt.nom;
         document.getElementById('pointModalDesc').textContent = punt.descripcio || '';
 
-        const DIST = 0.0225;
         let distance = null;
         if (state.currentPosition) {
             const [lng, lat] = punt.coordenades.coordinates;
-            distance = Math.hypot(lat - state.currentPosition[0], lng - state.currentPosition[1]);
+            const dDeg = Math.hypot(lat - state.currentPosition[0], lng - state.currentPosition[1]);
+            // Convert degrees to metres (approx)
+            distance = Math.round(dDeg * 111320);
         }
-        const isNear = distance !== null && distance < DIST;
+        const isNear = distance !== null && distance < 25;
 
         // Historic photos (only if near or conquered)
         const historicPhotos = punt.foto_urls || [];
@@ -1689,12 +1966,16 @@
 
         let actionHtml = '';
         if (isConquered) {
-            document.getElementById('pointModalStatus').innerHTML = '<div class="conquest-status">Punt conquerit</div>';
+            document.getElementById('pointModalStatus').innerHTML = '<div class="conquest-status">✓ Punt conquerit</div>';
         } else if (isNear) {
             actionHtml = `<button class="conquest-button" onclick="capturePhoto('${punt.nom}')">Capturar foto i conquerir</button>`;
-            document.getElementById('pointModalStatus').innerHTML = '';
+            document.getElementById('pointModalStatus').innerHTML = `
+                <div class="conquest-status" style="background:#EAF4F6;border-color:#90C8D8;color:var(--secondary);">
+                    📍 Estàs a ${distance} m — pots conquerir!
+                </div>`;
         } else {
-            actionHtml = `<div class="distance-alert">Has d'estar a menys de 25 metres del punt per poder conquerir-lo.</div>`;
+            const distText = distance !== null ? ` Estàs a uns ${distance} m.` : '';
+            actionHtml = `<div class="distance-alert">Has d'estar a menys de 25 metres del punt per poder conquerir-lo.${distText}</div>`;
             document.getElementById('pointModalStatus').innerHTML = '';
         }
 
@@ -1758,7 +2039,6 @@
                 alert('Error: ' + err.message);
             }
 
-            // Reset file input so the same file can be picked again if needed
             e.target.value = '';
         };
         reader.readAsDataURL(file);
@@ -1766,8 +2046,8 @@
 
     async function loadUserPhotosForPoint(puntNom) {
         try {
-            const allPhotos  = await fetch(`${API_BASE}/fotografies`).then(r => r.json());
-            const userPhoto  = allPhotos.find(f => f.punt_id === puntNom && f.tipus === 'usuari' && f.codi_usuari === state.userCode);
+            const allPhotos   = await fetch(`${API_BASE}/fotografies`).then(r => r.json());
+            const userPhoto   = allPhotos.find(f => f.punt_id === puntNom && f.tipus === 'usuari' && f.codi_usuari === state.userCode);
             const otherPhotos = allPhotos.filter(f => f.punt_id === puntNom && f.tipus === 'usuari' && f.codi_usuari !== state.userCode);
 
             if (userPhoto?.foto_base64) {
