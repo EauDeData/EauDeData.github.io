@@ -26,8 +26,6 @@
             --text-mid:     #4A4438;
             --text-light:   #7A7060;
             --white:        #FAFAF8;
-
-            /* map marker colours */
             --marker-far:   #8A8070;
             --marker-near:  #2A7A8C;
             --marker-done:  #2A5C3F;
@@ -61,7 +59,6 @@
             border-bottom: 2px solid var(--secondary);
             flex-shrink: 0;
         }
-
         .header-back {
             cursor: pointer;
             font-size: 12px;
@@ -74,9 +71,7 @@
             color: #A8B8C0;
             transition: color 0.15s;
         }
-
         .header-back:hover { color: #E8E2D8; background: transparent; }
-
         .header-title {
             flex: 1;
             text-align: center;
@@ -86,16 +81,10 @@
             letter-spacing: 0.04em;
             color: #E8E2D8;
         }
-
         .header-right { width: 60px; text-align: right; }
 
         /* ── CONTENT ─────────────────────────────────────── */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 16px;
-            background: var(--light);
-        }
+        .content { flex: 1; overflow-y: auto; padding: 20px 16px; background: var(--light); }
 
         /* ── BUTTONS ─────────────────────────────────────── */
         button {
@@ -112,24 +101,11 @@
             cursor: pointer;
             transition: background 0.15s, color 0.15s;
         }
-
         button:hover { background: var(--secondary); color: #fff; }
-
-        button.secondary {
-            background: transparent;
-            color: var(--text-mid);
-            border: 1px solid var(--border);
-        }
-
-        button.secondary:hover {
-            background: var(--parchment);
-            color: var(--text);
-            border-color: var(--text-mid);
-        }
-
+        button.secondary { background: transparent; color: var(--text-mid); border: 1px solid var(--border); }
+        button.secondary:hover { background: var(--parchment); color: var(--text); border-color: var(--text-mid); }
         button.success { background: var(--success); color: #E8F0EB; }
         button.success:hover { background: #1d4032; }
-
         button.danger { background: var(--danger); color: #F0E0E0; }
         button.danger:hover { background: #6a1212; }
 
@@ -147,47 +123,15 @@
             outline: none;
             transition: border-color 0.15s;
         }
-
-        input:focus, textarea:focus {
-            border-color: var(--secondary);
-            background: #fff;
-        }
+        input:focus, textarea:focus { border-color: var(--secondary); background: #fff; }
 
         /* ── TYPOGRAPHY ─────────────────────────────────── */
-        h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-            margin-bottom: 10px;
-            color: var(--primary-dark);
-        }
-
-        h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--primary-dark);
-        }
-
-        h3 {
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--text-light);
-            margin-bottom: 10px;
-        }
+        h1 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 10px; color: var(--primary-dark); }
+        h2 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--primary-dark); }
+        h3 { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light); margin-bottom: 10px; }
 
         /* ── CARD ─────────────────────────────────────── */
-        .card {
-            background: var(--white);
-            padding: 14px;
-            margin: 8px 0;
-            border: 1px solid var(--border-light);
-            border-top: 2px solid var(--primary);
-        }
+        .card { background: var(--white); padding: 14px; margin: 8px 0; border: 1px solid var(--border-light); border-top: 2px solid var(--primary); }
 
         /* ── TAB BAR ─────────────────────────────────── */
         .tab-bar {
@@ -196,7 +140,6 @@
             border-top: 2px solid var(--secondary);
             flex-shrink: 0;
         }
-
         .tab-btn {
             flex: 1;
             background: transparent;
@@ -213,63 +156,98 @@
             transition: color 0.15s, background 0.15s;
             border-right: 1px solid rgba(255,255,255,0.06);
         }
-
         .tab-btn:last-child { border-right: none; }
         .tab-btn.active { color: #E8E2D8; background: rgba(42,122,140,0.25); }
         .tab-btn:hover { color: #E8E2D8; background: rgba(255,255,255,0.06); }
 
         /* ── STATUS MESSAGES ─────────────────────────── */
-        .error-msg {
-            color: var(--danger);
-            font-size: 12px;
-            font-weight: 600;
-            margin: 8px 0;
-            letter-spacing: 0.02em;
-        }
-
-        .success-msg {
-            color: var(--success);
-            font-size: 12px;
-            font-weight: 600;
-            margin: 8px 0;
-        }
+        .error-msg { color: var(--danger); font-size: 12px; font-weight: 600; margin: 8px 0; letter-spacing: 0.02em; }
+        .success-msg { color: var(--success); font-size: 12px; font-weight: 600; margin: 8px 0; }
 
         /* ── RADIO GROUP ─────────────────────────────── */
         .radio-group { margin: 12px 0; }
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 10px 0;
-            cursor: pointer;
-            font-size: 13px;
-            color: var(--text-mid);
-        }
+        .radio-group label { display: flex; align-items: center; gap: 8px; margin: 10px 0; cursor: pointer; font-size: 13px; color: var(--text-mid); }
 
         /* ── MAP ─────────────────────────────────────── */
-        .map-container { flex: 1; background: var(--white); position: relative; }
+        .map-container { flex: 1; background: var(--white); position: relative; overflow: hidden; }
         #map { width: 100%; height: 100%; }
+        .leaflet-control-zoom, .leaflet-control-attribution { display: none !important; }
 
-        /* hide only the attribution/zoom default leaflet UI */
-        .leaflet-control-zoom,
-        .leaflet-control-attribution { display: none !important; }
+        /* ── MAP LOADING OVERLAY ─────────────────────── */
+        #mapLoadOverlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1000;
+            background: var(--primary-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            transition: opacity 0.4s ease;
+        }
+        #mapLoadOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .load-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(42,122,140,0.3);
+            border-top-color: var(--secondary);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .load-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: var(--white);
+            letter-spacing: 0.03em;
+        }
+        .load-status {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #8AA0AA;
+            text-align: center;
+            max-width: 240px;
+            line-height: 1.6;
+        }
+        .load-step {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 220px;
+        }
+        .load-step-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: #5A6E78;
+            transition: color 0.3s;
+        }
+        .load-step-row.active { color: #8AA0AA; }
+        .load-step-row.done { color: #6ADFA8; }
+        .step-icon { width: 16px; font-size: 13px; text-align: center; flex-shrink: 0; }
 
-        /* ── CUSTOM SVG MARKERS ──────────────────────── */
-        /* Animated pulse ring for near markers */
+        /* ── MARKER ANIMATIONS ───────────────────────── */
         @keyframes markerPulse {
             0%   { transform: scale(1);   opacity: 0.7; }
-            60%  { transform: scale(1.9); opacity: 0; }
-            100% { transform: scale(1.9); opacity: 0; }
+            60%  { transform: scale(2.2); opacity: 0; }
+            100% { transform: scale(2.2); opacity: 0; }
         }
-
-        /* User position blinking dot */
         @keyframes userBlink {
             0%, 100% { opacity: 1; }
             50%       { opacity: 0.35; }
         }
 
-        /* ── MAP HUD OVERLAY ─────────────────────────── */
-        /* Floating stats panel top-left of map */
+        /* ── MAP HUD ─────────────────────────────────── */
         #mapHud {
             position: absolute;
             top: 12px;
@@ -280,7 +258,6 @@
             gap: 6px;
             pointer-events: none;
         }
-
         .hud-pill {
             background: rgba(15, 37, 53, 0.82);
             backdrop-filter: blur(6px);
@@ -292,12 +269,10 @@
             padding: 5px 10px;
             border-left: 2px solid var(--secondary);
             white-space: nowrap;
-            pointer-events: none;
         }
-
         .hud-pill span { color: #6EC6D8; margin-right: 4px; font-family: 'Playfair Display', serif; font-size: 14px; }
 
-        /* Near-points banner at bottom of map */
+        /* ── NEAR BANNER ─────────────────────────────── */
         #nearBanner {
             position: absolute;
             bottom: 68px;
@@ -308,7 +283,6 @@
             display: flex;
             justify-content: center;
         }
-
         .near-banner-inner {
             background: rgba(42, 92, 63, 0.90);
             backdrop-filter: blur(6px);
@@ -323,19 +297,10 @@
             align-items: center;
             gap: 8px;
         }
-
-        .near-banner-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #6ADFA8;
-            flex-shrink: 0;
-            animation: userBlink 1.4s ease-in-out infinite;
-        }
-
+        .near-banner-dot { width: 8px; height: 8px; border-radius: 50%; background: #6ADFA8; flex-shrink: 0; animation: userBlink 1.4s ease-in-out infinite; }
         #nearBanner.hidden { display: none; }
 
-        /* ── MAP CONTROL BUTTONS ─────────────────────── */
+        /* ── MAP CONTROLS ────────────────────────────── */
         .map-ctrl-col {
             position: absolute;
             bottom: 20px;
@@ -345,7 +310,6 @@
             flex-direction: column;
             gap: 6px;
         }
-
         .map-ctrl-btn {
             background: var(--white);
             border: 1px solid var(--border);
@@ -364,7 +328,6 @@
             justify-content: center;
             pointer-events: all;
         }
-
         .map-ctrl-btn:hover { background: var(--parchment); color: var(--text); }
 
         /* ── MAP LEGEND ──────────────────────────────── */
@@ -378,469 +341,101 @@
             padding: 8px 12px;
             pointer-events: none;
         }
-
-        .legend-row {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.07em;
-            text-transform: uppercase;
-            color: #A0B4BC;
-            margin: 4px 0;
-        }
-
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
+        .legend-row { display: flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #A0B4BC; margin: 4px 0; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
         /* ── MODAL ───────────────────────────────────── */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 25, 35, 0.6);
-            z-index: 1000;
-            justify-content: center;
-            align-items: flex-end;
-            flex-direction: column;
-            backdrop-filter: blur(2px);
-        }
-
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 25, 35, 0.6); z-index: 1000; justify-content: center; align-items: flex-end; flex-direction: column; backdrop-filter: blur(2px); }
         .modal.active { display: flex; }
         .modal-overlay { position: absolute; inset: 0; }
-
-        .modal-content {
-            background: var(--white);
-            width: 100%;
-            max-height: 82vh;
-            padding: 20px 16px;
-            overflow-y: auto;
-            border-top: 3px solid var(--secondary);
-            position: relative;
-            z-index: 1001;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 14px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .modal-header h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 16px;
-            font-weight: 600;
-            text-transform: none;
-            letter-spacing: 0;
-            color: var(--primary-dark);
-        }
-
-        .modal-close {
-            background: transparent;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: var(--text-light);
-            padding: 0;
-            line-height: 1;
-            text-transform: none;
-            letter-spacing: 0;
-            font-weight: 300;
-        }
-
+        .modal-content { background: var(--white); width: 100%; max-height: 82vh; padding: 20px 16px; overflow-y: auto; border-top: 3px solid var(--secondary); position: relative; z-index: 1001; }
+        .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light); }
+        .modal-header h3 { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--primary-dark); }
+        .modal-close { background: transparent; border: none; font-size: 22px; cursor: pointer; color: var(--text-light); padding: 0; line-height: 1; text-transform: none; letter-spacing: 0; font-weight: 300; }
         .modal-close:hover { color: var(--text); background: transparent; }
 
         /* ── LIST ITEMS ──────────────────────────────── */
-        .list-item {
-            background: var(--white);
-            padding: 13px 14px;
-            margin: 4px 0;
-            border: 1px solid var(--border-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background 0.12s, border-color 0.12s;
-        }
-
-        .list-item:hover {
-            background: var(--parchment);
-            border-color: var(--border);
-        }
+        .list-item { background: var(--white); padding: 13px 14px; margin: 4px 0; border: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.12s, border-color 0.12s; }
+        .list-item:hover { background: var(--parchment); border-color: var(--border); }
 
         /* ── STATS ROW ───────────────────────────────── */
-        .stats-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 18px;
-        }
-
-        .stat-box {
-            flex: 1;
-            background: var(--primary-dark);
-            padding: 14px 12px;
-            text-align: center;
-            border: 1px solid var(--primary);
-        }
-
-        .stat-value {
-            font-family: 'Playfair Display', serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--white);
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: #8AA0AA;
-            margin-top: 5px;
-        }
+        .stats-row { display: flex; gap: 8px; margin-bottom: 18px; }
+        .stat-box { flex: 1; background: var(--primary-dark); padding: 14px 12px; text-align: center; border: 1px solid var(--primary); }
+        .stat-value { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--white); line-height: 1; }
+        .stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #8AA0AA; margin-top: 5px; }
 
         /* ── RANKING ─────────────────────────────────── */
-        .ranking-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 14px;
-            margin: 3px 0;
-            background: var(--white);
-            border: 1px solid var(--border-light);
-            gap: 12px;
-        }
-
-        .ranking-position {
-            font-family: 'Playfair Display', serif;
-            font-size: 18px;
-            font-weight: 700;
-            min-width: 28px;
-            color: var(--text-light);
-            text-align: right;
-        }
-
+        .ranking-item { display: flex; align-items: center; padding: 12px 14px; margin: 3px 0; background: var(--white); border: 1px solid var(--border-light); gap: 12px; }
+        .ranking-position { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; min-width: 28px; color: var(--text-light); text-align: right; }
         .ranking-name { flex: 1; }
         .ranking-name .name { font-weight: 600; font-size: 13px; color: var(--text); }
-        .ranking-name .title-tag {
-            font-size: 11px;
-            color: var(--secondary);
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            margin-top: 2px;
-        }
-
-        .ranking-stats {
-            font-size: 11px;
-            text-align: right;
-            color: var(--text-light);
-            line-height: 1.6;
-        }
+        .ranking-name .title-tag { font-size: 11px; color: var(--secondary); font-weight: 600; letter-spacing: 0.04em; margin-top: 2px; }
+        .ranking-stats { font-size: 11px; text-align: right; color: var(--text-light); line-height: 1.6; }
 
         /* ── WELCOME ─────────────────────────────────── */
-        .welcome-hero {
-            padding: 44px 20px 32px;
-            text-align: center;
-            background: var(--primary-dark);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .welcome-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image:
-                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px),
-                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px);
-            pointer-events: none;
-        }
-
-        .welcome-wordmark {
-            font-family: 'Playfair Display', serif;
-            font-size: 34px;
-            font-weight: 700;
-            color: var(--white);
-            letter-spacing: 0.02em;
-            position: relative;
-        }
-
+        .welcome-hero { padding: 44px 20px 32px; text-align: center; background: var(--primary-dark); position: relative; overflow: hidden; }
+        .welcome-hero::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px); pointer-events: none; }
+        .welcome-wordmark { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 700; color: var(--white); letter-spacing: 0.02em; position: relative; }
         .welcome-wordmark span { color: var(--secondary); }
-
-        .welcome-tagline {
-            font-size: 12px;
-            font-weight: 400;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: #8AA0AA;
-            margin-top: 6px;
-            position: relative;
-        }
-
-        .welcome-divider {
-            width: 40px;
-            height: 2px;
-            background: var(--secondary);
-            margin: 18px auto;
-            position: relative;
-        }
+        .welcome-tagline { font-size: 12px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: #8AA0AA; margin-top: 6px; position: relative; }
+        .welcome-divider { width: 40px; height: 2px; background: var(--secondary); margin: 18px auto; position: relative; }
 
         /* ── INFO BOX ─────────────────────────────────── */
-        .info-box {
-            background: var(--parchment);
-            border-left: 3px solid var(--secondary);
-            padding: 11px 13px;
-            margin: 12px 0;
-            font-size: 13px;
-            line-height: 1.6;
-            color: var(--text-mid);
-        }
+        .info-box { background: var(--parchment); border-left: 3px solid var(--secondary); padding: 11px 13px; margin: 12px 0; font-size: 13px; line-height: 1.6; color: var(--text-mid); }
 
         /* ── BADGES ───────────────────────────────────── */
-        .pending-badge {
-            display: inline-block;
-            background: var(--parchment);
-            border: 1px solid var(--border);
-            padding: 2px 8px;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--text-light);
-        }
-
-        .conquered-badge {
-            display: inline-block;
-            background: #E6F0EB;
-            border: 1px solid #A8C8B4;
-            padding: 2px 8px;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--success);
-        }
+        .pending-badge { display: inline-block; background: var(--parchment); border: 1px solid var(--border); padding: 2px 8px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-light); }
+        .conquered-badge { display: inline-block; background: #E6F0EB; border: 1px solid #A8C8B4; padding: 2px 8px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--success); }
 
         /* ── CONQUEST CARDS ───────────────────────────── */
-        .conquest-card {
-            background: var(--white);
-            border: 1px solid var(--border-light);
-            border-left: 3px solid var(--success);
-            padding: 13px 14px;
-            margin: 5px 0;
-            cursor: pointer;
-            transition: border-color 0.15s, background 0.12s;
-        }
-
+        .conquest-card { background: var(--white); border: 1px solid var(--border-light); border-left: 3px solid var(--success); padding: 13px 14px; margin: 5px 0; cursor: pointer; transition: border-color 0.15s, background 0.12s; }
         .conquest-card:hover { background: var(--parchment); }
         .conquest-card.unconquered { border-left-color: var(--border-light); background: var(--light); }
 
         /* ── CONQUEST BUTTON ──────────────────────────── */
-        .conquest-button {
-            background: var(--success);
-            color: #E6F0EB;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            padding: 14px;
-            width: 100%;
-            margin-top: 14px;
-        }
-
+        .conquest-button { background: var(--success); color: #E6F0EB; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 14px; width: 100%; margin-top: 14px; }
         .conquest-button:hover { background: #1d4032; color: #fff; }
 
         /* ── ALERT BOXES ──────────────────────────────── */
-        .distance-alert {
-            background: #FBF6E8;
-            border: 1px solid #E0CFA0;
-            border-left: 3px solid #B89040;
-            padding: 11px 13px;
-            margin: 12px 0;
-            font-size: 12px;
-            color: #7A6020;
-            line-height: 1.5;
-        }
-
-        .conquest-status {
-            background: #E6F0EB;
-            border: 1px solid #A8C8B4;
-            border-left: 3px solid var(--success);
-            padding: 11px 13px;
-            margin: 12px 0;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            color: var(--success);
-            text-align: center;
-        }
+        .distance-alert { background: #FBF6E8; border: 1px solid #E0CFA0; border-left: 3px solid #B89040; padding: 11px 13px; margin: 12px 0; font-size: 12px; color: #7A6020; line-height: 1.5; }
+        .conquest-status { background: #E6F0EB; border: 1px solid #A8C8B4; border-left: 3px solid var(--success); padding: 11px 13px; margin: 12px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--success); text-align: center; }
 
         /* ── GALLERY ──────────────────────────────────── */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-            gap: 6px;
-            margin: 10px 0;
-        }
-
-        .gallery-item {
-            aspect-ratio: 1;
-            border: 1px solid var(--border-light);
-            overflow: hidden;
-            cursor: pointer;
-            background: var(--parchment);
-        }
-
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; margin: 10px 0; }
+        .gallery-item { aspect-ratio: 1; border: 1px solid var(--border-light); overflow: hidden; cursor: pointer; background: var(--parchment); }
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
 
         /* ── INPUT ROW ────────────────────────────────── */
-        .input-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 6px 0;
-        }
-
+        .input-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
         .input-row input { flex: 1; margin: 0; }
         .copy-btn { padding: 10px 14px; font-size: 11px; margin: 0; flex-shrink: 0; }
 
         /* ── FORM LABELS ──────────────────────────────── */
-        .field-label {
-            display: block;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--text-light);
-            margin-top: 16px;
-            margin-bottom: 2px;
-        }
+        .field-label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light); margin-top: 16px; margin-bottom: 2px; }
 
         /* ── CAMERA ───────────────────────────────────── */
         .camera-input { display: none; }
-
-        .camera-button {
-            background: var(--secondary);
-            color: #fff;
-            width: 100%;
-            padding: 13px;
-            font-size: 12px;
-        }
-
+        .camera-button { background: var(--secondary); color: #fff; width: 100%; padding: 13px; font-size: 12px; }
         .camera-button:hover { background: var(--primary); }
 
-        /* ── POINT DISTANCE ───────────────────────────── */
-        .point-distance {
-            display: inline-block;
-            background: var(--parchment);
-            border: 1px solid var(--border-light);
-            padding: 3px 8px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--secondary);
-            letter-spacing: 0.04em;
-        }
-
         /* ── TITLE BADGE ──────────────────────────────── */
-        .title-badge {
-            display: block;
-            background: var(--primary-dark);
-            color: #A8C4CC;
-            padding: 10px 14px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-top: 10px;
-            text-align: center;
-            border: 1px solid var(--primary);
-        }
+        .title-badge { display: block; background: var(--primary-dark); color: #A8C4CC; padding: 10px 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 10px; text-align: center; border: 1px solid var(--primary); }
 
         /* ── VERSION ──────────────────────────────────── */
-        .version {
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-light);
-            letter-spacing: 0.06em;
-            margin-top: 28px;
-        }
+        .version { text-align: center; font-size: 11px; color: var(--text-light); letter-spacing: 0.06em; margin-top: 28px; }
 
         /* ── PHOTO MODAL ──────────────────────────────── */
-        .photo-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 25, 35, 0.6);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(2px);
-        }
-
+        .photo-modal { display: none; position: fixed; inset: 0; background: rgba(15, 25, 35, 0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
         .photo-modal.active { display: flex; }
         .photo-modal-overlay { position: absolute; inset: 0; }
-
-        .photo-modal-content {
-            background: var(--white);
-            width: calc(100% - 32px);
-            max-width: 480px;
-            max-height: 80vh;
-            padding: 18px;
-            overflow-y: auto;
-            border-top: 3px solid var(--secondary);
-            position: relative;
-            z-index: 2001;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .photo-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .photo-modal-close {
-            background: transparent;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-light);
-            padding: 0;
-            font-weight: 300;
-            text-transform: none;
-            letter-spacing: 0;
-        }
-
+        .photo-modal-content { background: var(--white); width: calc(100% - 32px); max-width: 480px; max-height: 80vh; padding: 18px; overflow-y: auto; border-top: 3px solid var(--secondary); position: relative; z-index: 2001; display: flex; flex-direction: column; gap: 14px; }
+        .photo-modal-header { display: flex; justify-content: space-between; align-items: center; }
+        .photo-modal-close { background: transparent; border: none; font-size: 24px; cursor: pointer; color: var(--text-light); padding: 0; font-weight: 300; text-transform: none; letter-spacing: 0; }
         .photo-modal-close:hover { color: var(--text); background: transparent; }
-
-        .photo-modal-image {
-            width: 100%;
-            max-height: 400px;
-            object-fit: contain;
-            border: 1px solid var(--border-light);
-        }
+        .photo-modal-image { width: 100%; max-height: 400px; object-fit: contain; border: 1px solid var(--border-light); }
 
         /* ── SECTION DIVIDER ──────────────────────────── */
-        .section-label {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--text-light);
-            margin: 20px 0 8px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid var(--border-light);
-        }
+        .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); margin: 20px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border-light); }
 
         /* ── SCROLLBAR ────────────────────────────────── */
         ::-webkit-scrollbar { width: 4px; }
@@ -849,132 +444,31 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--text-light); }
 
         /* ── LOCATION STATUS BAR ──────────────────────── */
-        .loc-bar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.06em;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            flex-shrink: 0;
-        }
-
+        .loc-bar { display: flex; align-items: center; gap: 8px; padding: 8px 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; border-bottom: 1px solid rgba(0,0,0,0.1); flex-shrink: 0; }
         .loc-bar.unknown  { background: #2A2A2A; color: #888; }
         .loc-bar.waiting  { background: #1A3A4F; color: #8AA0AA; }
         .loc-bar.ok       { background: var(--success); color: #E6F0EB; }
         .loc-bar.error    { background: var(--danger); color: #F0E0E0; }
         .loc-bar.denied   { background: #5A3A00; color: #F0D080; }
         .loc-bar.insecure { background: #5A3A00; color: #F0D080; }
-
-        .loc-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
+        .loc-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
         .loc-bar.unknown  .loc-dot { background: #666; }
         .loc-bar.waiting  .loc-dot { background: #8AA0AA; animation: pulse 1.2s infinite; }
         .loc-bar.ok       .loc-dot { background: #A8E6BC; animation: pulse 2.5s infinite; }
         .loc-bar.error    .loc-dot { background: #F0A0A0; }
         .loc-bar.denied   .loc-dot { background: #F0D080; }
         .loc-bar.insecure .loc-dot { background: #F0D080; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        .loc-retry {
-            margin-left: auto;
-            background: rgba(255,255,255,0.15);
-            color: inherit;
-            border: 1px solid rgba(255,255,255,0.25);
-            padding: 3px 10px;
-            font-size: 10px;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .loc-retry { margin-left: auto; background: rgba(255,255,255,0.15); color: inherit; border: 1px solid rgba(255,255,255,0.25); padding: 3px 10px; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; cursor: pointer; }
         .loc-retry:hover { background: rgba(255,255,255,0.25); }
 
         /* ── LOCATION PERMISSION PROMPT ───────────────── */
-        .loc-prompt {
-            background: var(--parchment);
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--secondary);
-            padding: 14px;
-            margin: 0 0 14px;
-            display: none;
-        }
-
+        .loc-prompt { background: var(--parchment); border: 1px solid var(--border); border-left: 3px solid var(--secondary); padding: 14px; margin: 0 0 14px; display: none; }
         .loc-prompt.visible { display: block; }
-        .loc-prompt-title {
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--text-mid);
-            margin-bottom: 6px;
-        }
-
+        .loc-prompt-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mid); margin-bottom: 6px; }
         .loc-prompt p { font-size: 13px; color: var(--text-mid); line-height: 1.6; margin-bottom: 12px; }
-
-        .loc-prompt-denied {
-            background: #FBF0D8;
-            border-left-color: #B89040;
-            display: none;
-        }
-
+        .loc-prompt-denied { background: #FBF0D8; border-left-color: #B89040; display: none; }
         .loc-prompt-denied.visible { display: block; }
-
-        /* ── CUSTOM LEAFLET MARKER STYLES ─────────────── */
-        .custom-marker-wrap {
-            position: relative;
-            width: 32px;
-            height: 32px;
-            /* centred on lat/lng */
-        }
-
-        /* pulsing ring behind near markers */
-        .marker-ring {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            border: 2px solid currentColor;
-            animation: markerPulse 2s ease-out infinite;
-            opacity: 0;
-        }
-
-        .marker-core {
-            position: absolute;
-            inset: 6px;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.7);
-        }
-
-        /* user dot */
-        .user-dot-outer {
-            position: absolute;
-            inset: 3px;
-            border-radius: 50%;
-            background: rgba(184, 73, 10, 0.25);
-            border: 2px solid rgba(184, 73, 10, 0.4);
-        }
-
-        .user-dot-inner {
-            position: absolute;
-            inset: 9px;
-            border-radius: 50%;
-            background: var(--marker-user);
-            border: 2px solid #fff;
-            animation: userBlink 2.8s ease-in-out infinite;
-            box-shadow: 0 0 6px rgba(184,73,10,0.6);
-        }
     </style>
 </head>
 <body>
@@ -987,7 +481,6 @@
             <div class="welcome-tagline">Patrimoni Històric de Catalunya</div>
             <div class="welcome-divider"></div>
         </div>
-
         <div class="content" style="display: flex; flex-direction: column; justify-content: space-between; padding-top: 28px;">
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <div class="info-box" style="margin-bottom: 16px;">
@@ -1010,26 +503,21 @@
         <div class="content">
             <h2>Crea el teu compte</h2>
             <div class="info-box">Necessites un nom per começar. Es generarà un codi únic per accedir des de qualsevol dispositiu.</div>
-
             <label class="field-label">El teu nom</label>
             <input type="text" id="userName" placeholder="Escriu el teu nom" />
-
             <label class="field-label" style="margin-top: 18px;">Identificador d'accés (no el comparteixis)</label>
             <div class="input-row">
                 <input type="text" id="generatedCode" readonly style="background: var(--parchment); font-family: monospace; letter-spacing: 2px;" />
                 <button class="copy-btn" onclick="copyCode()">Copiar</button>
             </div>
-
             <div style="margin-top: 22px;">
                 <div class="section-label">Consentiment de fotografies</div>
                 <div class="info-box">Les fotos que facis s'empraran per enriquir el patrimoni visual de Catalunya i podran ser vistes per altres usuaris.</div>
-
                 <div class="radio-group">
                     <label><input type="radio" name="acceptance" value="yes" /> Sí, accepto compartir les fotografies</label>
                     <label><input type="radio" name="acceptance" value="no" checked /> No, prefereixo no participar-hi</label>
                 </div>
             </div>
-
             <div id="errorMsg" class="error-msg"></div>
             <button onclick="createUser()" style="width: 100%; margin-top: 24px; padding: 14px;">Crear compte</button>
         </div>
@@ -1116,12 +604,31 @@
         <div class="loc-bar unknown" id="locBar">
             <div class="loc-dot"></div>
             <span id="locBarText">Ubicació desconeguda</span>
-            <button class="loc-retry" id="locRetryBtn" onclick="requestLocation()" style="display:none;">Reintentar</button>
+            <button class="loc-retry" id="locRetryBtn" onclick="retryLocation()" style="display:none;">Reintentar</button>
         </div>
 
-        <!-- Map fills remaining height -->
         <div class="map-container">
             <div id="map"></div>
+
+            <!-- Loading overlay — shown while geo + data are fetching -->
+            <div id="mapLoadOverlay">
+                <div class="load-title">Carregant el mapa…</div>
+                <div class="load-spinner"></div>
+                <div class="load-step" id="loadSteps">
+                    <div class="load-step-row" id="step-map">
+                        <span class="step-icon">🗺</span>Inicialitzant mapa
+                    </div>
+                    <div class="load-step-row" id="step-geo">
+                        <span class="step-icon">📡</span>Obtenint ubicació GPS
+                    </div>
+                    <div class="load-step-row" id="step-punts">
+                        <span class="step-icon">📍</span>Carregant punts
+                    </div>
+                    <div class="load-step-row" id="step-done">
+                        <span class="step-icon">✓</span>Llest
+                    </div>
+                </div>
+            </div>
 
             <!-- HUD: top-left stats -->
             <div id="mapHud">
@@ -1129,7 +636,7 @@
                 <div class="hud-pill"><span id="hudDone">—</span> conquerits</div>
             </div>
 
-            <!-- Bottom: "X punts a tocar" banner -->
+            <!-- Near banner -->
             <div id="nearBanner" class="hidden">
                 <div class="near-banner-inner">
                     <div class="near-banner-dot"></div>
@@ -1163,14 +670,8 @@
         </div>
         <div class="content" style="padding-bottom: 74px;">
             <div class="stats-row">
-                <div class="stat-box">
-                    <div class="stat-value" id="collComarcas">0</div>
-                    <div class="stat-label">Conquerides</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="collPunts">0</div>
-                    <div class="stat-label">Punts totals</div>
-                </div>
+                <div class="stat-box"><div class="stat-value" id="collComarcas">0</div><div class="stat-label">Conquerides</div></div>
+                <div class="stat-box"><div class="stat-value" id="collPunts">0</div><div class="stat-label">Punts totals</div></div>
             </div>
             <div id="comarcasList"></div>
         </div>
@@ -1220,44 +721,22 @@
         </div>
         <div class="content">
             <div class="section-label">Informació</div>
-            <div class="list-item" onclick="goToAbout()">
-                <span>Sobre TerritoCat</span>
-                <span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span>
-            </div>
-            <div class="list-item" onclick="goToLegal()">
-                <span>Privacitat i dades</span>
-                <span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span>
-            </div>
-            <div class="list-item" onclick="goToInstructions()">
-                <span>Com funciona</span>
-                <span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span>
-            </div>
-            <div class="list-item" onclick="goToIdentifier()">
-                <span>El meu codi d'accés</span>
-                <span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span>
-            </div>
-
+            <div class="list-item" onclick="goToAbout()"><span>Sobre TerritoCat</span><span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span></div>
+            <div class="list-item" onclick="goToLegal()"><span>Privacitat i dades</span><span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span></div>
+            <div class="list-item" onclick="goToInstructions()"><span>Com funciona</span><span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span></div>
+            <div class="list-item" onclick="goToIdentifier()"><span>El meu codi d'accés</span><span style="color: var(--text-light); font-size: 18px; line-height: 1;">›</span></div>
             <div class="section-label">Compte</div>
-            <div class="list-item" onclick="confirmLogout()" style="color: var(--danger);">
-                <span>Tancar sessió</span>
-                <span style="font-size: 18px; line-height: 1;">›</span>
-            </div>
-
+            <div class="list-item" onclick="confirmLogout()" style="color: var(--danger);"><span>Tancar sessió</span><span style="font-size: 18px; line-height: 1;">›</span></div>
             <div class="version">TerritoCat · v1.0 · juny 2025</div>
         </div>
     </div>
 
     <!-- ══════════════════════════════════════ ABOUT -->
     <div id="aboutScreen" class="screen">
-        <div class="header">
-            <button class="header-back" onclick="backToSettings()">← Enrere</button>
-            <div class="header-title">Sobre TerritoCat</div>
-            <div class="header-right"></div>
-        </div>
+        <div class="header"><button class="header-back" onclick="backToSettings()">← Enrere</button><div class="header-title">Sobre TerritoCat</div><div class="header-right"></div></div>
         <div class="content">
             <div class="section-label">Qui som</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Sóc Àlex Fernández Rascón, estudiant d'Enginyeria Informàtica a la Universitat Autònoma de Barcelona. TerritoCat és el meu Treball de Fi de Grau (TFG), desenvolupat conjuntament amb el Centre de Visió per Computador (CVC).</p>
-
             <div class="section-label" style="margin-top: 22px;">Objectiu</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Crear una aplicació interactiva per redescobrir el patrimoni cultural i arquitectònic de Catalunya, a través de la gamificació basada en ubicació i fotografia.</p>
         </div>
@@ -1265,18 +744,12 @@
 
     <!-- ══════════════════════════════════════ LEGAL -->
     <div id="legalScreen" class="screen">
-        <div class="header">
-            <button class="header-back" onclick="backToSettings()">← Enrere</button>
-            <div class="header-title">Privacitat i dades</div>
-            <div class="header-right"></div>
-        </div>
+        <div class="header"><button class="header-back" onclick="backToSettings()">← Enrere</button><div class="header-title">Privacitat i dades</div><div class="header-right"></div></div>
         <div class="content">
             <div class="section-label">Ubicació</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">S'utilitza exclusivament per mostrar punts d'interès propers i oferir l'experiència basada en territori.</p>
-
             <div class="section-label" style="margin-top: 22px;">Dades personals</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">No es comparteixen amb tercers i es mantenen de forma segura dins el sistema.</p>
-
             <div class="section-label" style="margin-top: 22px;">Fotografies</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Les fotos s'utilitzen per enriquir la xarxa visual del patrimoni català. La participació és sempre voluntària i pots revocar-ne el consentiment en qualsevol moment des de la configuració.</p>
         </div>
@@ -1284,21 +757,14 @@
 
     <!-- ══════════════════════════════════════ INSTRUCTIONS -->
     <div id="instructionsScreen" class="screen">
-        <div class="header">
-            <button class="header-back" onclick="backToSettings()">← Enrere</button>
-            <div class="header-title">Com funciona</div>
-            <div class="header-right"></div>
-        </div>
+        <div class="header"><button class="header-back" onclick="backToSettings()">← Enrere</button><div class="header-title">Com funciona</div><div class="header-right"></div></div>
         <div class="content">
             <div class="section-label">Exploració</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Explora Catalunya visitant els punts marcats al mapa. Els colors indiquen l'estat: gris (llunyà), blau (proper), verd (conquerit).</p>
-
             <div class="section-label" style="margin-top: 22px;">Conquesta</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Quan estiguis a menys de 25 metres d'un punt, podràs fer-hi una fotografia i conquerir-lo. La geolocalització ha d'estar activada.</p>
-
             <div class="section-label" style="margin-top: 22px;">Col·lecció</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Consulta el teu progrés per comarca. Cal conquerir els cinc punts d'una comarca per marcar-la com a completa.</p>
-
             <div class="section-label" style="margin-top: 22px;">Rànquing</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Competeix amb altres exploradors. Cada comarca i cada punt sumen posicions i t'atorguen un títol basat en la llegenda catalana.</p>
         </div>
@@ -1306,11 +772,7 @@
 
     <!-- ══════════════════════════════════════ IDENTIFIER -->
     <div id="identifierScreen" class="screen">
-        <div class="header">
-            <button class="header-back" onclick="backToSettings()">← Enrere</button>
-            <div class="header-title">Codi d'accés</div>
-            <div class="header-right"></div>
-        </div>
+        <div class="header"><button class="header-back" onclick="backToSettings()">← Enrere</button><div class="header-title">Codi d'accés</div><div class="header-right"></div></div>
         <div class="content" style="display: flex; flex-direction: column; justify-content: center;">
             <p style="font-size: 13px; color: var(--text-mid); margin-bottom: 16px; line-height: 1.6;">Utilitza aquest codi per accedir des d'altres dispositius. Guarda'l en un lloc segur i no el comparteixis.</p>
             <div style="font-family: monospace; font-size: 20px; font-weight: 700; letter-spacing: 3px; padding: 20px; background: var(--primary-dark); color: var(--white); text-align: center; border: 1px solid var(--primary); margin: 16px 0;" id="displayCode">XXXX-XXXX-XXXX</div>
@@ -1328,7 +790,6 @@
             <button class="modal-close" onclick="closePointModal()">&#215;</button>
         </div>
         <p id="pointModalDesc" style="font-size: 13px; color: var(--text-mid); margin: 0 0 10px; line-height: 1.6;"></p>
-
         <div id="pointModalHistoricPhotos"></div>
         <div id="pointModalUserPhotos"></div>
         <div id="pointModalMyPhoto"></div>
@@ -1364,30 +825,67 @@
 <script>
     const API_BASE = 'https://dagdemos.cvc.uab.es:8501';
 
-    // conquest radius in degrees (~25m at latitude 41°)
-    const CONQUEST_DEG = 0.000225; // ≈ 25 m
+    // ─── CONQUEST RADIUS ────────────────────────────────────────────────
+    // Physical radius in metres used for: visual circle, nearness check, modal UI
+    const CONQUEST_METRES = 25;
 
+    // Convert metres to degrees latitude (constant everywhere)
+    const METRES_PER_DEG_LAT = 111320;
+
+    // Compute great-circle distance in metres between two [lat,lng] points
+    // Uses equirectangular approximation — accurate enough for 25 m at lat 41°
+    function distanceMetres(lat1, lng1, lat2, lng2) {
+        const dLat = (lat2 - lat1) * METRES_PER_DEG_LAT;
+        const dLng = (lng2 - lng1) * METRES_PER_DEG_LAT * Math.cos((lat1 * Math.PI) / 180);
+        return Math.sqrt(dLat * dLat + dLng * dLng);
+    }
+
+    // ─── APP STATE ───────────────────────────────────────────────────────
     let state = {
         userCode: localStorage.getItem('userCode') || null,
         userName: localStorage.getItem('userName') || null,
         currentScreen: null,
-        currentPosition: null,
+        currentPosition: null,   // [lat, lng]
         map: null,
+        mapInitialised: false,
+        mapDataLoaded: false,
         mapMarkers: [],
-        userMarker: null,       // user position marker layer group
-        radiusCircle: null,     // conquest radius circle
+        userMarker: null,
+        radiusCircle: null,
         conquests: [],
         allPunts: [],
         currentComarca: null,
         selectedPoint: null,
-        captureMode: false,
         photoBase64: null
     };
 
+    // ─── LOADING OVERLAY HELPERS ─────────────────────────────────────────
+    function setLoadStep(id, status) {
+        // status: 'active' | 'done' | '' (idle)
+        const el = document.getElementById('step-' + id);
+        if (!el) return;
+        el.className = 'load-step-row' + (status ? ' ' + status : '');
+    }
+
+    function showMapOverlay() {
+        const ov = document.getElementById('mapLoadOverlay');
+        if (ov) { ov.style.opacity = '1'; ov.style.pointerEvents = 'auto'; ov.classList.remove('hidden'); }
+    }
+
+    function hideMapOverlay() {
+        const ov = document.getElementById('mapLoadOverlay');
+        if (!ov) return;
+        ov.style.opacity = '0';
+        ov.style.pointerEvents = 'none';
+        setTimeout(() => ov.classList.add('hidden'), 420);
+    }
+
+    // ─── SCREEN MANAGEMENT ───────────────────────────────────────────────
     function initApp() {
         if (state.userCode) {
             showScreen('gameScreen');
             updateStats();
+            // Detect geo capability early so prompts render correctly
             if (!navigator.geolocation) {
                 geoState = 'error';
             } else if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
@@ -1414,34 +912,29 @@
     }
 
     // ─── NAVIGATION ──────────────────────────────────────────────────────
-    function goToNewUser() { showScreen('newUserScreen'); generateCode(); }
+    function goToNewUser()      { showScreen('newUserScreen'); generateCode(); }
     function goToExistingUser() { showScreen('existingUserScreen'); }
 
     function goToMap() {
         showScreen('mapScreen');
-        setTimeout(() => {
-            if (!state.map) initMap();
-            else {
-                loadMapData();
-                if (geoState === 'unknown' || geoState === 'error') requestLocation();
-            }
-        }, 100);
+
+        // Reset overlay to visible with fresh step indicators
+        showMapOverlay();
+        setLoadStep('map',   '');
+        setLoadStep('geo',   '');
+        setLoadStep('punts', '');
+        setLoadStep('done',  '');
+
+        // Small delay lets the screen paint before we do heavy work
+        setTimeout(initMapSequence, 80);
     }
 
-    function goToCollection() {
-        showScreen('collectionScreen');
-        loadComarques();
-    }
-
-    function goToRanking() {
-        showScreen('rankingScreen');
-        loadRanking();
-    }
-
-    function goToSettings() { showScreen('settingsScreen'); }
+    function goToCollection() { showScreen('collectionScreen'); loadComarques(); }
+    function goToRanking()    { showScreen('rankingScreen');    loadRanking(); }
+    function goToSettings()   { showScreen('settingsScreen'); }
     function backToSettings() { showScreen('settingsScreen'); }
-    function goToAbout() { showScreen('aboutScreen'); }
-    function goToLegal() { showScreen('legalScreen'); }
+    function goToAbout()        { showScreen('aboutScreen'); }
+    function goToLegal()        { showScreen('legalScreen'); }
     function goToInstructions() { showScreen('instructionsScreen'); }
     function goToIdentifier() {
         document.getElementById('displayCode').textContent = state.userCode;
@@ -1452,9 +945,9 @@
     function switchTab(tab, e) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         if (e && e.target) e.target.classList.add('active');
-        if (tab === 'game') showScreen('gameScreen');
+        if (tab === 'game')       showScreen('gameScreen');
         else if (tab === 'collection') goToCollection();
-        else if (tab === 'ranking') goToRanking();
+        else if (tab === 'ranking')    goToRanking();
     }
 
     // ─── AUTH ─────────────────────────────────────────────────────────────
@@ -1475,14 +968,12 @@
     }
 
     async function createUser() {
-        const name = document.getElementById('userName').value.trim();
-        const code = document.getElementById('generatedCode').value;
+        const name     = document.getElementById('userName').value.trim();
+        const code     = document.getElementById('generatedCode').value;
         const accepted = document.querySelector('input[name="acceptance"]:checked').value === 'yes';
-
         document.getElementById('errorMsg').textContent = '';
-        if (!name) { document.getElementById('errorMsg').textContent = 'Introdueix un nom.'; return; }
+        if (!name)     { document.getElementById('errorMsg').textContent = 'Introdueix un nom.'; return; }
         if (!accepted) { document.getElementById('errorMsg').textContent = "Has d'acceptar les condicions per participar."; return; }
-
         try {
             const res = await fetch(`${API_BASE}/nou_usuari`, {
                 method: 'POST',
@@ -1508,14 +999,12 @@
     async function loginUser() {
         const code = document.getElementById('existingCode').value.trim().toUpperCase();
         document.getElementById('existingErrorMsg').textContent = '';
-
         if (!code.match(/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) {
             document.getElementById('existingErrorMsg').textContent = 'Format incorrecte (XXXX-XXXX-XXXX).';
             return;
         }
-
         try {
-            const res = await fetch(`${API_BASE}/existeix_usuari/${code}`);
+            const res  = await fetch(`${API_BASE}/existeix_usuari/${code}`);
             const data = await res.json();
             if (data.existeix) {
                 localStorage.setItem('userCode', code);
@@ -1546,7 +1035,11 @@
     const GEO_OPTIONS = { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 };
 
     let geoWatchId = null;
-    let geoState = 'unknown';
+    let geoState   = 'unknown';
+
+    // Resolve/reject references for the one-shot promise used in initMapSequence
+    let _geoPendingResolve = null;
+    let _geoPendingReject  = null;
 
     function setLocBarState(s, text) {
         geoState = s;
@@ -1578,23 +1071,27 @@
     }
 
     function handleLocationSuccess(pos) {
-        const prev = state.currentPosition;
-        state.currentPosition = [pos.coords.latitude, pos.coords.longitude];
+        const newLat = pos.coords.latitude;
+        const newLng = pos.coords.longitude;
+        const prev   = state.currentPosition;
+        state.currentPosition = [newLat, newLng];
+
         setLocBarState('ok', 'Ubicació activa · ±' + Math.round(pos.coords.accuracy) + ' m');
         updateGameScreenPrompts();
 
-        // Update user marker + radius circle on map
-        if (state.map) {
-            updateUserMarker();
-            if (!prev) {
-                state.map.setView(state.currentPosition, 17);
-                loadMapData();
-            } else {
-                const moved = Math.hypot(
-                    state.currentPosition[0] - prev[0],
-                    state.currentPosition[1] - prev[1]
-                );
-                if (moved > 0.0001) loadMapData();
+        // Resolve the one-shot promise if still waiting (first fix)
+        if (_geoPendingResolve) {
+            _geoPendingResolve(state.currentPosition);
+            _geoPendingResolve = null;
+            _geoPendingReject  = null;
+        }
+
+        // Subsequent position updates: refresh map data if we moved meaningfully
+        if (state.mapInitialised && prev) {
+            const moved = distanceMetres(prev[0], prev[1], newLat, newLng);
+            if (moved > 5) {
+                updateUserMarker();
+                refreshMapMarkers(); // lightweight — no full re-fetch needed
             }
         }
     }
@@ -1608,28 +1105,95 @@
             setLocBarState('error', "Temps d'espera esgotat — reintenta");
         }
         updateGameScreenPrompts();
+
+        // Reject pending geo promise so the map can still show without position
+        if (_geoPendingReject) {
+            _geoPendingReject(new Error('Geo error ' + err.code));
+            _geoPendingResolve = null;
+            _geoPendingReject  = null;
+        }
     }
 
-    function requestLocation() {
-        if (!navigator.geolocation) {
-            setLocBarState('error', 'Geolocalització no disponible en aquest navegador');
+    // Returns a Promise that resolves with [lat,lng] on first GPS fix, or rejects on error
+    function requestFirstPosition() {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                reject(new Error('no-geolocation'));
+                return;
+            }
+            if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                setLocBarState('insecure', 'Connexió HTTP — la ubicació pot estar bloquejada');
+                updateGameScreenPrompts();
+                // still try; some browsers allow it on http localhost variants
+            }
+
+            setLocBarState('waiting', 'Sol·licitant ubicació GPS…');
             updateGameScreenPrompts();
+
+            // Stop any previous watch
+            if (geoWatchId !== null) {
+                navigator.geolocation.clearWatch(geoWatchId);
+                geoWatchId = null;
+            }
+
+            // Store resolve/reject so handleLocationSuccess/Error can call them
+            _geoPendingResolve = resolve;
+            _geoPendingReject  = reject;
+
+            // Start a continuous watch — first callback resolves the promise,
+            // subsequent ones will update position live
+            geoWatchId = navigator.geolocation.watchPosition(
+                handleLocationSuccess,
+                handleLocationError,
+                GEO_OPTIONS
+            );
+        });
+    }
+
+    // Called from the retry button in the loc bar
+    function retryLocation() {
+        if (!state.mapInitialised) {
+            // Map not yet open; just update the home screen prompt
+            requestLocation();
             return;
         }
+        // Re-run the geo step only (map tiles already loaded)
+        showMapOverlay();
+        setLoadStep('map',   'done');
+        setLoadStep('geo',   'active');
+        setLoadStep('punts', '');
+        setLoadStep('done',  '');
 
-        if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-            setLocBarState('insecure', 'Connexió HTTP — la ubicació pot estar bloquejada');
-            updateGameScreenPrompts();
-        }
+        requestFirstPosition()
+            .then(pos => {
+                setLoadStep('geo', 'done');
+                setLoadStep('punts', 'active');
+                return fetchAndRenderMapData(pos);
+            })
+            .then(() => {
+                setLoadStep('punts', 'done');
+                setLoadStep('done',  'done');
+                hideMapOverlay();
+            })
+            .catch(() => {
+                // Show map without position
+                setLoadStep('geo', '');
+                fetchAndRenderMapData(null).then(() => {
+                    setLoadStep('punts', 'done');
+                    setLoadStep('done',  'done');
+                    hideMapOverlay();
+                });
+            });
+    }
 
+    // Legacy helper still used from home screen prompt button
+    function requestLocation() {
         setLocBarState('waiting', 'Sol·licitant ubicació…');
         updateGameScreenPrompts();
-
         if (geoWatchId !== null) {
             navigator.geolocation.clearWatch(geoWatchId);
             geoWatchId = null;
         }
-
         geoWatchId = navigator.geolocation.watchPosition(
             handleLocationSuccess,
             handleLocationError,
@@ -1637,37 +1201,158 @@
         );
     }
 
-    // ─── MAP ──────────────────────────────────────────────────────────────
-    function initMap() {
-        state.map = L.map('map', {zoomControl: false}).setView([41.9973, 2.8235], 10);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            subdomains: ['a', 'b', 'c', 'd'],
-            maxZoom: 19
-        }).addTo(state.map);
-        requestLocation();
+    // ─── MAP INITIALISATION SEQUENCE ─────────────────────────────────────
+    // Called once when the user taps "Obrir mapa".
+    // Order: init Leaflet → get GPS fix → fetch data → hide overlay
+    async function initMapSequence() {
+        // ── Step 1: init Leaflet tiles ────────────────────────────────
+        setLoadStep('map', 'active');
+
+        if (!state.mapInitialised) {
+            state.map = L.map('map', {zoomControl: false}).setView([41.9973, 2.8235], 10);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                subdomains: ['a', 'b', 'c', 'd'],
+                maxZoom: 19
+            }).addTo(state.map);
+            state.mapInitialised = true;
+        }
+
+        setLoadStep('map', 'done');
+
+        // ── Step 2: GPS fix ───────────────────────────────────────────
+        setLoadStep('geo', 'active');
+
+        let position = null;
+        try {
+            position = await requestFirstPosition();
+            setLoadStep('geo', 'done');
+            // Centre map on user immediately
+            state.map.setView(position, 17);
+            updateUserMarker();
+        } catch (e) {
+            // Geo failed / denied — continue without position
+            setLoadStep('geo', '');
+            setLoadStep('punts', 'active');
+        }
+
+        // ── Step 3: fetch punts + conquests ───────────────────────────
+        setLoadStep('punts', 'active');
+        await fetchAndRenderMapData(position);
+        setLoadStep('punts', 'done');
+
+        // ── Step 4: done ──────────────────────────────────────────────
+        setLoadStep('done', 'done');
+        hideMapOverlay();
     }
 
-    // ── User position marker (custom SVG dot + accuracy halo) ─────────────
+    // ─── MAP: fetch data + render markers ────────────────────────────────
+    // position is [lat,lng] or null if geo unavailable
+    async function fetchAndRenderMapData(position) {
+        if (!state.map) return;
+        try {
+            const [punts, conquests] = await Promise.all([
+                fetch(`${API_BASE}/punts`).then(r => r.json()),
+                fetch(`${API_BASE}/conquestes_punts/${state.userCode}`).then(r => r.json())
+            ]);
+            state.allPunts  = punts;
+            state.conquests = conquests;
+            state.mapDataLoaded = true;
+            renderMapMarkers(position);
+        } catch (e) {
+            console.error('Error loading map data:', e);
+        }
+    }
+
+    // Render / re-render all point markers using current state
+    function renderMapMarkers(position) {
+        if (!state.map || !state.mapDataLoaded) return;
+
+        // Remove old markers
+        state.mapMarkers.forEach(m => state.map.removeLayer(m));
+        state.mapMarkers = [];
+
+        let nearCount  = 0;
+        const doneCount = state.conquests.length;
+
+        state.allPunts.forEach(punt => {
+            const [lng, lat] = punt.coordenades.coordinates;
+            const isConquered = state.conquests.includes(punt.nom);
+            let isNear = false;
+            let dist   = null;
+
+            if (position) {
+                dist   = distanceMetres(position[0], position[1], lat, lng);
+                isNear = dist < CONQUEST_METRES;
+                if (isNear) nearCount++;
+            }
+
+            let color = '#8A8070';
+            if (isConquered)   color = '#2A5C3F';
+            else if (isNear)   color = '#2A7A8C';
+
+            const ring = isNear
+                ? `<div style="position:absolute;inset:-8px;border-radius:50%;border:2px solid ${color};animation:markerPulse 2s ease-out infinite;"></div>`
+                : '';
+
+            const icon = L.divIcon({
+                className: '',
+                html: `<div style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
+                         ${ring}
+                         <div style="width:22px;height:22px;border-radius:50%;background:${color};border:2.5px solid rgba(250,250,248,0.9);box-shadow:0 1px 5px rgba(0,0,0,0.28);"></div>
+                       </div>`,
+                iconSize: [44, 44],
+                iconAnchor: [22, 22]
+            });
+
+            const marker = L.marker([lat, lng], {icon}).addTo(state.map);
+            marker.on('click', () => showPointModal(punt, isConquered));
+            state.mapMarkers.push(marker);
+        });
+
+        // Update HUD
+        document.getElementById('hudNear').textContent = nearCount;
+        document.getElementById('hudDone').textContent = doneCount;
+
+        // Near banner
+        const banner = document.getElementById('nearBanner');
+        if (nearCount > 0) {
+            document.getElementById('nearBannerText').textContent =
+                nearCount === 1
+                    ? "1 punt a menys de 25 m — obre'l al mapa!"
+                    : `${nearCount} punts a menys de 25 m — a conquerir!`;
+            banner.classList.remove('hidden');
+        } else {
+            banner.classList.add('hidden');
+        }
+
+        // Keep user marker on top
+        updateUserMarker();
+    }
+
+    // Called on GPS updates after initial load
+    function refreshMapMarkers() {
+        renderMapMarkers(state.currentPosition);
+    }
+
+    // ─── USER POSITION MARKER ─────────────────────────────────────────────
     function updateUserMarker() {
         if (!state.map || !state.currentPosition) return;
         const [lat, lng] = state.currentPosition;
 
-        // Remove old layers
-        if (state.userMarker) state.map.removeLayer(state.userMarker);
+        if (state.userMarker)   state.map.removeLayer(state.userMarker);
         if (state.radiusCircle) state.map.removeLayer(state.radiusCircle);
 
-        // Conquest radius circle — subtle dashed ring
+        // Conquest radius visual — use actual 25 m in Leaflet metres
         state.radiusCircle = L.circle([lat, lng], {
-            radius: 25,                          // metres
+            radius: CONQUEST_METRES,
             color: '#2A7A8C',
             weight: 1.5,
-            opacity: 0.55,
+            opacity: 0.6,
             fillColor: '#2A7A8C',
-            fillOpacity: 0.07,
+            fillOpacity: 0.08,
             dashArray: '4 5'
         }).addTo(state.map);
 
-        // User dot icon (larger, animated)
         const userIcon = L.divIcon({
             className: '',
             html: `<div style="position:relative;width:28px;height:28px;">
@@ -1681,87 +1366,11 @@
         state.userMarker = L.marker([lat, lng], {icon: userIcon, zIndexOffset: 900}).addTo(state.map);
     }
 
-    async function loadMapData() {
-        if (!state.map) return;
-        try {
-            const [punts, conquests] = await Promise.all([
-                fetch(`${API_BASE}/punts`).then(r => r.json()),
-                fetch(`${API_BASE}/conquestes_punts/${state.userCode}`).then(r => r.json())
-            ]);
-
-            state.allPunts = punts;
-            state.conquests = conquests;
-
-            // Remove old point markers (but keep user marker)
-            state.mapMarkers.forEach(m => state.map.removeLayer(m));
-            state.mapMarkers = [];
-
-            let nearCount = 0;
-            const doneCount = conquests.length;
-
-            punts.forEach(punt => {
-                const [lng, lat] = punt.coordenades.coordinates;
-                const isConquered = conquests.includes(punt.nom);
-                let isNear = false;
-
-                let color = '#8A8070';
-                if (isConquered) {
-                    color = '#2A5C3F';
-                } else if (state.currentPosition) {
-                    const d = Math.hypot(lat - state.currentPosition[0], lng - state.currentPosition[1]);
-                    if (d < CONQUEST_DEG) { color = '#2A7A8C'; isNear = true; nearCount++; }
-                }
-
-                // Build larger touch-friendly marker (22px core, 44px touch target)
-                const ring = isNear
-                    ? `<div style="position:absolute;inset:-6px;border-radius:50%;border:2px solid ${color};animation:markerPulse 2s ease-out infinite;"></div>`
-                    : '';
-
-                const icon = L.divIcon({
-                    className: '',
-                    html: `<div style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
-                             ${ring}
-                             <div style="width:22px;height:22px;border-radius:50%;background:${color};border:2.5px solid rgba(250,250,248,0.9);box-shadow:0 1px 5px rgba(0,0,0,0.28);"></div>
-                           </div>`,
-                    iconSize: [44, 44],
-                    iconAnchor: [22, 22],
-                    popupAnchor: [0, -22]
-                });
-
-                const marker = L.marker([lat, lng], {icon}).addTo(state.map);
-                marker.on('click', () => showPointModal(punt, isConquered));
-                state.mapMarkers.push(marker);
-            });
-
-            // Update HUD
-            document.getElementById('hudNear').textContent = nearCount;
-            document.getElementById('hudDone').textContent = doneCount;
-
-            // Near banner
-            const banner = document.getElementById('nearBanner');
-            if (nearCount > 0) {
-                document.getElementById('nearBannerText').textContent =
-                    nearCount === 1
-                        ? '1 punt a menys de 25 m — obre\'l al mapa!'
-                        : `${nearCount} punts a menys de 25 m — a conquerir!`;
-                banner.classList.remove('hidden');
-            } else {
-                banner.classList.add('hidden');
-            }
-
-            // Re-draw user marker on top
-            updateUserMarker();
-
-        } catch (e) {
-            console.error('Error loading map:', e);
-        }
-    }
-
     function recenterMap() {
-        if (state.currentPosition) {
+        if (state.currentPosition && state.map) {
             state.map.setView(state.currentPosition, 17);
         } else {
-            requestLocation();
+            retryLocation();
         }
     }
 
@@ -1775,7 +1384,7 @@
             ]);
 
             document.getElementById('collComarcas').textContent = resum.comarques_conquerides || 0;
-            document.getElementById('collPunts').textContent = resum.punts_conquerits || 0;
+            document.getElementById('collPunts').textContent    = resum.punts_conquerits || 0;
 
             const sorted = comarques.sort((a, b) => {
                 const cA = conquests[a.nom] || 0, cB = conquests[b.nom] || 0;
@@ -1791,8 +1400,8 @@
                 const done  = count >= 5;
                 return `
                     <div class="list-item" onclick="openComarcaDetail('${c.nom}')"
-                         style="background: ${done ? '#E6F0EB' : 'var(--white)'}; border-left: 3px solid ${done ? 'var(--success)' : 'var(--border-light)'};">
-                        <span style="font-weight: ${done ? 600 : 400}; font-size: 13px;">${c.nom}</span>
+                         style="background:${done ? '#E6F0EB' : 'var(--white)'};border-left:3px solid ${done ? 'var(--success)' : 'var(--border-light)'};">
+                        <span style="font-weight:${done ? 600 : 400};font-size:13px;">${c.nom}</span>
                         <span class="${done ? 'conquered-badge' : 'pending-badge'}">${done ? 'Conquerida' : count + ' / 5'}</span>
                     </div>`;
             }).join('');
@@ -1825,12 +1434,12 @@
                 const conquered = conquests.includes(p.nom);
                 return `
                     <div class="conquest-card ${conquered ? '' : 'unconquered'}" onclick="showPointDetailsModal('${p.nom}')">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">${p.nom}</div>
-                                <div style="font-size: 12px; color: var(--text-mid); line-height: 1.5;">${p.descripcio || ''}</div>
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                            <div style="flex:1;">
+                                <div style="font-weight:600;font-size:13px;margin-bottom:4px;">${p.nom}</div>
+                                <div style="font-size:12px;color:var(--text-mid);line-height:1.5;">${p.descripcio || ''}</div>
                             </div>
-                            <div style="flex-shrink: 0;">
+                            <div style="flex-shrink:0;">
                                 <span class="${conquered ? 'conquered-badge' : 'pending-badge'}">${conquered ? 'Conquerit' : 'Pendent'}</span>
                             </div>
                         </div>
@@ -1845,16 +1454,16 @@
 
     // ─── RANKING TITLES ───────────────────────────────────────────────────
     const CATALAN_TITLES = [
-        { min: 90, title: 'Truita amb suc',      desc: 'El plat més humil de la cuina catalana. Ous, patata, brou — res més. Un inici modest.' },
-        { min: 80, title: 'El Caganer',           desc: 'Figura irreverent del pessebre català des del segle XVII. Symbolo d\'allò imprevisible i humà.' },
-        { min: 70, title: 'En Patufet',           desc: 'El personatge més petit del folklore català, tan menut que cabia sota una fulla de col. Gegant d\'esperit.' },
-        { min: 60, title: 'Aitana Bonmatí',       desc: 'Migcampista del FC Barcelona i la selecció espanyola, dues vegades Guanyadora de la Pilota d\'Or (2023, 2024). La millor del món.' },
-        { min: 50, title: 'El Timbaler del Bruc', desc: 'Segons la llegenda, un noi de Santpedor va fer fugir les tropes napoleòniques el 1808 fent ressonar el seu timbal entre les muntanyes de Montserrat.' },
-        { min: 40, title: 'La Mulassa',           desc: 'Bèstia de foc del bestiari festiu català. Figura imponent de les festes majors, símbol de força i tradició popular.' },
-        { min: 30, title: 'La Rosa de Sant Jordi',desc: 'El 23 d\'abril Catalunya s\'omple de roses i llibres. Símbol de cultura, amor i identitat catalana per excel·lència.' },
-        { min: 20, title: 'El Comte Arnau',       desc: 'El mite literari català per excel·lència. Condemnat a cavalcar per l\'eternitat sobre un cavall de foc pels seus pecats.' },
-        { min: 10, title: 'Sant Jordi',           desc: 'Patró de Catalunya. Cavaller que va vèncer el drac per salvar la princesa. La seva sang es va convertir en roses. Celebrat cada 23 d\'abril.' },
-        { min: 0,  title: 'Almogàver',            desc: 'L\'elit dels guerrers medievals catalans. Mercenaris temuts arreu de la Mediterrània, des de Sicília fins a Bizanci. El seu crit de guerra: "Desperta, ferro!"' }
+        { min: 90, title: 'Truita amb suc',       desc: 'El plat més humil de la cuina catalana. Ous, patata, brou — res més. Un inici modest.' },
+        { min: 80, title: 'El Caganer',            desc: 'Figura irreverent del pessebre català des del segle XVII. Symbolo d\'allò imprevisible i humà.' },
+        { min: 70, title: 'En Patufet',            desc: 'El personatge més petit del folklore català, tan menut que cabia sota una fulla de col. Gegant d\'esperit.' },
+        { min: 60, title: 'Aitana Bonmatí',        desc: 'Migcampista del FC Barcelona i la selecció espanyola, dues vegades Guanyadora de la Pilota d\'Or (2023, 2024). La millor del món.' },
+        { min: 50, title: 'El Timbaler del Bruc',  desc: 'Segons la llegenda, un noi de Santpedor va fer fugir les tropes napoleòniques el 1808 fent ressonar el seu timbal entre les muntanyes de Montserrat.' },
+        { min: 40, title: 'La Mulassa',            desc: 'Bèstia de foc del bestiari festiu català. Figura imponent de les festes majors, símbol de força i tradició popular.' },
+        { min: 30, title: 'La Rosa de Sant Jordi', desc: 'El 23 d\'abril Catalunya s\'omple de roses i llibres. Símbol de cultura, amor i identitat catalana per excel·lència.' },
+        { min: 20, title: 'El Comte Arnau',        desc: 'El mite literari català per excel·lència. Condemnat a cavalcar per l\'eternitat sobre un cavall de foc pels seus pecats.' },
+        { min: 10, title: 'Sant Jordi',            desc: 'Patró de Catalunya. Cavaller que va vèncer el drac per salvar la princesa. La seva sang es va convertir en roses. Celebrat cada 23 d\'abril.' },
+        { min: 0,  title: 'Almogàver',             desc: 'L\'elit dels guerrers medievals catalans. Mercenaris temuts arreu de la Mediterrània, des de Sicília fins a Bizanci. El seu crit de guerra: "Desperta, ferro!"' }
     ];
 
     function getTitleByPercentile(position, totalPlayers) {
@@ -1869,18 +1478,18 @@
     // ─── RANKING ──────────────────────────────────────────────────────────
     async function loadRanking() {
         try {
-            const ranking = await fetch(`${API_BASE}/ranking`).then(r => r.json());
-            const total = ranking.length;
+            const ranking     = await fetch(`${API_BASE}/ranking`).then(r => r.json());
+            const total       = ranking.length;
             const medalColors = ['#B8860B', '#8A8A8A', '#8C5A2A'];
 
             document.getElementById('rankingList').innerHTML = `
                 <div class="section-label">Classificació general</div>
                 ${ranking.map((u, i) => {
-                    const pos = i + 1;
-                    const t = getTitleByPercentile(pos, total);
+                    const pos     = i + 1;
+                    const t       = getTitleByPercentile(pos, total);
                     const isMedal = pos <= 3;
                     return `
-                        <div class="ranking-item" style="${isMedal ? 'border-left: 3px solid ' + medalColors[i] + '; background: var(--parchment);' : ''}">
+                        <div class="ranking-item" style="${isMedal ? 'border-left:3px solid ' + medalColors[i] + ';background:var(--parchment);' : ''}">
                             <div class="ranking-position" style="${isMedal ? 'color:' + medalColors[i] : ''}">${pos}</div>
                             <div class="ranking-name">
                                 <div class="name">${u.nom}</div>
@@ -1899,19 +1508,19 @@
                 const mt = getTitleByPercentile(myIdx + 1, total);
                 document.getElementById('myRanking').innerHTML = `
                     <div class="section-label">La teva posició</div>
-                    <div class="ranking-item" style="border: 1px solid var(--secondary); border-left: 3px solid var(--secondary); background: #EAF4F6;">
-                        <div class="ranking-position" style="color: var(--secondary);">${myIdx + 1}</div>
+                    <div class="ranking-item" style="border:1px solid var(--secondary);border-left:3px solid var(--secondary);background:#EAF4F6;">
+                        <div class="ranking-position" style="color:var(--secondary);">${myIdx + 1}</div>
                         <div class="ranking-name">
-                            <div class="name" style="color: var(--primary-dark);">${me.nom}</div>
+                            <div class="name" style="color:var(--primary-dark);">${me.nom}</div>
                             <div class="title-tag">${mt.title}</div>
                         </div>
-                        <div class="ranking-stats" style="color: var(--text-mid);">
+                        <div class="ranking-stats" style="color:var(--text-mid);">
                             <div>${me.comarques} comarques</div>
                             <div>${me.punts} punts</div>
                         </div>
                     </div>
                     <div class="title-badge">${mt.title.toUpperCase()}</div>
-                    <p style="font-size: 12px; color: var(--text-light); margin-top: 10px; line-height: 1.6;">${mt.desc}</p>`;
+                    <p style="font-size:12px;color:var(--text-light);margin-top:10px;line-height:1.6;">${mt.desc}</p>`;
             }
         } catch (e) {
             console.error('Error loading ranking:', e);
@@ -1923,7 +1532,7 @@
         try {
             const resum = await fetch(`${API_BASE}/resum_conquestes/${state.userCode}`).then(r => r.json());
             document.getElementById('comarcasCount').textContent = resum.comarques_conquerides || 0;
-            document.getElementById('puntsCount').textContent = resum.punts_conquerits || 0;
+            document.getElementById('puntsCount').textContent    = resum.punts_conquerits || 0;
         } catch (e) {
             console.error('Error updating stats:', e);
         }
@@ -1933,16 +1542,14 @@
     async function showPointModal(punt, isConquered) {
         state.selectedPoint = punt;
         document.getElementById('pointModalTitle').textContent = punt.nom;
-        document.getElementById('pointModalDesc').textContent = punt.descripcio || '';
+        document.getElementById('pointModalDesc').textContent  = punt.descripcio || '';
 
-        let distance = null;
+        const [lng, lat] = punt.coordenades.coordinates;
+        let dist = null;
         if (state.currentPosition) {
-            const [lng, lat] = punt.coordenades.coordinates;
-            const dDeg = Math.hypot(lat - state.currentPosition[0], lng - state.currentPosition[1]);
-            // Convert degrees to metres (approx)
-            distance = Math.round(dDeg * 111320);
+            dist = Math.round(distanceMetres(state.currentPosition[0], state.currentPosition[1], lat, lng));
         }
-        const isNear = distance !== null && distance < 25;
+        const isNear = dist !== null && dist < CONQUEST_METRES;
 
         // Historic photos (only if near or conquered)
         const historicPhotos = punt.foto_urls || [];
@@ -1961,7 +1568,7 @@
             loadUserPhotosForPoint(punt.nom);
         } else {
             document.getElementById('pointModalUserPhotos').innerHTML = '';
-            document.getElementById('pointModalMyPhoto').innerHTML = '';
+            document.getElementById('pointModalMyPhoto').innerHTML    = '';
         }
 
         let actionHtml = '';
@@ -1971,10 +1578,10 @@
             actionHtml = `<button class="conquest-button" onclick="capturePhoto('${punt.nom}')">Capturar foto i conquerir</button>`;
             document.getElementById('pointModalStatus').innerHTML = `
                 <div class="conquest-status" style="background:#EAF4F6;border-color:#90C8D8;color:var(--secondary);">
-                    📍 Estàs a ${distance} m — pots conquerir!
+                    📍 Estàs a ${dist} m — pots conquerir!
                 </div>`;
         } else {
-            const distText = distance !== null ? ` Estàs a uns ${distance} m.` : '';
+            const distText = dist !== null ? ` Estàs a uns ${dist} m.` : '';
             actionHtml = `<div class="distance-alert">Has d'estar a menys de 25 metres del punt per poder conquerir-lo.${distText}</div>`;
             document.getElementById('pointModalStatus').innerHTML = '';
         }
@@ -1988,22 +1595,12 @@
         if (punt) showPointModal(punt, state.conquests.includes(puntNom));
     }
 
-    function closePointModal() {
-        document.getElementById('pointModal').classList.remove('active');
-    }
-
-    function showFullImage(url) {
-        document.getElementById('fullImage').src = url;
-        document.getElementById('imageModal').classList.add('active');
-    }
-
-    function closeImageModal() {
-        document.getElementById('imageModal').classList.remove('active');
-    }
+    function closePointModal()  { document.getElementById('pointModal').classList.remove('active'); }
+    function showFullImage(url) { document.getElementById('fullImage').src = url; document.getElementById('imageModal').classList.add('active'); }
+    function closeImageModal()  { document.getElementById('imageModal').classList.remove('active'); }
 
     function capturePhoto(puntNom) {
         state.selectedPoint = puntNom;
-        state.captureMode = true;
         document.getElementById('cameraInput').click();
     }
 
@@ -2015,7 +1612,6 @@
         reader.onload = async (ev) => {
             const base64 = ev.target.result;
             state.photoBase64 = base64;
-
             try {
                 const ok = await fetch(`${API_BASE}/conquerir_punt`, {
                     method: 'POST',
@@ -2031,14 +1627,19 @@
                     alert('Punt conquerit!');
                     closePointModal();
                     updateStats();
-                    if (state.map) loadMapData();
+                    if (state.map && state.mapDataLoaded) {
+                        // Refresh conquests list then re-render markers
+                        try {
+                            state.conquests = await fetch(`${API_BASE}/conquestes_punts/${state.userCode}`).then(r => r.json());
+                            renderMapMarkers(state.currentPosition);
+                        } catch (_) {}
+                    }
                 } else {
                     alert('Error en conquerir el punt.');
                 }
             } catch (err) {
                 alert('Error: ' + err.message);
             }
-
             e.target.value = '';
         };
         reader.readAsDataURL(file);
@@ -2056,7 +1657,7 @@
                     <div style="text-align:center;">
                         <img src="${userPhoto.foto_base64}"
                              onclick="showPhotoDetailModal('${puntNom}', '${userPhoto.foto_base64}')"
-                             style="max-width:100%; max-height:260px; object-fit:contain; cursor:pointer; border:1px solid var(--border-light);" />
+                             style="max-width:100%;max-height:260px;object-fit:contain;cursor:pointer;border:1px solid var(--border-light);" />
                     </div>`;
             } else {
                 document.getElementById('pointModalMyPhoto').innerHTML = '';
