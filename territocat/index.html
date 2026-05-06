@@ -1177,7 +1177,6 @@
         if (state.userCode) {
             showScreen('gameScreen');
             updateStats();
-            // Check geo support immediately so the prompt is shown
             if (!navigator.geolocation) {
                 geoState = 'error';
             } else if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
@@ -1203,7 +1202,7 @@
         }
     }
 
-    // Navigation
+    // ─── NAVIGATION ──────────────────────────────────────────────────────
     function goToNewUser() { showScreen('newUserScreen'); generateCode(); }
     function goToExistingUser() { showScreen('existingUserScreen'); }
 
@@ -1212,7 +1211,6 @@
         setTimeout(() => {
             if (!state.map) initMap();
             else {
-                // Map already exists — refresh data; also retry location if not active
                 loadMapData();
                 if (geoState === 'unknown' || geoState === 'error') requestLocation();
             }
@@ -1221,7 +1219,7 @@
 
     function goToCollection() {
         showScreen('collectionScreen');
-        loadComarques();
+        loadComarques();  // ← was incorrectly calling createUser() before
     }
 
     function goToRanking() {
@@ -1248,7 +1246,7 @@
         else if (tab === 'ranking') goToRanking();
     }
 
-    // Auth
+    // ─── AUTH ─────────────────────────────────────────────────────────────
     function generateCode() {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         const seg = () => Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
@@ -1265,6 +1263,7 @@
         alert('Codi copiat!');
     }
 
+    // ─── CREATE USER (only defined once) ─────────────────────────────────
     async function createUser() {
         const name = document.getElementById('userName').value.trim();
         const code = document.getElementById('generatedCode').value;
@@ -1272,7 +1271,7 @@
 
         document.getElementById('errorMsg').textContent = '';
         if (!name) { document.getElementById('errorMsg').textContent = 'Introdueix un nom.'; return; }
-        if (!accepted) { document.getElementById('errorMsg').textContent = 'Has d\'acceptar les condicions per participar.'; return; }
+        if (!accepted) { document.getElementById('errorMsg').textContent = "Has d'acceptar les condicions per participar."; return; }
 
         try {
             const res = await fetch(`${API_BASE}/nou_usuari`, {
@@ -1297,7 +1296,7 @@
     }
 
     async function loginUser() {
-        const code = document.getElementById('existingCode').value.trim();
+        const code = document.getElementById('existingCode').value.trim().toUpperCase();
         document.getElementById('existingErrorMsg').textContent = '';
 
         if (!code.match(/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) {
@@ -1310,7 +1309,9 @@
             const data = await res.json();
             if (data.existeix) {
                 localStorage.setItem('userCode', code);
+                localStorage.setItem('userName', data.nom || '');
                 state.userCode = code;
+                state.userName = data.nom || '';
                 showScreen('gameScreen');
                 updateStats();
                 updateGameScreenPrompts();
@@ -1332,11 +1333,7 @@
     }
 
     // ─── GEOLOCATION ─────────────────────────────────────────────────────
-    const GEO_OPTIONS = {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 5000
-    };
+    const GEO_OPTIONS = { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 };
 
     let geoWatchId = null;
     let geoState = 'unknown'; // unknown | waiting | ok | error | denied | insecure
@@ -1353,9 +1350,9 @@
     }
 
     function updateGameScreenPrompts() {
-        const ask     = document.getElementById('locPromptAsk');
-        const denied  = document.getElementById('locPromptDenied');
-        const https   = document.getElementById('locPromptHttps');
+        const ask    = document.getElementById('locPromptAsk');
+        const denied = document.getElementById('locPromptDenied');
+        const https  = document.getElementById('locPromptHttps');
         if (!ask) return;
         ask.classList.remove('visible');
         denied.classList.remove('visible');
@@ -1368,7 +1365,6 @@
         } else if (geoState === 'unknown' || geoState === 'error') {
             ask.classList.add('visible');
         }
-        // 'waiting' and 'ok' → no prompt shown
     }
 
     function handleLocationSuccess(pos) {
@@ -1377,29 +1373,27 @@
         setLocBarState('ok', 'Ubicació activa · ±' + Math.round(pos.coords.accuracy) + ' m');
         updateGameScreenPrompts();
 
-        // Re-center map on first fix, or if we moved significantly
         if (state.map) {
             if (!prev) {
                 state.map.setView(state.currentPosition, 17);
-                loadMapData(); // refresh marker colours with real position
+                loadMapData();
             } else {
                 const moved = Math.hypot(
                     state.currentPosition[0] - prev[0],
                     state.currentPosition[1] - prev[1]
                 );
-                if (moved > 0.0001) loadMapData(); // ~11 m threshold
+                if (moved > 0.0001) loadMapData();
             }
         }
     }
 
     function handleLocationError(err) {
-        // err.code: 1=PERMISSION_DENIED 2=UNAVAILABLE 3=TIMEOUT
         if (err.code === 1) {
             setLocBarState('denied', 'Permís denegat — revisa la configuració');
         } else if (err.code === 2) {
             setLocBarState('error', 'Senyal GPS no disponible — reintenta');
         } else {
-            setLocBarState('error', 'Temps d\'espera esgotat — reintenta');
+            setLocBarState('error', "Temps d'espera esgotat — reintenta");
         }
         updateGameScreenPrompts();
     }
@@ -1411,17 +1405,14 @@
             return;
         }
 
-        // Warn if HTTP (most mobile browsers block geo on non-secure origins)
         if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
             setLocBarState('insecure', 'Connexió HTTP — la ubicació pot estar bloquejada');
             updateGameScreenPrompts();
-            // still attempt; some HTTP contexts (LAN testing) work
         }
 
         setLocBarState('waiting', 'Sol·licitant ubicació…');
         updateGameScreenPrompts();
 
-        // Stop any existing watcher before starting a new one
         if (geoWatchId !== null) {
             navigator.geolocation.clearWatch(geoWatchId);
             geoWatchId = null;
@@ -1434,15 +1425,13 @@
         );
     }
 
-    // Map
+    // ─── MAP ──────────────────────────────────────────────────────────────
     function initMap() {
         state.map = L.map('map', {zoomControl: false}).setView([41.9973, 2.8235], 10);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
             subdomains: ['a', 'b', 'c', 'd'],
             maxZoom: 19
         }).addTo(state.map);
-
-        // Start watching if geolocation is available
         requestLocation();
     }
 
@@ -1498,8 +1487,10 @@
         }
     }
 
-    // Also call updateGameScreenPrompts after login transitions
-    async function createUser() {
+    // ─── COLLECTION / COMARQUES ───────────────────────────────────────────
+    // NOTE: This was previously named createUser() by mistake, causing the
+    // real createUser() to be silently overwritten. Now correctly named.
+    async function loadComarques() {
         try {
             const [comarques, conquests, resum] = await Promise.all([
                 fetch(`${API_BASE}/comarques`).then(r => r.json()),
@@ -1521,7 +1512,7 @@
 
             document.getElementById('comarcasList').innerHTML = sorted.map(c => {
                 const count = conquests[c.nom] || 0;
-                const done = count >= 5;
+                const done  = count >= 5;
                 return `
                     <div class="list-item" onclick="openComarcaDetail('${c.nom}')"
                          style="background: ${done ? '#E6F0EB' : 'var(--white)'}; border-left: 3px solid ${done ? 'var(--success)' : 'var(--border-light)'};">
@@ -1543,6 +1534,9 @@
                 fetch(`${API_BASE}/punts_comarca/${encodeURIComponent(comarca)}`).then(r => r.json()),
                 fetch(`${API_BASE}/conquestes_punts/${state.userCode}`).then(r => r.json())
             ]);
+
+            state.conquests = conquests;
+            state.allPunts  = [...new Map([...state.allPunts, ...punts].map(p => [p.nom, p])).values()];
 
             const sorted = punts.sort((a, b) => {
                 const cA = conquests.includes(a.nom), cB = conquests.includes(b.nom);
@@ -1573,59 +1567,18 @@
         }
     }
 
-    // ─── RANKING TITLES ──────────────────────────────────────────────────
-    // Titles are ordered from WORST (high percentile) to BEST (low percentile)
+    // ─── RANKING TITLES ───────────────────────────────────────────────────
     const CATALAN_TITLES = [
-        {
-            min: 90,
-            title: 'Truita amb suc',
-            desc: 'El plat més humil de la cuina catalana. Ous, patata, brou — res més. Un inici modest.'
-        },
-        {
-            min: 80,
-            title: 'El Caganer',
-            desc: 'Figura irreverent del pessebre català des del segle XVII. Symbolo d\'allò imprevisible i humà.'
-        },
-        {
-            min: 70,
-            title: 'En Patufet',
-            desc: 'El personatge més petit del folklore català, tan menut que cabia sota una fulla de col. Gegant d\'esperit.'
-        },
-        {
-            min: 60,
-            title: 'Aitana Bonmatí',
-            desc: 'Migcampista del FC Barcelona i la selecció espanyola, dues vegades Guanyadora de la Pilota d\'Or (2023, 2024). La millor del món.'
-        },
-        {
-            min: 50,
-            title: 'El Timbaler del Bruc',
-            desc: 'Segons la llegenda, un noi de Santpedor va fer fugir les tropes napoleòniques el 1808 fent ressonar el seu timbal entre les muntanyes de Montserrat.'
-        },
-        {
-            min: 40,
-            title: 'La Mulassa',
-            desc: 'Bèstia de foc del bestiari festiu català. Figura imponent de les festes majors, símbol de força i tradició popular.'
-        },
-        {
-            min: 30,
-            title: 'La Rosa de Sant Jordi',
-            desc: 'El 23 d\'abril Catalunya s\'omple de roses i llibres. Símbol de cultura, amor i identitat catalana per excel·lència.'
-        },
-        {
-            min: 20,
-            title: 'El Comte Arnau',
-            desc: 'El mite literari català per excel·lència. Condemnat a cavalcar per l\'eternitat sobre un cavall de foc pels seus pecats. Nascut d\'una balada del Ripollès al segle XVI.'
-        },
-        {
-            min: 10,
-            title: 'Sant Jordi',
-            desc: 'Patró de Catalunya. Cavaller que va vèncer el drac per salvar la princesa. La seva sang es va convertir en roses. Celebrat cada 23 d\'abril.'
-        },
-        {
-            min: 0,
-            title: 'Almogàver',
-            desc: 'L\'elit dels guerrers medievals catalans. Mercenaris temuts arreu de la Mediterrània, des de Sicília fins a Bizanci. El seu crit de guerra: "Desperta, ferro!"'
-        }
+        { min: 90, title: 'Truita amb suc',     desc: 'El plat més humil de la cuina catalana. Ous, patata, brou — res més. Un inici modest.' },
+        { min: 80, title: 'El Caganer',          desc: 'Figura irreverent del pessebre català des del segle XVII. Symbolo d\'allò imprevisible i humà.' },
+        { min: 70, title: 'En Patufet',          desc: 'El personatge més petit del folklore català, tan menut que cabia sota una fulla de col. Gegant d\'esperit.' },
+        { min: 60, title: 'Aitana Bonmatí',      desc: 'Migcampista del FC Barcelona i la selecció espanyola, dues vegades Guanyadora de la Pilota d\'Or (2023, 2024). La millor del món.' },
+        { min: 50, title: 'El Timbaler del Bruc',desc: 'Segons la llegenda, un noi de Santpedor va fer fugir les tropes napoleòniques el 1808 fent ressonar el seu timbal entre les muntanyes de Montserrat.' },
+        { min: 40, title: 'La Mulassa',          desc: 'Bèstia de foc del bestiari festiu català. Figura imponent de les festes majors, símbol de força i tradició popular.' },
+        { min: 30, title: 'La Rosa de Sant Jordi',desc: 'El 23 d\'abril Catalunya s\'omple de roses i llibres. Símbol de cultura, amor i identitat catalana per excel·lència.' },
+        { min: 20, title: 'El Comte Arnau',      desc: 'El mite literari català per excel·lència. Condemnat a cavalcar per l\'eternitat sobre un cavall de foc pels seus pecats. Nascut d\'una balada del Ripollès al segle XVI.' },
+        { min: 10, title: 'Sant Jordi',          desc: 'Patró de Catalunya. Cavaller que va vèncer el drac per salvar la princesa. La seva sang es va convertir en roses. Celebrat cada 23 d\'abril.' },
+        { min: 0,  title: 'Almogàver',           desc: 'L\'elit dels guerrers medievals catalans. Mercenaris temuts arreu de la Mediterrània, des de Sicília fins a Bizanci. El seu crit de guerra: "Desperta, ferro!"' }
     ];
 
     function getTitleByPercentile(position, totalPlayers) {
@@ -1637,12 +1590,11 @@
         return CATALAN_TITLES[0];
     }
 
-    // Ranking
+    // ─── RANKING ──────────────────────────────────────────────────────────
     async function loadRanking() {
         try {
             const ranking = await fetch(`${API_BASE}/ranking`).then(r => r.json());
             const total = ranking.length;
-
             const medalColors = ['#B8860B', '#8A8A8A', '#8C5A2A'];
 
             document.getElementById('rankingList').innerHTML = `
@@ -1690,7 +1642,7 @@
         }
     }
 
-    // Stats
+    // ─── STATS ────────────────────────────────────────────────────────────
     async function updateStats() {
         try {
             const resum = await fetch(`${API_BASE}/resum_conquestes/${state.userCode}`).then(r => r.json());
@@ -1701,7 +1653,7 @@
         }
     }
 
-    // Point modal
+    // ─── POINT MODAL ──────────────────────────────────────────────────────
     async function showPointModal(punt, isConquered) {
         state.selectedPoint = punt;
         document.getElementById('pointModalTitle').textContent = punt.nom;
@@ -1715,7 +1667,7 @@
         }
         const isNear = distance !== null && distance < DIST;
 
-        // Historic photos
+        // Historic photos (only if near or conquered)
         const historicPhotos = punt.foto_urls || [];
         if (historicPhotos.length > 0 && (isNear || isConquered)) {
             let html = '<div class="section-label">Fotografies patrimonials</div><div class="gallery-grid">';
@@ -1802,16 +1754,19 @@
                 } else {
                     alert('Error en conquerir el punt.');
                 }
-            } catch (e) {
-                alert('Error: ' + e.message);
+            } catch (err) {
+                alert('Error: ' + err.message);
             }
+
+            // Reset file input so the same file can be picked again if needed
+            e.target.value = '';
         };
         reader.readAsDataURL(file);
     }
 
     async function loadUserPhotosForPoint(puntNom) {
         try {
-            const allPhotos = await fetch(`${API_BASE}/fotografies`).then(r => r.json());
+            const allPhotos  = await fetch(`${API_BASE}/fotografies`).then(r => r.json());
             const userPhoto  = allPhotos.find(f => f.punt_id === puntNom && f.tipus === 'usuari' && f.codi_usuari === state.userCode);
             const otherPhotos = allPhotos.filter(f => f.punt_id === puntNom && f.tipus === 'usuari' && f.codi_usuari !== state.userCode);
 
@@ -1828,7 +1783,7 @@
             }
 
             if (otherPhotos.length > 0) {
-                let html = '<div class="section-label">Fotografies d\'altres usuaris</div><div class="gallery-grid">';
+                let html = "<div class=\"section-label\">Fotografies d'altres usuaris</div><div class=\"gallery-grid\">";
                 otherPhotos.forEach(photo => {
                     if (photo.foto_base64) {
                         html += `<div class="gallery-item" onclick="showPhotoDetailModal('', '${photo.foto_base64}')"><img src="${photo.foto_base64}" /></div>`;
