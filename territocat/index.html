@@ -164,7 +164,7 @@
         .error-msg { color: var(--danger); font-size: 12px; font-weight: 600; margin: 8px 0; letter-spacing: 0.02em; }
         .success-msg { color: var(--success); font-size: 12px; font-weight: 600; margin: 8px 0; }
 
-        /* ── RADIO GROUP ─────────────────────────────── */
+        /* ── RADIO GROUP ─────────────────────────── */
         .radio-group { margin: 12px 0; }
         .radio-group label { display: flex; align-items: center; gap: 8px; margin: 10px 0; cursor: pointer; font-size: 13px; color: var(--text-mid); }
 
@@ -502,7 +502,7 @@
         </div>
         <div class="content">
             <h2>Crea el teu compte</h2>
-            <div class="info-box">Necessites un nom per começar. Es generarà un codi únic per accedir des de qualsevol dispositiu.</div>
+            <div class="info-box">Necessites un nom per començar. Es generarà un codi únic per accedir des de qualsevol dispositiu.</div>
             <label class="field-label">El teu nom</label>
             <input type="text" id="userName" placeholder="Escriu el teu nom" />
             <label class="field-label" style="margin-top: 18px;">Identificador d'accés (no el comparteixis)</label>
@@ -577,7 +577,7 @@
             <div class="card">
                 <h3>Com jugar</h3>
                 <p style="font-size: 13px; color: var(--text-mid); line-height: 1.7;">
-                    Visita els punts del mapa. Quan siguis a menys de 25 metres, fes una foto per conquerir-lo. Completa els cinc punts d'una comarca per marcar-la com a conquerida.
+                    Visita els punts del mapa. Quan siguis a menys de 500 metres, fes una foto per conquerir-lo. Completa els cinc punts d'una comarca per marcar-la com a conquerida.
                 </p>
             </div>
 
@@ -622,7 +622,7 @@
                         <span class="step-icon">📡</span>Obtenint ubicació GPS
                     </div>
                     <div class="load-step-row" id="step-punts">
-                        <span class="step-icon">📍</span>Carregant punts
+                        <span class="step-icon">📍</span>Carregant punts propers
                     </div>
                     <div class="load-step-row" id="step-done">
                         <span class="step-icon">✓</span>Llest
@@ -647,7 +647,7 @@
             <!-- Legend -->
             <div id="mapLegend">
                 <div class="legend-row"><div class="legend-dot" style="background:#8A8070;"></div>Llunyà</div>
-                <div class="legend-row"><div class="legend-dot" style="background:#2A7A8C;"></div>Proper (&lt;25 m)</div>
+                <div class="legend-row"><div class="legend-dot" style="background:#2A7A8C;"></div>Proper (&lt;500 m)</div>
                 <div class="legend-row"><div class="legend-dot" style="background:#2A5C3F;"></div>Conquerit</div>
                 <div class="legend-row"><div class="legend-dot" style="background:#B8490A;"></div>La teva posició</div>
             </div>
@@ -762,7 +762,7 @@
             <div class="section-label">Exploració</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Explora Catalunya visitant els punts marcats al mapa. Els colors indiquen l'estat: gris (llunyà), blau (proper), verd (conquerit).</p>
             <div class="section-label" style="margin-top: 22px;">Conquesta</div>
-            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Quan estiguis a menys de 25 metres d'un punt, podràs fer-hi una fotografia i conquerir-lo. La geolocalització ha d'estar activada.</p>
+            <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Quan estiguis a menys de 500 metres d'un punt, podràs fer-hi una fotografia i conquerir-lo. La geolocalització ha d'estar activada.</p>
             <div class="section-label" style="margin-top: 22px;">Col·lecció</div>
             <p style="font-size: 13px; line-height: 1.7; color: var(--text-mid);">Consulta el teu progrés per comarca. Cal conquerir els cinc punts d'una comarca per marcar-la com a completa.</p>
             <div class="section-label" style="margin-top: 22px;">Rànquing</div>
@@ -825,15 +825,15 @@
 <script>
     const API_BASE = 'https://dagdemos.cvc.uab.es:8501';
 
-    // ─── CONQUEST RADIUS ────────────────────────────────────────────────
+    // ─── CONQUEST RADIUS (500 metres) ──────────────────────────────────
     // Physical radius in metres used for: visual circle, nearness check, modal UI
-    const CONQUEST_METRES = 25;
+    const CONQUEST_METRES = 500;
 
     // Convert metres to degrees latitude (constant everywhere)
     const METRES_PER_DEG_LAT = 111320;
 
     // Compute great-circle distance in metres between two [lat,lng] points
-    // Uses equirectangular approximation — accurate enough for 25 m at lat 41°
+    // Uses equirectangular approximation — accurate enough for 500 m at lat 41°
     function distanceMetres(lat1, lng1, lat2, lng2) {
         const dLat = (lat2 - lat1) * METRES_PER_DEG_LAT;
         const dLng = (lng2 - lng1) * METRES_PER_DEG_LAT * Math.cos((lat1 * Math.PI) / 180);
@@ -1235,7 +1235,7 @@
             setLoadStep('punts', 'active');
         }
 
-        // ── Step 3: fetch punts + conquests ───────────────────────────
+        // ── Step 3: fetch punts propers + conquests ───────────────────────────
         setLoadStep('punts', 'active');
         await fetchAndRenderMapData(position);
         setLoadStep('punts', 'done');
@@ -1250,10 +1250,20 @@
     async function fetchAndRenderMapData(position) {
         if (!state.map) return;
         try {
-            const [punts, conquests] = await Promise.all([
-                fetch(`${API_BASE}/punts`).then(r => r.json()),
-                fetch(`${API_BASE}/conquestes_punts/${state.userCode}`).then(r => r.json())
-            ]);
+            let punts = [];
+            
+            // If we have position, fetch only the 200 closest points
+            if (position) {
+                punts = await fetch(`${API_BASE}/punts_propers/${position[0]}/${position[1]}`)
+                    .then(r => r.json());
+            } else {
+                // Fallback to all points if no position available
+                punts = await fetch(`${API_BASE}/punts`).then(r => r.json());
+            }
+
+            const conquests = await fetch(`${API_BASE}/conquestes_punts/${state.userCode}`)
+                .then(r => r.json());
+
             state.allPunts  = punts;
             state.conquests = conquests;
             state.mapDataLoaded = true;
@@ -1318,8 +1328,8 @@
         if (nearCount > 0) {
             document.getElementById('nearBannerText').textContent =
                 nearCount === 1
-                    ? "1 punt a menys de 25 m — obre'l al mapa!"
-                    : `${nearCount} punts a menys de 25 m — a conquerir!`;
+                    ? "1 punt a menys de 500 m — obre'l al mapa!"
+                    : `${nearCount} punts a menys de 500 m — a conquerir!`;
             banner.classList.remove('hidden');
         } else {
             banner.classList.add('hidden');
@@ -1342,7 +1352,7 @@
         if (state.userMarker)   state.map.removeLayer(state.userMarker);
         if (state.radiusCircle) state.map.removeLayer(state.radiusCircle);
 
-        // Conquest radius visual — use actual 25 m in Leaflet metres
+        // Conquest radius visual — 500 metres
         state.radiusCircle = L.circle([lat, lng], {
             radius: CONQUEST_METRES,
             color: '#2A7A8C',
@@ -1582,7 +1592,7 @@
                 </div>`;
         } else {
             const distText = dist !== null ? ` Estàs a uns ${dist} m.` : '';
-            actionHtml = `<div class="distance-alert">Has d'estar a menys de 25 metres del punt per poder conquerir-lo.${distText}</div>`;
+            actionHtml = `<div class="distance-alert">Has d'estar a menys de 500 metres del punt per poder conquerir-lo.${distText}</div>`;
             document.getElementById('pointModalStatus').innerHTML = '';
         }
 
