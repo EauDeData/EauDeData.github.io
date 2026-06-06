@@ -1,0 +1,1366 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TDIR · Composed Historical Image Retrieval · BMVC 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--p:#f4ecda;--pale:#eee6d0;--aged:#ddd4b8;--deep:#14100a;--ink:#1e1810;--sepia:#8b6618;--rust:#c04020;--steel:#1e3a58;--sage:#3a5c3a;--hi:#e8c030;--mu:#706050;--blu:#1e3a58;--red:#8b2c14;--grn:#2a5a2a;--org:#7a4a0a;}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{background:var(--p);color:var(--ink);font-family:'Crimson Pro',serif;overflow-x:hidden;}
+.grain{position:fixed;inset:0;z-index:300;pointer-events:none;opacity:.04;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--sepia);z-index:500;width:0;}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(244,236,218,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(139,102,24,.2);padding:0 2rem;display:flex;align-items:center;height:46px;gap:1.3rem;}
+.logo{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--sepia);margin-right:auto;}
+nav a{font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);text-decoration:none;transition:color .2s;}
+nav a:hover,nav a.active{color:var(--rust);}nav a.active{border-bottom:1.5px solid var(--rust);padding-bottom:2px;}
+#toc{position:fixed;right:1.1rem;top:50%;transform:translateY(-50%);z-index:140;display:flex;flex-direction:column;gap:.75rem;align-items:flex-end;}
+#toc a{display:flex;align-items:center;gap:.55rem;text-decoration:none;cursor:pointer;}
+#toc .tl{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.1em;color:var(--mu);opacity:0;transform:translateX(6px);transition:all .25s;white-space:nowrap;}
+#toc .td{width:6px;height:6px;border-radius:50%;border:1px solid var(--sepia);background:transparent;transition:all .25s;flex-shrink:0;}
+#toc a:hover .tl,#toc a.active .tl{opacity:1;transform:none;color:var(--rust);}
+#toc a.active .td{background:var(--rust);border-color:var(--rust);}
+section{padding:5rem 0;}.dark{background:var(--deep);color:var(--p);}.pale{background:var(--pale);}
+.container{max-width:870px;margin:0 auto;padding:0 2rem;}
+.divider{height:1px;background:rgba(139,102,24,.2);margin:2.5rem 0;}
+/* HERO */
+#hero{min-height:100vh;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:5rem;padding-top:80px;}
+#hcan{position:absolute;inset:0;width:100%;height:100%;}
+.hc{position:relative;z-index:10;max-width:870px;margin:0 auto;padding:0 2rem;}
+.badge{font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--rust);margin-bottom:.9rem;display:flex;align-items:center;gap:.6rem;}
+.badge::before{content:'';width:22px;height:1.5px;background:var(--rust);}
+h1.ht{font-family:'DM Serif Display',serif;font-size:clamp(2rem,5vw,3.3rem);line-height:1.12;color:var(--ink);margin-bottom:.5rem;}
+h1.ht em{color:var(--sepia);font-style:italic;}
+.sub{font-size:1.08rem;color:var(--mu);max-width:560px;line-height:1.7;margin-bottom:2rem;}
+.hmeta{display:flex;gap:2.5rem;flex-wrap:wrap;}
+.hk{font-family:'DM Mono',monospace;font-size:.49rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sepia);margin-bottom:.2rem;}
+.hv{font-size:1rem;color:var(--ink);}
+.sh{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mu);display:flex;align-items:center;gap:.5rem;margin-top:2.5rem;}
+.sh::after{content:'↓';animation:bou 1.6s infinite;}@keyframes bou{0%,100%{transform:none}50%{transform:translateY(4px)}}
+/* TYPE */
+h2.st{font-family:'DM Serif Display',serif;font-size:2.1rem;line-height:1.22;margin-bottom:.8rem;}
+h3.nt{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--ink);margin-bottom:.6rem;line-height:1.2;}
+.dark h3.nt,.dark h2.st{color:var(--p);}
+.ey{font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.22em;text-transform:uppercase;color:var(--rust);margin-bottom:.65rem;}
+.ne{font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--rust);margin-bottom:.75rem;display:flex;align-items:center;gap:.55rem;}
+.ne::before{content:'◆';font-size:.45rem;opacity:.6;}
+.intro{font-size:1.12rem;line-height:1.82;max-width:640px;margin-bottom:1.8rem;}
+.dark .intro{color:rgba(244,236,218,.82);}
+.nb{font-size:1rem;color:var(--ink);line-height:1.76;margin-bottom:1.1rem;max-width:640px;}
+.dark .nb{color:rgba(244,236,218,.78);}
+.pq{border-left:3px solid var(--sepia);padding:.85rem 1.3rem;font-style:italic;font-size:1.02rem;color:var(--mu);line-height:1.7;margin:1.3rem 0;}
+code{font-family:'DM Mono',monospace;font-size:.82em;background:rgba(139,102,24,.12);padding:.08em .32em;border-radius:2px;}
+.dark code{background:rgba(244,236,218,.12);}
+.mbl{background:var(--pale);border:1px solid rgba(139,102,24,.22);padding:.95rem 1.5rem;font-family:'DM Mono',monospace;font-size:.86rem;line-height:2;margin:.95rem 0;overflow-x:auto;}
+.dark .mbl{background:rgba(244,236,218,.06);border-color:rgba(244,236,218,.14);color:var(--p);}
+/* CANVAS BOXES */
+.cb{background:var(--pale);border:1px solid rgba(139,102,24,.2);overflow:hidden;position:relative;}
+.cb canvas{display:block;width:100%;}
+.clbl{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--sepia);padding:.5rem .8rem;border-bottom:1px solid rgba(139,102,24,.14);}
+.chnt{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--mu);padding:.5rem .8rem;border-top:1px solid rgba(139,102,24,.11);line-height:1.5;}
+.dark .chnt{color:rgba(244,236,218,.5);}
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .55s,transform .55s;}.reveal.vis{opacity:1;transform:none;}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid rgba(139,102,24,.2);margin:1.8rem 0;}
+.stat{padding:1.2rem;border-right:1px solid rgba(139,102,24,.14);text-align:center;}.stat:last-child{border-right:none;}
+.sn{font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--sepia);margin-bottom:.18rem;}.dark .sn{color:var(--hi);}
+.sl{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.13em;text-transform:uppercase;color:var(--mu);}
+/* STEPPER */
+.step{display:flex;gap:0;border:1px solid rgba(139,102,24,.2);overflow:hidden;}
+.sx{flex:1;padding:.7rem .35rem;text-align:center;cursor:pointer;border-right:1px solid rgba(139,102,24,.14);background:var(--pale);transition:all .2s;font-family:'DM Mono',monospace;}
+.sx:last-child{border-right:none;}.sx.on{background:var(--ink);color:var(--p);}
+.sx:hover:not(.on){background:var(--aged);}
+.skk{font-size:.46rem;letter-spacing:.13em;color:var(--sepia);margin-bottom:.18rem;}.sx.on .skk{color:var(--hi);}
+.stt{font-size:.54rem;letter-spacing:.05em;text-transform:uppercase;}
+.sbox{border:1px solid rgba(139,102,24,.2);border-top:none;overflow:hidden;}
+.scap{background:var(--ink);color:rgba(244,236,218,.85);padding:.85rem 1.25rem;min-height:54px;font-size:.9rem;line-height:1.6;}
+.scap b{color:var(--hi);font-weight:400;font-family:'DM Mono',monospace;font-size:.84em;}
+.snav{display:flex;gap:.55rem;margin-top:.65rem;}
+.snav button{font-family:'DM Mono',monospace;font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;padding:.42rem .85rem;border:1px solid rgba(139,102,24,.3);background:var(--pale);color:var(--ink);cursor:pointer;transition:all .2s;}
+.snav button:hover{background:var(--sepia);color:var(--p);}
+.snav button.pl{background:var(--rust);color:var(--p);border-color:var(--rust);}
+/* DEF BOXES */
+.def{border:1px solid rgba(139,102,24,.3);padding:1.15rem 1.45rem;margin:1.25rem 0;position:relative;}
+.def::before{content:attr(data-l);position:absolute;top:-.62rem;left:.85rem;background:var(--p);padding:0 .38rem;font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.13em;text-transform:uppercase;color:var(--sepia);}
+.dark .def::before{background:var(--deep);}
+.def.prop::before{color:var(--steel);}.def.thm::before{color:var(--rust);}.def.lem::before{color:var(--sage);}.def.cor::before{color:var(--org);}
+/* ALGORITHM */
+.ahdr{display:flex;gap:0;border-bottom:1px solid rgba(139,102,24,.15);overflow:hidden;}
+.ast{flex:1;padding:.58rem .3rem;text-align:center;cursor:pointer;border-right:1px solid rgba(139,102,24,.13);transition:all .2s;font-family:'DM Mono',monospace;font-size:.48rem;text-transform:uppercase;letter-spacing:.04em;}
+.ast:last-child{border-right:none;}
+.ast[data-c=b]{background:rgba(30,58,88,.1);}.ast[data-c=r]{background:rgba(139,44,20,.08);}
+.ast[data-c=g]{background:rgba(42,90,42,.09);}.ast[data-c=o]{background:rgba(122,74,10,.09);}
+.ast[data-c=b].on{background:#2a4a7a;color:#a8c4e0;}.ast[data-c=r].on{background:#8b2c14;color:#e8a090;}
+.ast[data-c=g].on{background:#2a5a2a;color:#90c090;}.ast[data-c=o].on{background:#7a4a0a;color:#d0a060;}
+.abdy{display:grid;grid-template-columns:1.15fr 1fr;}
+.acod{padding:1.25rem 1.45rem;font-family:'DM Mono',monospace;font-size:.68rem;line-height:1.82;background:var(--deep);color:rgba(244,236,218,.87);overflow:auto;min-height:290px;}
+.acod .c{color:rgba(244,236,218,.32);}
+.acan canvas{display:block;width:100%;height:290px;}
+.acap{background:rgba(20,16,10,.92);color:rgba(244,236,218,.85);padding:.8rem 1.1rem;font-size:.88rem;line-height:1.6;border-top:1px solid rgba(139,102,24,.14);}
+/* INFERENCE TABS */
+.itabs{display:flex;gap:0;border:1px solid rgba(139,102,24,.2);border-bottom:none;overflow:hidden;}
+.it{flex:1;padding:.82rem .38rem;text-align:center;cursor:pointer;background:var(--pale);border-right:1px solid rgba(139,102,24,.14);font-family:'DM Mono',monospace;font-size:.58rem;text-transform:uppercase;letter-spacing:.08em;transition:all .22s;}
+.it:last-child{border-right:none;}.it.on{background:var(--ink);color:var(--p);}
+.it .ik{font-size:.46rem;color:var(--sepia);margin-bottom:.15rem;}.it.on .ik{color:var(--hi);}
+/* TABLES */
+.dt{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.68rem;margin:1rem 0;}
+.dt th{background:var(--ink);color:var(--p);padding:.52rem .68rem;text-align:center;letter-spacing:.05em;}
+.dt td{padding:.48rem .68rem;text-align:center;border-bottom:1px solid rgba(139,102,24,.13);}
+.dt tr:hover td{background:rgba(139,102,24,.05);}
+.dt .best{color:var(--rust);font-weight:600;}.dt .tr2{background:rgba(30,58,88,.05);}
+/* ABLATION BTNS */
+.abtns{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.85rem;}
+.abt{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.09em;text-transform:uppercase;padding:.42rem .88rem;border:1.5px solid;background:transparent;cursor:pointer;transition:all .2s;}
+.abt.sw{color:var(--steel);border-color:var(--steel);}.abt.sw.on{color:var(--p);background:var(--steel);}
+.abt.ax{color:var(--rust);border-color:var(--rust);}.abt.ax.on{color:var(--p);background:var(--rust);}
+.abt.nm{color:var(--sage);border-color:var(--sage);}.abt.nm.on{color:var(--p);background:var(--sage);}
+.abt.full{color:var(--ink);border-color:var(--ink);}.abt.full.on{color:var(--p);background:var(--ink);}
+/* LEGEND */
+.leg{display:flex;gap:1rem;flex-wrap:wrap;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--mu);margin:.65rem 0;}
+.leg span{display:flex;align-items:center;gap:.35rem;}
+.leg i{width:11px;height:11px;border-radius:50%;display:inline-block;}
+@media(max-width:1180px){#toc{display:none;}}
+@media(max-width:720px){.stats{grid-template-columns:1fr 1fr;}.abdy{grid-template-columns:1fr;}.itabs{flex-direction:column;}}
+</style></head><body>
+<div class="grain"></div><div id="prog"></div>
+<nav>
+  <div class="logo">BMVC 2026 · #131</div>
+  <a href="#abstract">Abstract</a><a href="#intro">Intro</a><a href="#method">Method</a>
+  <a href="#algorithm">Algorithm</a><a href="#inference">Inference</a><a href="#results">Results</a>
+</nav>
+<div id="toc">
+  <a data-t="hero"><span class="tl">Title</span><span class="td"></span></a>
+  <a data-t="abstract"><span class="tl">Abstract</span><span class="td"></span></a>
+  <a data-t="intro"><span class="tl">Introduction</span><span class="td"></span></a>
+  <a data-t="related"><span class="tl">Related Work</span><span class="td"></span></a>
+  <a data-t="method"><span class="tl">Methodology</span><span class="td"></span></a>
+  <a data-t="algorithm"><span class="tl">Algorithm&nbsp;1</span><span class="td"></span></a>
+  <a data-t="inference"><span class="tl">Inference</span><span class="td"></span></a>
+  <a data-t="experiments"><span class="tl">Experiments</span><span class="td"></span></a>
+  <a data-t="results"><span class="tl">Results</span><span class="td"></span></a>
+  <a data-t="conclusion"><span class="tl">Conclusions</span><span class="td"></span></a>
+</div>
+<section id="hero">
+<canvas id="hcan"></canvas>
+<div class="hc">
+  <div class="badge">BMVC 2026 · Submission #131</div>
+  <h1 class="ht">Composed Historical Image<br>Retrieval by Modeling<br><em>Temporal Representations</em></h1>
+  <p class="sub">Can a neural embedding space preserve temporal structure while remaining effective for both date estimation and object retrieval — simultaneously?</p>
+  <div class="hmeta">
+    <div><div class="hk">Method</div><div class="hv">TDIR</div></div>
+    <div><div class="hk">Dataset</div><div class="hv">DEW · 7.2M detections</div></div>
+    <div><div class="hk">Best Date P@10</div><div class="hv">86.3% (ViT)</div></div>
+    <div><div class="hk">Zero-label mode</div><div class="hv">Image + Image</div></div>
+  </div>
+  <div class="sh">Explore the paper</div>
+</div>
+</section>
+<section id="abstract" class="pale">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Abstract</div>
+  <h2 class="st">Orthogonal Subspaces for Date and Content</h2>
+  <p class="intro">While time evolves linearly, neural embeddings are chaotic and multi-dimensional. TDIR asks: can we decompose a single embedding into independent temporal and categorical subspaces — so the year of one image can be <em>surgically transplanted</em> onto another, label-free?</p>
+</div>
+<div class="reveal">
+  <p style="font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sepia);margin-bottom:.7rem;">Disentangle the space — drag the slider or press play</p>
+  <div class="cb" style="overflow:visible;">
+    <canvas id="morphC" style="height:360px;display:block;width:100%;"></canvas>
+    <div style="display:flex;align-items:center;gap:.9rem;padding:.7rem 1rem;background:var(--pale);border-top:1px solid rgba(139,102,24,.12);">
+      <button id="morphPlay" onclick="morphPlay()" style="font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.4rem .8rem;border:1px solid var(--steel);background:var(--steel);color:var(--p);cursor:pointer;">▶ Disentangle</button>
+      <span style="font-family:'DM Mono',monospace;font-size:.56rem;color:var(--rust);">Entangled</span>
+      <input type="range" id="morphR" min="0" max="100" value="0" oninput="morphSet(this.value/100)" style="flex:1;accent-color:var(--sepia);">
+      <span style="font-family:'DM Mono',monospace;font-size:.56rem;color:var(--steel);">TDIR</span>
+    </div>
+    <div class="chnt" id="morphH"></div>
+  </div>
+  <div class="leg" style="margin-top:.6rem;">
+    <span><i style="background:#1e3a58"></i>Car</span>
+    <span><i style="background:#c04020"></i>Jacket</span>
+    <span><i style="background:#3a5c3a"></i>Poster</span>
+    <span style="color:var(--mu);font-style:italic;">point size encodes the year (small=1930s, large=1990s)</span>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<div class="reveal">
+  <p class="nb">We propose <strong>Temporally Decomposable Image Representations (TDIR)</strong> — the first formal treatment of temporal decomposability in visual embeddings. We prove conditions under which decomposition holds, that orthogonality between subspaces <em>emerges from joint optimisation</em> without being explicitly imposed, and characterise the error when conditions are only partially met.</p>
+  <p class="nb">Beyond geometry, TDIR enables <strong>transitive operations</strong>: the year of one image can be extracted and injected into another with no label supervision — enabling the first zero-label composed historical image retrieval.</p>
+</div>
+</div>
+</section>
+<section id="intro">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 1 · Introduction</div>
+  <h2 class="st">When an Archivist Queries by Composition</h2>
+  <p class="intro">Around 5–10% of archival material is photographic. Unlike text, photographs encode temporal information implicitly — in the design of a car, the cut of a jacket, the typography of a poster. Archivists infer dates from objects; TDIR makes this machine-readable.</p>
+</div>
+<div class="reveal">
+  <div class="ne">Probative Value — objects as temporal vessels</div>
+  <h3 class="nt">Not all objects carry date information equally</h3>
+  <p class="nb">In archival science, the <em>probative value</em> of an image is its capacity to uniquely illustrate a phenomenon. Objects evolve at different temporal rhythms. A tire or a pair of shorts are strong temporal signals; a building or a wheel are ambiguous. TDIR learns which objects are reliable "time capsules."</p>
+  <div class="cb" style="height:290px;">
+    <div class="clbl">Temporal reliability — Average Year MAE by object (lower = more reliable)</div>
+    <canvas id="maeC" style="height:248px;"></canvas>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<div class="reveal">
+  <div class="ne">The Three Query Modes</div>
+  <h3 class="nt">How should an ideal archive search work?</h3>
+  <p class="nb">TDIR supports three retrieval modes of increasing expressiveness. Select each to see the geometric operation on the embedding space.</p>
+  <div class="itabs" id="itmodes">
+    <div class="it on" data-m="ll" onclick="setIM('ll')"><div class="ik">Mode A · q = µ<sup>c</sup> + µ<sup>y</sup></div>Label + Label</div>
+    <div class="it" data-m="il" onclick="setIM('il')"><div class="ik">Mode B · q = f(x<sub>c</sub>) + µ<sup>y</sup></div>Image + Label</div>
+    <div class="it" data-m="ii" onclick="setIM('ii')"><div class="ik">Mode C · q = f(x<sub>c</sub>) + r<sub>y</sub></div>Image + Image</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:0;border:1px solid rgba(139,102,24,.2);border-top:none;">
+    <canvas id="imC" style="height:320px;display:block;border-right:1px solid rgba(139,102,24,.14);"></canvas>
+    <div style="padding:1.2rem;background:var(--pale);" id="imD"></div>
+  </div>
+  <div style="background:var(--ink);color:rgba(244,236,218,.84);padding:1rem 1.35rem;border:1px solid rgba(139,102,24,.2);border-top:none;font-size:.9rem;line-height:1.62;" id="imCap"></div>
+  <div class="leg" style="margin-top:.6rem;">
+    <span><i style="background:#1e3a58"></i>Car col.</span><span><i style="background:#c04020"></i>Jacket col.</span><span><i style="background:#3a5c3a"></i>Poster col.</span>
+    <span style="color:var(--mu);font-style:italic;">faded glyph = older year, vivid = newer</span>
+    <span style="color:var(--mu);"><i style="background:#e8c030"></i>gold ring = retrieved (inside radius)</span>
+  </div>
+</div>
+</div>
+</section>
+<section id="related" class="pale">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 2 · Related Work</div>
+  <h2 class="st">What Came Before</h2>
+  <p class="intro">Prior work observes temporal structure post-hoc, treats object-centricity as a means to date estimation (discarding the object once dated), or requires one encoder per category. TDIR addresses all three gaps with a single unified framework.</p>
+</div>
+<div class="reveal">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(139,102,24,.2);border:1px solid rgba(139,102,24,.2);margin:1.4rem 0;">
+    <div style="background:var(--pale);padding:1.15rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.13em;color:var(--sepia);margin-bottom:.45rem;">DATE ESTIMATION</div>
+      <div style="font-size:.92rem;line-height:1.62;">Palermo et al. (ECCV 12) — low-level cues. Müller et al. (ECIR 17) — DEW regression, no geometric structure. Net et al. (ECIR 24) — 6 categories, one encoder each.</div>
+    </div>
+    <div style="background:var(--pale);padding:1.15rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.13em;color:var(--sepia);margin-bottom:.45rem;">TEMPORAL STRUCTURE (POST-HOC)</div>
+      <div style="font-size:.92rem;line-height:1.62;">Molina et al. (DAS 22) — metric learning re-organisation. Sonthalia et al. (NeurIPS 26) — rankable time in CLIP. Neither induces structure by design.</div>
+    </div>
+    <div style="background:var(--pale);padding:1.15rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.13em;color:var(--sepia);margin-bottom:.45rem;">COMPOSED IMAGE RETRIEVAL</div>
+      <div style="font-size:.92rem;line-height:1.62;">FashionIQ (CVPR 21), Cola (NeurIPS 23) — general domain. EUFCC-CIR (ECCV 24) — cultural heritage, <em>no temporal metadata</em>. No benchmark supports category-date composition.</div>
+    </div>
+    <div style="background:rgba(30,58,88,.06);padding:1.15rem;border-left:3px solid var(--steel);">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.13em;color:var(--steel);margin-bottom:.45rem;">TDIR (OURS)</div>
+      <div style="font-size:.92rem;line-height:1.62;">First formal treatment of temporal decomposability. Single unified backbone for all 50 categories. First benchmark with object + year annotations. Zero-label composed retrieval.</div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+<section id="method">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 3 · Methodology</div>
+  <h2 class="st">Building the Mathematical Foundation</h2>
+  <p class="intro">TDIR rests on two definitions, two propositions, a lemma, a theorem, and its corollary — each with a geometric illustration inline. No appendix needed.</p>
+</div>
+<!-- DEF 1 -->
+<div class="reveal">
+  <div class="ne">§3.1 · Definition 1</div>
+  <div class="def" data-l="Definition 1 · Temporal Independence of Classes">
+    <p class="nb" style="margin-bottom:.7rem;">A representation is <strong>temporally independent</strong> from object classes when:</p>
+    <div class="mbl">p(µ<sup>c</sup>, c, µ<sup>y</sup>, y) = p(µ<sup>c</sup>, c) · p(µ<sup>y</sup>, y)</div>
+    <p style="font-size:.94rem;color:var(--mu);line-height:1.68;">Category centroids carry no date information; date centroids carry no category information.</p>
+  </div>
+  <div class="cb" style="overflow:visible;">
+    <div class="clbl">Independence, illustrated — pick a category, then drag the year through it</div>
+    <canvas id="def1C" style="height:250px;cursor:pointer;"></canvas>
+    <div style="display:flex;align-items:center;gap:.8rem;padding:.6rem 1rem;background:var(--pale);border-top:1px solid rgba(139,102,24,.12);flex-wrap:wrap;">
+      <div style="display:flex;gap:.4rem;" id="def1Cats"></div>
+      <label style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.05em;color:var(--mu);display:flex;align-items:center;gap:.55rem;flex:1;min-width:170px;">YEAR
+        <input type="range" id="def1Yr" min="1930" max="1999" value="1965" oninput="def1Year()" style="flex:1;accent-color:var(--sepia);">
+        <span id="def1YrV" style="color:var(--sepia);font-weight:500;">1965</span>
+      </label>
+    </div>
+    <div class="chnt" id="def1H"></div>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<!-- DEF 2 -->
+<div class="reveal">
+  <div class="ne">§3.1 · Definition 2</div>
+  <div class="def" data-l="Definition 2 · Temporal Transitivity">
+    <p class="nb" style="margin-bottom:.7rem;">The year subspace is <strong>temporally transitive</strong> if for any triple (A, B, C):</p>
+    <div class="mbl">∆<sup>y</sup><sub>A→B</sub> + ∆<sup>y</sup><sub>B→C</sub> = ∆<sup>y</sup><sub>A→C</sub>&nbsp;&nbsp;&nbsp;where&nbsp;&nbsp;∆<sup>y</sup><sub>A→B</sub> = µ<sup>y<sub>B</sub></sup> − µ<sup>y<sub>A</sub></sup></div>
+    <p style="font-size:.94rem;color:var(--mu);line-height:1.68;">Necessary for zero-label inference: a year residual from <em>any</em> image acts as a consistent temporal operator when transplanted.</p>
+  </div>
+  <div class="cb" style="height:270px;cursor:grab;">
+    <div class="clbl">Drag the year proxies — watch the displacement identity hold</div>
+    <canvas id="def2C" style="height:228px;"></canvas>
+    <div class="chnt" id="def2H">Drag µ<sup>y</sup><sub>B</sub> — the displacement Δ<sub>A→C</sub> = Δ<sub>A→B</sub> + Δ<sub>B→C</sub> updates live.</div>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<!-- PROXY SETS -->
+<div class="reveal">
+  <div class="ne">§3.2 · Proxy Sets</div>
+  <h3 class="nt">Three learned proxy sets</h3>
+  <p class="nb">The ideal decomposition v = f(x) = µ<sup>c</sup> + µ<sup>y</sup> requires three proxy sets, each with a distinct role at training and inference time.</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid rgba(139,102,24,.2);margin:1.1rem 0;">
+    <div style="padding:1.2rem;border-right:1px solid rgba(139,102,24,.14);">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.15em;color:var(--steel);margin-bottom:.45rem;">𝒫<sup>c</sup> — CATEGORY</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:1.05rem;margin-bottom:.4rem;">µ<sup>c</sup><sub>1</sub> … µ<sup>c</sup><sub>C</sub></div>
+      <div style="font-size:.88rem;line-height:1.58;color:var(--mu);">One per object category. Integrates over all years → year-agnostic centroid. Operates on <em>unnormalised</em> embeddings.</div>
+    </div>
+    <div style="padding:1.2rem;border-right:1px solid rgba(139,102,24,.14);">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.15em;color:var(--rust);margin-bottom:.45rem;">𝒫<sup>y</sup> — YEAR</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:1.05rem;margin-bottom:.4rem;">µ<sup>y</sup><sub>1</sub> … µ<sup>y</sup><sub>Y</sub></div>
+      <div style="font-size:.88rem;line-height:1.58;color:var(--mu);">One per year, shared across categories. Operates on ℓ₂-normalised residuals — temporal info purely in direction.</div>
+    </div>
+    <div style="padding:1.2rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.15em;color:var(--sage);margin-bottom:.45rem;">𝒦<sup>y</sup> — DISPLACEMENT</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:1.05rem;margin-bottom:.4rem;">k<sup>y</sup><sub>1</sub> … k<sup>y</sup><sub>Y</sub></div>
+      <div style="font-size:.88rem;line-height:1.58;color:var(--mu);">Learnable temporal offsets for the swapping trick. Used only at training. <strong>Discarded at inference.</strong></div>
+    </div>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<!-- PROP 1 -->
+<div class="reveal">
+  <div class="ne">§3.2 · Proposition 1</div>
+  <div class="def prop" data-l="Proposition 1 · Temporally Decomposable Image Representation">
+    <p class="nb" style="margin-bottom:.7rem;">Under Definition 1:</p>
+    <div class="mbl">I(µ<sup>c</sup>, µ<sup>y</sup>; c, y) = I(µ<sup>c</sup>; c) + I(µ<sup>y</sup>; y)</div>
+    <p style="font-size:.94rem;color:var(--mu);line-height:1.68;">The total information in the joint embedding decomposes into two independent sums — no cross-information between categorical and temporal components.</p>
+  </div>
+  <p class="nb" style="margin-top:.9rem;">The proof is a two-line cancellation. Step through it — read the diagram as an information map: the total area is everything the proxies tell us about (category, year). Watch the cross-terms vanish, leaving two disjoint pools.</p>
+  <div class="step" id="p1steps" style="margin:.6rem 0;">
+    <div class="sx on" onclick="p1Go(0)"><div class="skk">START</div><div class="stt">Joint info</div></div>
+    <div class="sx" onclick="p1Go(1)"><div class="skk">CHAIN ×1</div><div class="stt">Peel off µᶜ</div></div>
+    <div class="sx" onclick="p1Go(2)"><div class="skk">DEF 1</div><div class="stt">Kill cross-terms</div></div>
+    <div class="sx" onclick="p1Go(3)"><div class="skk">RESULT</div><div class="stt">Disjoint sum</div></div>
+  </div>
+  <div class="sbox">
+    <canvas id="prop1C" style="height:200px;width:100%;display:block;"></canvas>
+    <div class="scap" id="prop1H"></div>
+  </div>
+  <p class="nb" style="margin-top:.7rem;">So <strong>v = f(x)</strong> is temporally decomposable: knowing both proxies captures everything v encodes about (c, y), with no shared (overlapping) information left between the temporal and categorical parts.</p>
+</div>
+<div class="divider reveal"></div>
+<!-- LEMMA ORTH -->
+<div class="reveal">
+  <div class="ne">§3.2 · Lemma 1</div>
+  <div class="def lem" data-l="Lemma 1 · Orthogonality of Centroid Subspaces">
+    <p class="nb" style="margin-bottom:.7rem;">Under Definition 1, the category and temporal centroids are orthogonal:</p>
+    <div class="mbl">Cov(µ<sup>c</sup>, µ<sup>y</sup>) = 0&nbsp;&nbsp;&nbsp;&nbsp;Var(µ<sup>c</sup> + µ<sup>y</sup>) = Var(µ<sup>c</sup>) + Var(µ<sup>y</sup>)</div>
+    <p style="font-size:.94rem;color:var(--mu);line-height:1.68;">Independence → zero covariance → Pythagorean variance decomposition.</p>
+  </div>
+  <h4 style="font-family:'DM Serif Display',serif;font-size:1.05rem;margin:.9rem 0 .45rem;">The two subspaces are perpendicular — drag the noise slider to see the effect of residual entanglement</h4>
+  <div style="border:1px solid rgba(139,102,24,.2);margin:0;">
+    <canvas id="orthC" style="height:290px;width:100%;display:block;"></canvas>
+    <div style="display:flex;align-items:center;gap:.85rem;padding:.7rem 1rem;background:var(--pale);border-top:1px solid rgba(139,102,24,.12);">
+      <label style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--mu);display:flex;align-items:center;gap:.7rem;">
+        Noise I(ε;c,y):
+        <input type="range" id="noiseR" min="0" max="100" value="0" oninput="drawOrth()" style="width:150px;accent-color:var(--sepia);">
+        <span id="noiseV" style="font-weight:500;color:var(--sepia);">0%</span>
+      </label>
+      <span id="innerV" style="margin-left:auto;font-family:'DM Mono',monospace;font-size:.62rem;color:var(--mu);">⟨µ<sup>c</sup>, µ<sup>y</sup>⟩ = 0.00</span>
+    </div>
+  </div>
+  <p style="font-size:.84rem;font-style:italic;color:var(--mu);margin-top:.55rem;">As I(ε;c,y) grows, µ<sup>c</sup> picks up a projection onto µ<sup>y</sup> — but Theorem 1 shows joint optimisation drives this projection back to zero.</p>
+</div>
+<div class="divider reveal"></div>
+<!-- PROP 2 -->
+<div class="reveal">
+  <div class="ne">§3.2 · Proposition 2</div>
+  <div class="def prop" data-l="Proposition 2 · Practical Learnability">
+    <p class="nb" style="margin-bottom:.7rem;">In real data, residual noise ε entangles year and category. But:</p>
+    <div class="mbl">I(v; c,y) ≤ I(µ<sup>c</sup>; c) + I(µ<sup>y</sup>; y) + δ&nbsp;&nbsp;&nbsp;where&nbsp;&nbsp;δ ≜ I(ε; c,y)</div>
+    <p style="font-size:.94rem;color:var(--mu);line-height:1.68;">δ is a data-dependent constant — it does not depend on the proxy vectors µ<sup>c</sup>, µ<sup>y</sup>. The orthogonality constraint ⟨µ<sup>c</sup>, µ<sup>y</sup>⟩ = 0 can be satisfied without affecting this bound.</p>
+  </div>
+  <h4 style="font-family:'DM Serif Display',serif;font-size:1.05rem;margin:1rem 0 .45rem;">The error floor δ ignores how you orient the proxies — drag both knobs</h4>
+  <p class="nb">An embedding splits as v = µ<sup>c</sup> + µ<sup>y</sup> + ε. You are free to <em>rotate</em> the orthogonal (µ<sup>c</sup>, µ<sup>y</sup>) frame to satisfy ⟨µ<sup>c</sup>,µ<sup>y</sup>⟩ = 0 — but that only re-shuffles information <em>between</em> the two proxies. The residual δ = I(ε; c,y) is fixed by the data alone, so the proxies can be learned freely without touching the bound.</p>
+  <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:0;border:1px solid rgba(139,102,24,.2);">
+    <canvas id="prop2C" style="height:300px;display:block;width:100%;border-right:1px solid rgba(139,102,24,.14);"></canvas>
+    <div style="padding:1.1rem 1.2rem;background:var(--pale);">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.14em;color:var(--steel);margin-bottom:.35rem;">PROXY ORIENTATION θ</div>
+      <input type="range" id="p2Theta" min="0" max="100" value="50" oninput="drawProp2()" style="width:100%;accent-color:#1e3a58;margin-bottom:.9rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.14em;color:var(--sepia);margin-bottom:.35rem;">DATA ENTANGLEMENT  I(ε;c,y)</div>
+      <input type="range" id="p2Delta" min="0" max="100" value="22" oninput="drawProp2()" style="width:100%;accent-color:var(--sepia);margin-bottom:1rem;">
+      <div id="prop2V" style="font-size:.85rem;line-height:1.55;"></div>
+    </div>
+  </div>
+  <div class="chnt" id="prop2H" style="border:1px solid rgba(139,102,24,.2);border-top:none;"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin:.9rem 0;">
+    <div class="mbl" style="margin:0;font-size:.8rem;">δ ≤ I(ε; c) + I(ε; y)<br><br>When ε is disentangled: δ → 0<br>⟹ I(v; c,y) ≈ I(µ<sup>c</sup>;c) + I(µ<sup>y</sup>;y)</div>
+    <div style="background:var(--pale);border:1px solid rgba(139,102,24,.2);padding:1.1rem;font-size:.9rem;line-height:1.62;">
+      <strong>Circularity resolved by Theorem 1:</strong> Proposition 2 assumes orthogonality to guarantee free learning — but orthogonality hasn't been enforced yet. Theorem 1 shows it emerges implicitly from the training strategy.
+    </div>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<!-- THEOREM 1 -->
+<div class="reveal">
+  <div class="ne">§3.4 · Theorem 1 (Emergent TDIR)</div>
+  <div class="def thm" data-l="Theorem 1 · Emergent TDIR">
+    <p class="nb" style="margin-bottom:.6rem;"><strong>Part I (exact).</strong> If I(ε;c,y) = 0:</p>
+    <div class="mbl" style="margin-bottom:.9rem;">min<sub>θ</sub> ℒ<sup>c</sup> + ℒ<sup>y</sup> ⟹ p(µ<sup>c</sup>, µ<sup>y</sup>, c, y) = p(µ<sup>c</sup>, c) · p(µ<sup>y</sup>, y)</div>
+    <p class="nb" style="margin-bottom:.6rem;"><strong>Part II (asymptotic).</strong> If I(ε;c,y) ≠ 0:</p>
+    <div class="mbl">min<sub>θ</sub> ℒ<sup>c</sup> + ℒ<sup>y</sup> ⟹ ⟨µ<sup>c</sup>, µ<sup>y</sup>⟩ → O(I(ε;c,y) / ‖µ<sup>y</sup>‖²) ∀c,y</div>
+    <p style="font-size:.94rem;color:var(--mu);line-height:1.68;">Orthogonality is an <em>emergent property</em> of the joint optimisation — it does not need to be imposed explicitly.</p>
+  </div>
+  <h4 style="font-family:'DM Serif Display',serif;font-size:1.05rem;margin:1rem 0 .45rem;">Interactive geometric proof (Part II) — drag the category proxy µ<sup>c</sup></h4>
+  <p class="nb">Decompose µ<sup>c</sup> = µ̃<sup>c</sup> + αµ<sup>y<sub>A</sub></sup> + βµ<sup>y<sub>B</sub></sup>, where (α,β) is its projection onto the year subspace. <strong>Drag µ<sup>c</sup>:</strong> watch the two year residuals r<sub>A</sub>, r<sub>B</sub> drift away from the year proxies they are supposed to match, and the year loss climb. Only at α=β=0 do the residuals land exactly on µ<sup>y<sub>A</sub></sup>, µ<sup>y<sub>B</sub></sup> — that is the unique minimum.</p>
+  <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap;">
+    <span style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.1em;color:var(--mu);">LEMMA · YEAR PROXIES:</span>
+    <button id="thmLemBtn" onclick="thmToggleLemma()" class="abt sw on" style="font-size:.56rem;padding:.34rem .7rem;">Linearly independent</button>
+    <span style="font-family:'DM Mono',monospace;font-size:.5rem;color:var(--mu);font-style:italic;">click to force them parallel and watch the unique minimum collapse</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid rgba(139,102,24,.2);">
+    <div style="position:relative;">
+      <div style="position:absolute;top:6px;left:8px;font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.12em;color:var(--sepia);z-index:2;">GEOMETRY — drag µᶜ</div>
+      <canvas id="thmC" style="height:300px;display:block;width:100%;border-right:1px solid rgba(139,102,24,.14);cursor:grab;"></canvas>
+    </div>
+    <div style="position:relative;">
+      <div style="position:absolute;top:6px;left:8px;font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.12em;color:var(--sepia);z-index:2;">YEAR-LOSS ENERGY  Q(α,β)</div>
+      <canvas id="thmBowl" style="height:300px;display:block;width:100%;"></canvas>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid rgba(139,102,24,.2);border-top:none;">
+    <div style="padding:.9rem 1.1rem;background:var(--pale);border-right:1px solid rgba(139,102,24,.14);" id="thmPanel"></div>
+    <div style="padding:.9rem 1.1rem;background:var(--pale);" id="thmBowlP"></div>
+  </div>
+  <div class="chnt" id="thmH" style="border:1px solid rgba(139,102,24,.2);border-top:none;"></div>
+  <p style="font-size:.84rem;font-style:italic;color:var(--mu);margin-top:.55rem;">The right panel is the actual loss surface Q(α,β) = 2α²‖µ<sup>y<sub>A</sub></sup>‖² + 2β²‖µ<sup>y<sub>B</sub></sup>‖² + 4αβ⟨µ<sup>y<sub>A</sub></sup>,µ<sup>y<sub>B</sub></sup>⟩ = 2‖α µ<sup>y<sub>A</sub></sup> + β µ<sup>y<sub>B</sub></sup>‖². It is a positive-definite bowl with a <em>single</em> minimum at α=β=0 — but only while the year proxies are linearly independent (the Lemma). Force them parallel and the bowl flattens into a valley: the minimum is no longer unique. Double-click the left panel to reset.</p>
+</div>
+<div class="divider reveal"></div>
+<!-- COROLLARY -->
+<div class="reveal">
+  <div class="ne">§3.4 · Corollary 1</div>
+  <div class="def cor" data-l="Corollary 1 · Swapping Trick Enforces Cross-Category Orthogonality">
+    <div class="mbl">Proj<sub>µ<sup>y</sup></sub>(µ<sup>c</sup>) → 0 &nbsp;&nbsp; ∀ c, y</div>
+    <p style="font-size:.94rem;color:var(--mu);line-height:1.68;">The shared displacement vectors k<sup>y</sup> cannot simultaneously compensate projections α ≠ α' across two categories — since ε is not a control variable, the unique globally consistent solution is α = α' = 0 for all c, c'.</p>
+  </div>
+  <p class="nb">The swapping trick forces residuals from <em>different categories</em> to be displaced by the <em>same k<sup>y</sup></em>. This makes the optimizer implicitly require all category proxies to be orthogonal to all year proxies — not just category by category. It's the key to scalability.</p>
+  <div style="background:var(--pale);border-left:3px solid var(--steel);padding:.7rem 1rem;margin:.9rem 0;font-size:.9rem;line-height:1.6;">
+    <strong>What is α?</strong> Write each category centroid as µ<sup>c</sup> = µ̃<sup>c</sup> + α·µ<sup>y<sub>A</sub></sup> + β·µ<sup>y<sub>B</sub></sup>. The coefficient <strong style="color:var(--steel);">α</strong> is simply <em>how far µ<sup>c</sup> leans into the year axis</em> — the length of its shadow on µ<sup>y</sup>. Orthogonality means α = 0 (no shadow). Below, α and α' are drawn as the coloured offsets that pull each residual <em>off</em> the year proxy.
+  </div>
+  <h4 style="font-family:'DM Serif Display',serif;font-size:1.05rem;margin:1rem 0 .45rem;">Why one shared k<sup>y</sup> forces it globally — adjust each category's projection</h4>
+  <p class="nb">Two categories (blue, red) must both have their year-A residual mapped onto the <em>same</em> target µ<sup>y<sub>B</sub></sup> by the <em>same</em> displacement k<sup>y<sub>B</sub></sup>. If their projections α, α' differ, a single k<sup>y<sub>B</sub></sup> cannot hit the target for both. The only globally consistent solution is α = α' = 0.</p>
+  <div style="display:grid;grid-template-columns:1.45fr 1fr;gap:0;border:1px solid rgba(139,102,24,.2);">
+    <canvas id="corC" style="height:300px;display:block;width:100%;border-right:1px solid rgba(139,102,24,.14);"></canvas>
+    <div style="padding:1.1rem 1.2rem;background:var(--pale);">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.14em;color:var(--steel);margin-bottom:.4rem;">CATEGORY c (blue) · α</div>
+      <input type="range" id="corA" min="-60" max="60" value="35" oninput="drawCor()" style="width:100%;accent-color:#1e3a58;margin-bottom:.9rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.14em;color:var(--rust);margin-bottom:.4rem;">CATEGORY c' (red) · α'</div>
+      <input type="range" id="corB" min="-60" max="60" value="-25" oninput="drawCor()" style="width:100%;accent-color:#c04020;margin-bottom:1rem;">
+      <div id="corV" style="font-size:.86rem;line-height:1.55;"></div>
+    </div>
+  </div>
+  <div class="chnt" id="corH" style="border:1px solid rgba(139,102,24,.2);border-top:none;"></div>
+  <p style="font-size:.84rem;font-style:italic;color:var(--mu);margin-top:.55rem;">Set both sliders to 0 to see both residuals land exactly on µ<sup>y<sub>B</sub></sup> with the shared displacement — the consistent optimum.</p>
+</div>
+</div>
+</section>
+<section id="algorithm" class="pale">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 3 · Algorithm 1</div>
+  <h2 class="st">The TDIR Training Loop</h2>
+  <p class="intro">Click each step — or press Play — to step through Algorithm 1. The canvas shows the geometric operation on the embedding space at each point. Color-coded to match the pseudocode.</p>
+</div>
+<div class="reveal">
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.9rem;font-family:'DM Mono',monospace;font-size:.58rem;">
+    <span style="background:rgba(30,58,88,.12);color:#1e3a58;border:1px solid #1e3a58;padding:.22rem .55rem;">■ Forward / Backward</span>
+    <span style="background:rgba(139,44,20,.1);color:#8b2c14;border:1px solid #8b2c14;padding:.22rem .55rem;">■ Losses</span>
+    <span style="background:rgba(42,90,42,.1);color:#2a5a2a;border:1px solid #2a5a2a;padding:.22rem .55rem;">■ Residuals</span>
+    <span style="background:rgba(122,74,10,.1);color:#7a4a0a;border:1px solid #7a4a0a;padding:.22rem .55rem;">■ Normalise</span>
+  </div>
+  <div style="border:1px solid rgba(139,102,24,.2);">
+    <div class="ahdr" id="atabs">
+      <div class="ast on" data-s="0" data-c="b" onclick="aGo(0)">Init</div>
+      <div class="ast" data-s="1" data-c="b" onclick="aGo(1)">Forward</div>
+      <div class="ast" data-s="2" data-c="r" onclick="aGo(2)">ℒ<sup>c</sup></div>
+      <div class="ast" data-s="3" data-c="g" onclick="aGo(3)">Center</div>
+      <div class="ast" data-s="4" data-c="g" onclick="aGo(4)">Swap</div>
+      <div class="ast" data-s="5" data-c="o" onclick="aGo(5)">Norm</div>
+      <div class="ast" data-s="6" data-c="r" onclick="aGo(6)">ℒ<sup>y</sup> direct</div>
+      <div class="ast" data-s="7" data-c="r" onclick="aGo(7)">ℒ<sup>y</sup> trans</div>
+      <div class="ast" data-s="8" data-c="b" onclick="aGo(8)">Backward</div>
+    </div>
+    <div class="abdy">
+      <div class="acod" id="acod"></div>
+      <div class="acan" style="border-left:1px solid rgba(139,102,24,.15);"><canvas id="acan"></canvas></div>
+    </div>
+    <div class="acap" id="acap"></div>
+  </div>
+  <div class="snav" style="margin-top:.7rem;">
+    <button onclick="aGo(Math.max(0,aStep-1))">‹ Prev</button>
+    <button class="pl" id="aplay" onclick="aToggle()">▶ Play algorithm</button>
+    <button onclick="aGo(Math.min(8,aStep+1))">Next ›</button>
+  </div>
+</div>
+</div>
+</section>
+<section id="inference">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 3 · Inference</div>
+  <h2 class="st">Three Modes of Composed Retrieval</h2>
+  <p class="intro">At inference, 𝒦<sup>y</sup> is discarded. The three retrieval modes follow from f(x) ≈ µ<sup>c</sup> + µ<sup>y</sup>. Each is a different geometric operation on the learned embedding space.</p>
+</div>
+<div class="reveal">
+  <div class="itabs" id="infTabs">
+    <div class="it on" data-m="ll" onclick="setInf('ll')"><div class="ik">q = µ<sup>c</sup> + µ<sup>y</sup></div>Label + Label</div>
+    <div class="it" data-m="il" onclick="setInf('il')"><div class="ik">q = f(x<sub>c</sub>) + µ<sup>y</sup></div>Image + Label</div>
+    <div class="it" data-m="ii" onclick="setInf('ii')"><div class="ik">q = f(x<sub>c</sub>) + r<sub>y</sub></div>Image + Image</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:0;border:1px solid rgba(139,102,24,.2);border-top:none;">
+    <canvas id="infC" style="height:340px;display:block;border-right:1px solid rgba(139,102,24,.14);"></canvas>
+    <div style="padding:1.2rem;background:var(--pale);" id="infD"></div>
+  </div>
+  <div style="background:var(--ink);color:rgba(244,236,218,.84);padding:.95rem 1.3rem;border:1px solid rgba(139,102,24,.2);border-top:none;font-size:.9rem;line-height:1.62;" id="infCap"></div>
+  <div class="leg" style="margin-top:.6rem;">
+    <span><i style="background:#1e3a58"></i>Car col.</span><span><i style="background:#c04020"></i>Jacket col.</span><span><i style="background:#3a5c3a"></i>Poster col.</span>
+    <span style="color:var(--mu);font-style:italic;">faded glyph = older year, vivid = newer</span>
+    <span style="color:var(--mu);"><i style="background:#e8c030"></i>gold ring = retrieved (inside radius)</span>
+  </div>
+</div>
+</div>
+</section>
+<section id="experiments" class="pale">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 4 · Experimental Setup</div>
+  <h2 class="st">Dataset, Architecture, Protocol</h2>
+</div>
+<div class="reveal">
+  <div class="stats">
+    <div class="stat"><div class="sn">7.2M</div><div class="sl">Object Detections</div></div>
+    <div class="stat"><div class="sn">586</div><div class="sl">Object Categories</div></div>
+    <div class="stat"><div class="sn">50</div><div class="sl">Top Categories (focus)</div></div>
+    <div class="stat"><div class="sn">70yr</div><div class="sl">1930–1999</div></div>
+  </div>
+</div>
+<div class="reveal">
+  <div class="ne">Dataset Construction</div>
+  <h3 class="nt">Object-Centric DEW</h3>
+  <p class="nb">Starting from DEW (1M natural-scene photographs, 1930–1999, one year per image), we apply OWLv2 with a 30% threshold — yielding 7.2M detections across 586 classes with year-level annotation. Top-50 categories used for evaluation (4.4M detections).</p>
+  <div class="cb" style="height:300px;">
+    <div class="clbl">DEW object detections by decade — click a bar</div>
+    <canvas id="dsetC" style="height:258px;cursor:pointer;"></canvas>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<div class="reveal">
+  <div class="ne">Evaluation Protocol</div>
+  <h3 class="nt">Two precision axes — object and date</h3>
+  <p class="nb">For each inference mode, retrieve top-K=10 images for every query. A date retrieval is correct if within the same <em>lustrum</em> (5-year window). Random baseline for date: 7.14% (70yr / 14 bins).</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin:.9rem 0;">
+    <div class="mbl" style="margin:0;font-size:.82rem;line-height:1.95;">Object Precision@K:<br>&nbsp;&nbsp;#{xᵢ : cᵢ = c} / K<br><br>Date Precision@K:<br>&nbsp;&nbsp;#{xᵢ : yᵢ ≈ y} / K<br>&nbsp;&nbsp;(y ≈ yᵢ iff same 5-year lustrum)</div>
+    <div style="background:var(--pale);border:1px solid rgba(139,102,24,.2);padding:1.1rem;font-size:.9rem;line-height:1.62;">
+      <strong>Random date baseline:</strong> 7.14%<br><br>
+      <strong>Best Label+Label:</strong> Date 86.3% (ViT)<br>
+      <strong>Best Image+Image:</strong> Obj 72.5% (ConvNeXt)
+    </div>
+  </div>
+</div>
+</div>
+</section>
+<section id="results">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 5 · Results</div>
+  <h2 class="st">Evaluation: Backbones, Ablations, Calibration</h2>
+</div>
+<!-- Backbone comparison -->
+<div class="reveal">
+  <div class="ne">Table 2 · Backbone Comparison (K=10)</div>
+  <h3 class="nt">All TDIR architectures dominate CLIP on date precision</h3>
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem;">
+    <label style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--mu);display:flex;align-items:center;gap:.5rem;">Mode:
+      <select id="bbMode" onchange="drawBB()" style="font-family:'DM Mono',monospace;font-size:.62rem;background:var(--pale);border:1px solid rgba(139,102,24,.3);color:var(--ink);padding:.22rem .45rem;">
+        <option value="0">Label + Label</option><option value="1">Image + Label</option><option value="2">Image + Image</option>
+      </select>
+    </label>
+  </div>
+  <div class="cb" style="height:310px;">
+    <canvas id="bbC" style="height:268px;"></canvas>
+    <div class="chnt" id="bbH">CLIP is competitive on objects but fails temporally — date composability requires TDIR's explicit geometric structure.</div>
+  </div>
+  <div style="margin-top:1.1rem;overflow-x:auto;">
+    <table class="dt">
+      <tr><th rowspan="2">Backbone</th><th colspan="2">Label+Label</th><th colspan="2">Image+Label</th><th colspan="2">Image+Image</th></tr>
+      <tr><th>Obj P@K</th><th>Date P@K</th><th>Obj P@K</th><th>Date P@K</th><th>Obj P@K</th><th>Date P@K</th></tr>
+      <tr><td>CLIP (arithmetic)</td><td>.152</td><td>.115</td><td>.387</td><td>.076</td><td>.389</td><td>.102</td></tr>
+      <tr><td>CLIP (prompting)</td><td>.415</td><td>.105</td><td>.372</td><td>.079</td><td>.520</td><td>.081</td></tr>
+      <tr class="tr2"><td>VGG + TDIR</td><td>.397</td><td>.712</td><td>.388</td><td>.579</td><td>.669</td><td>.234</td></tr>
+      <tr class="tr2"><td>ResNet + TDIR</td><td class="best">.489</td><td>.803</td><td class="best">.444</td><td>.665</td><td>.721</td><td>.306</td></tr>
+      <tr class="tr2"><td>ConvNeXt + TDIR</td><td>.443</td><td>.824</td><td>.416</td><td>.664</td><td class="best">.725</td><td>.393</td></tr>
+      <tr class="tr2"><td>ViT + TDIR</td><td>.413</td><td class="best">.863</td><td>.355</td><td class="best">.708</td><td>.646</td><td class="best">.429</td></tr>
+    </table>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<!-- Ablation -->
+<div class="reveal">
+  <div class="ne">Table 3 · Ablation Study (ConvNeXt, K=10)</div>
+  <h3 class="nt">All three components are necessary</h3>
+  <p class="nb">The paper ablates exactly <em>one</em> component at a time, so this is a single choice: pick what to remove and the bars compare it against the full model (faded bars). Notably, removing the swapping trick hurts <em>Label+Label</em> too — confirming Corollary 1 (implicit orthogonality regularisation).</p>
+  <div class="abtns" id="ablBtns">
+    <button class="abt full on" data-k="full" onclick="ablSel('full')">Full model</button>
+    <button class="abt sw" data-k="sw" onclick="ablSel('sw')">− Swapping trick</button>
+    <button class="abt ax" data-k="ax" onclick="ablSel('ax')">− Auxiliary k*</button>
+    <button class="abt nm" data-k="nm" onclick="ablSel('nm')">− Normalisation</button>
+  </div>
+  <div class="cb" style="height:250px;">
+    <canvas id="ablC" style="height:208px;"></canvas>
+    <div class="chnt" id="ablH"></div>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<!-- Calibration -->
+<div class="reveal">
+  <div class="ne">Figure 4 · Calibration Analysis</div>
+  <h3 class="nt">Category preserved; date degrades with temporal gap</h3>
+  <p class="nb">Object precision remains stable across source years, target years, and gaps — the category subspace is insulated from temporal injection. Date precision follows a U-shaped curve over target year and degrades monotonically with gap.</p>
+  <div style="display:flex;gap:.5rem;margin-bottom:.7rem;">
+    <label style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--mu);display:flex;align-items:center;gap:.5rem;">X-axis:
+      <select id="calMode" onchange="drawCal()" style="font-family:'DM Mono',monospace;font-size:.62rem;background:var(--pale);border:1px solid rgba(139,102,24,.3);color:var(--ink);padding:.22rem .45rem;">
+        <option value="src">Source image year</option>
+        <option value="tgt">Target (reference) year</option>
+        <option value="gap">|Source − Target| gap</option>
+      </select>
+    </label>
+  </div>
+  <div class="cb" style="height:300px;">
+    <canvas id="calC" style="height:258px;"></canvas>
+    <div class="chnt" id="calH"></div>
+  </div>
+</div>
+<div class="divider reveal"></div>
+</div>
+</section>
+<section id="conclusion" class="dark">
+<div class="container">
+<div class="reveal">
+  <div class="ey" style="color:var(--hi);">Chapter 6 · Conclusions</div>
+  <h2 class="st" style="color:var(--p);">What TDIR Establishes</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(244,236,218,.1);border:1px solid rgba(244,236,218,.1);margin:2rem 0;" class="reveal">
+  <div style="padding:1.4rem;background:rgba(20,16,10,.4);">
+    <div style="font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.14em;color:var(--hi);margin-bottom:.5rem;">THEORETICAL</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--p);margin-bottom:.4rem;">First formal treatment of temporal decomposability</div>
+    <p style="font-size:.9rem;color:rgba(244,236,218,.68);line-height:1.62;">Propositions 1 & 2 bound the decomposition error. Theorem 1 proves orthogonality emerges from joint optimisation. Corollary 1 shows the swapping trick enforces this cross-category.</p>
+  </div>
+  <div style="padding:1.4rem;background:rgba(20,16,10,.4);">
+    <div style="font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.14em;color:var(--hi);margin-bottom:.5rem;">EMPIRICAL</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--p);margin-bottom:.4rem;">First zero-label composed historical retrieval</div>
+    <p style="font-size:.9rem;color:rgba(244,236,218,.68);line-height:1.62;">DEW extended with 7.2M detections across 50 categories. Image+Image mode transplants the year of one image onto the content of another — no labels required.</p>
+  </div>
+  <div style="padding:1.4rem;background:rgba(20,16,10,.4);border-top:1px solid rgba(244,236,218,.1);">
+    <div style="font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.14em;color:var(--hi);margin-bottom:.5rem;">LIMITATIONS</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--p);margin-bottom:.4rem;">Shared displacement; additive operator</div>
+    <p style="font-size:.9rem;color:rgba(244,236,218,.68);line-height:1.62;">A single temporal displacement across all categories may not reflect uneven historical evolution. Additive transplantation loses fidelity at large temporal distances.</p>
+  </div>
+  <div style="padding:1.4rem;background:rgba(20,16,10,.4);border-top:1px solid rgba(244,236,218,.1);">
+    <div style="font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.14em;color:var(--hi);margin-bottom:.5rem;">FUTURE WORK</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--p);margin-bottom:.4rem;">Non-linear operators; category-specific subspaces</div>
+    <p style="font-size:.9rem;color:rgba(244,236,218,.68);line-height:1.62;">Replace additive operator with a non-linear mechanism. Explore category-specific temporal subspaces. Extend to zero-shot evaluation over unseen categories.</p>
+  </div>
+</div>
+<div class="reveal" style="max-width:640px;">
+  <p style="font-size:1.08rem;color:rgba(244,236,218,.68);line-height:1.9;"><em>The geometry of a well-structured embedding is not merely a tool for retrieval — it is a formal language for historical reasoning.</em> Every µ<sup>c</sup> + µ<sup>y</sup> is a sentence: <strong style="color:var(--p);">"Show me <em>this object</em> from <em>this era</em>."</strong></p>
+</div>
+</div>
+</section><script>
+const C=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+if(!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){r=Math.min(r,w/2,h/2);this.beginPath();this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath();return this;};}
+function hex2rgb(h){h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function yearTint(col,year){const t=clamp((year-1930)/69,0,1),sep=[150,134,102],c=hex2rgb(col);return `rgb(${Math.round(lerp(sep[0],c[0],t))},${Math.round(lerp(sep[1],c[1],t))},${Math.round(lerp(sep[2],c[2],t))})`;}
+const RCATS=[{l:'Car',col:'#1e3a58'},{l:'Jacket',col:'#c04020'},{l:'Poster',col:'#3a5c3a'}];
+function gGlyph(ctx,kind,x,y,s,stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.15;ctx.lineJoin='round';
+ if(kind===0){ctx.beginPath();ctx.roundRect(x-s*.42,y-s*.10,s*.84,s*.30,3);ctx.stroke();ctx.beginPath();ctx.moveTo(x-s*.26,y-s*.10);ctx.lineTo(x-s*.15,y-s*.30);ctx.lineTo(x+s*.15,y-s*.30);ctx.lineTo(x+s*.26,y-s*.10);ctx.stroke();[-s*.22,s*.22].forEach(dx=>{ctx.beginPath();ctx.arc(x+dx,y+s*.22,s*.10,0,7);ctx.stroke();});}
+ else if(kind===1){ctx.beginPath();ctx.moveTo(x-s*.28,y-s*.30);ctx.lineTo(x-s*.42,y+s*.34);ctx.lineTo(x+s*.42,y+s*.34);ctx.lineTo(x+s*.28,y-s*.30);ctx.lineTo(x+s*.10,y-s*.30);ctx.lineTo(x,y-s*.08);ctx.lineTo(x-s*.10,y-s*.30);ctx.closePath();ctx.stroke();}
+ else{ctx.beginPath();ctx.roundRect(x-s*.30,y-s*.36,s*.60,s*.72,2);ctx.stroke();[-.16,-.02,.12,.24].forEach(d=>{ctx.beginPath();ctx.moveTo(x-s*.20,y+s*d);ctx.lineTo(x+s*.20,y+s*d);ctx.stroke();});}}
+function gTile(ctx,kind,x,y,year,size,state){const tint=yearTint(RCATS[kind].col,year);ctx.save();
+ ctx.fillStyle=state==='hit'?'#fffdf5':'rgba(255,255,255,.8)';ctx.strokeStyle=state==='hit'?'#d8a818':(state==='ref'?RCATS[kind].col:tint);ctx.lineWidth=state==='hit'?2.4:(state==='ref'?2.4:1);
+ ctx.beginPath();ctx.roundRect(x-size/2,y-size/2,size,size,4);ctx.fill();ctx.stroke();gGlyph(ctx,kind,x,y,size*.92,tint);
+ if(state==='hit'){ctx.fillStyle='#d8a818';ctx.beginPath();ctx.arc(x+size/2-3,y-size/2+3,5.5,0,7);ctx.fill();ctx.strokeStyle='#14100a';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x+size/2-6,y-size/2+3);ctx.lineTo(x+size/2-4,y-size/2+5.5);ctx.lineTo(x+size/2,y-size/2+.5);ctx.stroke();}
+ ctx.restore();}
+const RGAL=[];(()=>{const yrs=[1935,1947,1958,1969,1980,1991],jit=[[.04,-.03],[-.05,.04],[.06,.05],[-.04,-.05],[.03,.06],[-.06,-.04]];for(let ci=0;ci<3;ci++)yrs.forEach((yr,k)=>RGAL.push({ci,yr,jx:jit[(ci+k)%6][0],jy:jit[(ci*2+k)%6][1]}));})();
+function retrievalScene(canvasId,mode){const ctx=fit(canvasId);if(!ctx)return null;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+ ctx.fillStyle='rgba(238,230,208,.5)';ctx.fillRect(0,0,W,H);
+ const m={l:50,r:16,t:24,b:40},px=W-m.l-m.r,py=H-m.t-m.b;
+ const colX=ci=>m.l+px*(0.2+ci*0.3),yrY=yr=>m.t+py*(1-clamp((yr-1930)/69,0,1));
+ // grid + axes
+ ctx.strokeStyle='rgba(139,102,24,.1)';ctx.lineWidth=.6;ctx.font='8px DM Mono,monospace';ctx.fillStyle='rgba(112,96,80,.7)';ctx.textAlign='right';
+ [1930,1950,1970,1990].forEach(yr=>{const y=yrY(yr);ctx.beginPath();ctx.moveTo(m.l,y);ctx.lineTo(m.l+px,y);ctx.stroke();ctx.fillText(yr,m.l-5,y+3);});
+ ctx.strokeStyle='rgba(139,102,24,.4)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(m.l,m.t-4);ctx.lineTo(m.l,m.t+py);ctx.lineTo(m.l+px+4,m.t+py);ctx.stroke();
+ // axis labels
+ ctx.save();ctx.translate(11,m.t+py/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillStyle='#8b6618';ctx.font='8px DM Mono,monospace';ctx.fillText('YEAR  (μʸ)',0,0);ctx.restore();
+ ctx.textAlign='center';ctx.fillStyle='#8b6618';ctx.fillText('OBJECT  (μᶜ)',m.l+px/2,H-6);
+ RCATS.forEach((c,ci)=>{ctx.fillStyle=c.col;ctx.font='600 8.5px DM Mono,monospace';ctx.fillText(c.l,colX(ci),m.t+py+13);});
+ const TS=Math.max(16,Math.min(22,px*0.06));
+ // query target per mode
+ let q,refs=[],guides=[],note='';
+ if(mode==='ll'){q={x:colX(0),y:yrY(1956)};guides=[{type:'v',x:colX(0),lbl:'μᶜ Car',col:'#1e3a58'},{type:'h',y:yrY(1956),lbl:'μʸ 1956',col:'#c04020'}];note='Both axes come from labels. The query is the cell where column Car meets row 1956.';}
+ else if(mode==='il'){const inst=RGAL.find(g=>g.ci===0&&g.yr===1947);const ix=colX(0)+inst.jx*px;q={x:ix,y:yrY(1989)};refs=[{g:inst,role:'xc'}];guides=[{type:'v',x:ix,lbl:'f(x_c)',col:'#1e3a58'},{type:'h',y:yrY(1989),lbl:'μʸ 1989',col:'#c04020'}];note='Column is anchored to one specific photo (its exact look + ε), not the generic centroid. Row still comes from a year label.';}
+ else{const xc=RGAL.find(g=>g.ci===2&&g.yr===1947),xy=RGAL.find(g=>g.ci===0&&g.yr===1980);const xcx=colX(2)+xc.jx*px,xyy=yrY(1980)+xy.jy*py;q={x:xcx,y:yrY(1980)};refs=[{g:xc,role:'xc'},{g:xy,role:'xy'}];guides=[{type:'h',y:yrY(1980),lbl:'r_y (borrowed year)',col:'#8b6618',from:colX(0)+xy.jx*px}];note='No labels. We keep the COLUMN of one photo (poster) and copy the ROW — the year — of another (a 1980 car). Result: posters from ≈88 1980.';}
+ // retrieval disk
+ const R=Math.min(px,py)*0.17;ctx.fillStyle='rgba(232,192,48,.16)';ctx.strokeStyle='rgba(216,168,24,.6)';ctx.lineWidth=1.2;ctx.setLineDash([4,3]);ctx.beginPath();ctx.arc(q.x,q.y,R,0,7);ctx.fill();ctx.stroke();ctx.setLineDash([]);
+ // guides
+ guides.forEach(g=>{ctx.strokeStyle=g.col;ctx.globalAlpha=.5;ctx.lineWidth=1.3;ctx.setLineDash([5,4]);ctx.beginPath();if(g.type==='v'){ctx.moveTo(g.x,m.t-2);ctx.lineTo(g.x,m.t+py);}else{ctx.moveTo(g.from!=null?g.from:m.l,g.y);ctx.lineTo(m.l+px,g.y);}ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle=g.col;ctx.font='8px DM Mono,monospace';ctx.textAlign='left';if(g.type==='v')ctx.fillText(g.lbl,g.x+4,m.t+6);else ctx.fillText(g.lbl,m.l+px-ctx.measureText(g.lbl).width-2,g.y-4);});
+ // tiles
+ let hits=0;RGAL.forEach(g=>{const x=colX(g.ci)+g.jx*px,y=yrY(g.yr)+g.jy*py;const d=Math.hypot(x-q.x,y-q.y);const ref=refs.find(r=>r.g===g);let st=null;if(ref)st='ref';else if(d<R){st='hit';hits++;}gTile(ctx,g.ci,x,y,g.yr,TS,st);if(ref){ctx.fillStyle=ref.role==='xc'?'#1e3a58':'#8b6618';ctx.font='600 8px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(ref.role==='xc'?'x_c':'x_y',x,y+TS/2+11);}});
+ // II extraction arrow
+ if(mode==='ii'){const xy=refs.find(r=>r.role==='xy').g,xc=refs.find(r=>r.role==='xc').g;const xyx=colX(0)+xy.jx*px,xyy=yrY(1980)+xy.jy*py,xcx=colX(2)+xc.jx*px,xcy=yrY(xc.yr)+xc.jy*py;
+  ctx.strokeStyle='rgba(139,102,24,.8)';ctx.lineWidth=1.4;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(xyx,xyy);ctx.lineTo(xcx,yrY(1980));ctx.stroke();ctx.setLineDash([]);
+  // arrow head
+  const a=Math.atan2(yrY(1980)-xyy,xcx-xyx);ctx.fillStyle='rgba(139,102,24,.9)';ctx.beginPath();ctx.moveTo(xcx,yrY(1980));ctx.lineTo(xcx-8*Math.cos(a-.4),yrY(1980)-8*Math.sin(a-.4));ctx.lineTo(xcx-8*Math.cos(a+.4),yrY(1980)-8*Math.sin(a+.4));ctx.closePath();ctx.fill();
+  ctx.strokeStyle='rgba(30,58,88,.7)';ctx.lineWidth=1.4;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(xcx,xcy);ctx.lineTo(xcx,yrY(1980)+12);ctx.stroke();ctx.setLineDash([]);}
+ // query marker
+ ctx.beginPath();ctx.arc(q.x,q.y,9,0,7);ctx.fillStyle='#e8c030';ctx.fill();ctx.strokeStyle='#8b6618';ctx.lineWidth=1.6;ctx.stroke();ctx.fillStyle='#14100a';ctx.font='600 10px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('q',q.x,q.y+3.5);
+ return{hits,note};}
+
+
+/* ── SCROLL ── */
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  C('prog').style.width=(window.scrollY/h*100)+'%';
+  document.querySelectorAll('nav a').forEach(a=>{const s=C(a.getAttribute('href').slice(1));if(s)a.classList.toggle('active',window.scrollY>=s.offsetTop-80);});
+  document.querySelectorAll('#toc a').forEach(a=>{const s=C(a.dataset.t);if(s)a.classList.toggle('active',window.scrollY>=s.offsetTop-120);});
+});
+document.querySelectorAll('#toc a').forEach(a=>a.addEventListener('click',()=>C(a.dataset.t)?.scrollIntoView({behavior:'smooth'})));
+
+/* ── REVEAL ── */
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+/* ── FIT CANVAS ── */
+function fit(id){const c=C(id);if(!c)return null;c.width=c.clientWidth||c.parentElement.offsetWidth;c.height=c.clientHeight||300;return c.getContext('2d');}
+
+/* ── SHARED CATS ── */
+const CATS=[{l:'Car',col:'#1e3a58'},{l:'Jacket',col:'#c04020'},{l:'Poster',col:'#3a5c3a'}];
+const YRS=[1933,1943,1955,1967,1978,1988,1996];
+
+/* ── HERO CANVAS ── */
+(function(){
+  const cv=C('hcan');let W,H;
+  const resize=()=>{W=cv.width=cv.parentElement.offsetWidth;H=cv.height=cv.parentElement.offsetHeight;};
+  resize();new ResizeObserver(resize).observe(cv.parentElement);
+  const pts=[];let rng=1;const r=()=>{rng=rng*16807%2147483647;return rng/2147483647;};
+  for(let i=0;i<50;i++){const cat=Math.floor(r()*3),yr=Math.floor(r()*7);pts.push({x:r(),y:r(),vx:(r()-.5)*.0001,vy:(r()-.5)*.00008,cat,yr,ph:r()*6.28,sz:2.5+r()*3});}
+  let mx=-1,my=-1;
+  cv.parentElement.addEventListener('mousemove',e=>{const rc=cv.getBoundingClientRect();mx=e.clientX-rc.left;my=e.clientY-rc.top;});
+  cv.parentElement.addEventListener('mouseleave',()=>{mx=-1;});
+  function frame(t){
+    const ctx=cv.getContext('2d');ctx.clearRect(0,0,W,H);const ti=t*.0003;
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const a=pts[i],b=pts[j];const dx=(a.x-b.x)*W,dy=(a.y-b.y)*H;const d=Math.hypot(dx,dy);
+      if(d<75&&a.cat===b.cat){ctx.strokeStyle=`rgba(139,102,24,${.12*(1-d/75)})`;ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(a.x*W,a.y*H);ctx.lineTo(b.x*W,b.y*H);ctx.stroke();}}
+    pts.forEach(p=>{
+      if(mx>0){const dx=p.x*W-mx,dy=p.y*H-my,d=Math.hypot(dx,dy);if(d<110&&d>.1){p.vx+=dx/d*.00008;p.vy+=dy/d*.00008;}}
+      p.vx*=.95;p.vy*=.95;p.x=(p.x+p.vx+.00005+1)%1;p.y=(p.y+p.vy+1)%1;
+      const pul=Math.sin(ti*1.8+p.ph)*.3+.7;const sz=(.7+p.yr/7*.8)*p.sz;
+      const col=CATS[p.cat].col;
+      ctx.save();ctx.translate(p.x*W,p.y*H);ctx.rotate(ti*.25+p.ph);
+      ctx.fillStyle=col.replace(')',`,${.16*pul})`).replace('rgb','rgba');
+      ctx.fillRect(-sz,-sz*1.3,sz*2,sz*2.6);
+      ctx.strokeStyle=col.replace(')',`,${.38*pul})`).replace('rgb','rgba');ctx.lineWidth=.7;ctx.strokeRect(-sz,-sz*1.3,sz*2,sz*2.6);
+      ctx.restore();});
+    requestAnimationFrame(frame);}
+  requestAnimationFrame(frame);
+})();
+
+/* ── EMBEDDING SPACE (morphing) ── */
+let morphT=0,morphTimer=null;
+function embEnt(ci,yi,W,H){let s=ci*7+yi+1;const r=()=>{s=s*16807%2147483647;return s/2147483647;};r();r();
+  return{x:W*(.34+ci*.16)+W*.13*(r()-.5),y:H*(.42+ci*.13)+(r()-.5)*80+(yi-3)*12};}
+function embTdir(ci,yi,W,H){let s=ci*7+yi+101;const r=()=>{s=s*16807%2147483647;return s/2147483647;};r();r();
+  return{x:W*(.2+ci*.26)+(r()-.5)*14,y:H*(.84-yi*.108)+(r()-.5)*12};}
+function drawMorph(){
+  const ctx=fit('morphC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const t=morphT,ease=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  // bg blends
+  const bg=`rgb(${Math.round(lerp(248,240,ease))},${Math.round(lerp(240,248,ease))},${Math.round(lerp(224,232,ease))})`;
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // TDIR grid fades in
+  if(ease>.02){ctx.globalAlpha=ease*.5;ctx.strokeStyle='rgba(139,102,24,.4)';ctx.lineWidth=.8;ctx.setLineDash([3,3]);
+    for(let c=0;c<3;c++){const x=W*(.2+c*.26);ctx.beginPath();ctx.moveTo(x,20);ctx.lineTo(x,H-30);ctx.stroke();}
+    for(let y=0;y<7;y++){const yy=H*(.84-y*.108);ctx.beginPath();ctx.moveTo(20,yy);ctx.lineTo(W-20,yy);ctx.stroke();}
+    ctx.setLineDash([]);ctx.globalAlpha=1;}
+  // points morph
+  CATS.forEach((cat,ci)=>YRS.forEach((y,yi)=>{
+    const a=embEnt(ci,yi,W,H),b=embTdir(ci,yi,W,H);
+    const x=lerp(a.x,b.x,ease),yy=lerp(a.y,b.y,ease);const sz=4+yi*.95;
+    // trail
+    if(ease>.05&&ease<.99){ctx.strokeStyle=cat.col+'33';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(x,yy);ctx.stroke();}
+    ctx.beginPath();ctx.arc(x,yy,sz,0,7);ctx.fillStyle=cat.col+'aa';ctx.fill();ctx.strokeStyle=cat.col;ctx.lineWidth=1.4;ctx.stroke();}));
+  // axis labels + compose-query overlay at TDIR end
+  if(ease>.55){ctx.globalAlpha=(ease-.55)/.45;ctx.font='9px DM Mono,monospace';ctx.fillStyle='#8b6618';ctx.textAlign='center';
+    CATS.forEach((c,i)=>ctx.fillText(c.l,W*(.2+i*.26),H-14));
+    ctx.save();ctx.translate(12,H/2);ctx.rotate(-Math.PI/2);ctx.fillText('YEAR  1930s → 1990s',0,0);ctx.restore();
+    ctx.fillText('CATEGORY  →',W*.5,H-3);
+    // query marker: car (ci=0) 1955 (yi=2)
+    const q=embTdir(0,2,W,H);ctx.beginPath();ctx.arc(q.x,q.y,11,0,7);ctx.fillStyle='#e8c030';ctx.fill();ctx.strokeStyle='#8b6618';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#14100a';ctx.font='600 9px DM Mono,monospace';ctx.fillText('q',q.x,q.y+3);
+    ctx.fillStyle='#8b6618';ctx.font='8px DM Mono,monospace';ctx.fillText('q = µᶜ_car + µʸ_1955',q.x+62,q.y);
+    ctx.globalAlpha=1;}
+  ctx.textAlign='left';
+  C('morphH').innerHTML = ease<.1 ? 'Standard embedding: the same category at different years scatters everywhere, and different categories overlap. Date and content are <b>entangled</b> — you cannot query one without the other.' : ease>.9 ? 'TDIR: every category occupies a vertical line; every year occupies a horizontal line. A composed query <b>µᶜ + µʸ</b> is just a grid intersection (gold). The axes are <b>orthogonal</b>.' : 'Disentangling… each point slides from its chaotic position toward its (category, year) grid cell.';
+}
+window.morphSet=function(v){morphT=v;C('morphR').value=Math.round(v*100);drawMorph();};
+window.morphPlay=function(){const b=C('morphPlay');if(morphTimer){clearInterval(morphTimer);morphTimer=null;}const start=morphT>=.99?0:morphT;let v=start;morphT=start;b.textContent='❚❚';
+  morphTimer=setInterval(()=>{v+=.025;if(v>=1){v=1;clearInterval(morphTimer);morphTimer=null;b.textContent='↻ Replay';}morphT=v;C('morphR').value=Math.round(v*100);drawMorph();},28);};
+(function(){new ResizeObserver(drawMorph).observe(C('morphC').parentElement);drawMorph();})();
+
+/* ── MAE BAR ── */
+(function(){
+  const data=[{n:'Tire',v:4.2},{n:'Shorts',v:5.1},{n:'Glasses',v:5.8},{n:'Face',v:6.2},{n:'Taxi',v:7.4},{n:'Dress',v:14},{n:'Building',v:17},{n:'Man',v:18.5},{n:'Wheel',v:21},{n:'Plate',v:24}];
+  function draw(){const ctx=fit('maeC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+    const pL=72,pR=16,pT=14,pB=20;const maxV=30;const rh=(H-pT-pB)/data.length-3;
+    data.forEach((d,i)=>{const y=pT+i*(rh+3);const bw=d.v/maxV*(W-pL-pR);const col=d.v<10?'#3a5c3a':d.v<18?'#8b6618':'#c04020';
+      ctx.fillStyle=col+'88';ctx.fillRect(pL,y,bw,rh);
+      ctx.font='8px DM Mono,monospace';ctx.fillStyle='#14100a';ctx.textAlign='right';ctx.fillText(d.n,pL-5,y+rh*.65);
+      ctx.fillStyle=col;ctx.textAlign='left';ctx.fillText(d.v+'yr',pL+bw+4,y+rh*.65);ctx.textAlign='right';});
+    ctx.strokeStyle='rgba(139,102,24,.25)';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(pL,pT-4);ctx.lineTo(pL,H-pB+4);ctx.stroke();
+    ctx.font='7.5px DM Mono,monospace';ctx.fillStyle='rgba(112,96,80,.65)';ctx.textAlign='center';ctx.fillText('← reliable  ·  harder to date →',W/2,H-4);}
+  new ResizeObserver(draw).observe(C('maeC').parentElement);draw();
+})();
+
+/* ── INTRO MODES ── */
+let iMode='ll';
+const imData={
+  ll:{cap:'Picture the embedding space as a grid: each <b>column</b> is an object, each <b>row</b> is a year. A Label+Label query just names a column (Car) and a row (1956) — the answer is everything sitting in that cell.',steps:['Name the object → picks a column (μᶜ)','Name the year → picks a row (μʸ)','q = μᶜ + μʸ — the cell where they cross','Return the photos nearest q']},
+  il:{cap:'Now the object is a real photo, not a generic centroid. The column is pinned to <b>that exact image’s look</b> (down to its quirks, the ε term); the row is still a year label. More specific than Label+Label.',steps:['Give a photo x_c → pins an exact column position','Name the year → picks a row (μʸ)','q = f(x_c) + μʸ','Return the photos nearest q']},
+  ii:{cap:'No labels at all. Keep the <b>column</b> of one photo (a poster) and steal the <b>row</b> — the year — of another (a 1980 car). The stolen row is the residual r_y. Result: posters that look contemporaneous to that car.',steps:['Give a content photo x_c → its column','Give a reference photo x_y → its year','Read x_y’s row off the year axis → r_y','Move x_c’s column to that row','q = f(x_c) + r_y → retrieve']}};
+function drawIM(){const r=retrievalScene('imC',iMode);const d=imData[iMode];
+  C('imD').innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.15em;color:var(--sepia);margin-bottom:.5rem">HOW THE QUERY IS BUILT</div><ol style="padding-left:1.1rem;font-size:.86rem;line-height:1.8;">${d.steps.map(x=>'<li>'+x+'</li>').join('')}</ol><div style="margin-top:.7rem;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--rust);">${r?r.hits:0} photos fall inside the retrieval radius → returned.</div>`;
+  C('imCap').innerHTML=d.cap;}
+window.setIM=function(m){iMode=m;document.querySelectorAll('#itmodes .it').forEach(t=>t.classList.toggle('on',t.dataset.m===m));drawIM();};
+(function(){new ResizeObserver(drawIM).observe(C('imC').parentElement);drawIM();})();
+
+/* ── DEF 1 (independence, illustrated) ── */
+(function(){let sel=0,yr=1965,flash='',flashT=0;
+  const cats=RCATS;
+  function pills(){C('def1Cats').innerHTML=cats.map((c,i)=>`<button onclick="def1Pick(${i})" style="font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.05em;padding:.32rem .6rem;border:1.5px solid ${c.col};background:${i===sel?c.col:'transparent'};color:${i===sel?'#fff':c.col};cursor:pointer;">${c.l}</button>`).join('');}
+  function draw(){const ctx=fit('def1C');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(238,230,208,.45)';ctx.fillRect(0,0,W,H);
+    const m={l:48,r:150,t:18,b:30},px=W-m.l-m.r,py=H-m.t-m.b;
+    const colX=ci=>m.l+px*(0.2+ci*0.3),yrY=y=>m.t+py*(1-clamp((y-1930)/69,0,1));
+    // grid
+    ctx.strokeStyle='rgba(139,102,24,.1)';ctx.lineWidth=.6;ctx.font='8px DM Mono,monospace';ctx.fillStyle='rgba(112,96,80,.7)';ctx.textAlign='right';
+    [1930,1950,1970,1990].forEach(y=>{const yy=yrY(y);ctx.beginPath();ctx.moveTo(m.l,yy);ctx.lineTo(m.l+px,yy);ctx.stroke();ctx.fillText(y,m.l-5,yy+3);});
+    ctx.strokeStyle='rgba(139,102,24,.4)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(m.l,m.t-4);ctx.lineTo(m.l,m.t+py);ctx.lineTo(m.l+px+4,m.t+py);ctx.stroke();
+    ctx.save();ctx.translate(11,m.t+py/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillStyle='#8b6618';ctx.fillText('YEAR  (μʸ)',0,0);ctx.restore();
+    ctx.textAlign='center';ctx.fillStyle='#8b6618';ctx.fillText('CATEGORY  (μᶜ)',m.l+px/2,m.t+py+13);
+    cats.forEach((c,ci)=>{ctx.fillStyle=c.col;ctx.font='600 8.5px DM Mono,monospace';ctx.fillText(c.l,colX(ci),m.t+py+24);});
+    // point clouds, every category across years
+    const yrs=[1936,1944,1952,1960,1968,1976,1984,1992];
+    cats.forEach((c,ci)=>{yrs.forEach((y,k)=>{const jx=((ci*7+k*13)%9-4)*0.012;const x=colX(ci)+jx*px,yy=yrY(y);ctx.beginPath();ctx.arc(x,yy,3,0,7);ctx.fillStyle=yearTint(c.col,y)+(ci===sel?'':'55');ctx.globalAlpha=ci===sel?1:.4;ctx.fill();ctx.globalAlpha=1;});});
+    // mu^c vertical line for selected category (does NOT depend on year)
+    ctx.strokeStyle=cats[sel].col;ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(colX(sel),m.t-2);ctx.lineTo(colX(sel),m.t+py);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=cats[sel].col;ctx.font='600 9px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('μᶜ',colX(sel),m.t-5);
+    // mu^y horizontal line for current year (does NOT depend on category)
+    const yy=yrY(yr);ctx.strokeStyle='#8b6618';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(m.l,yy);ctx.lineTo(m.l+px,yy);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#8b6618';ctx.textAlign='left';ctx.fillText('μʸ '+yr,m.l+px-44,yy-5);
+    // the intersection bead
+    ctx.beginPath();ctx.arc(colX(sel),yy,6,0,7);ctx.fillStyle='#e8c030';ctx.fill();ctx.strokeStyle='#8b6618';ctx.lineWidth=1.4;ctx.stroke();
+    // side readout panel
+    const rx=m.l+px+16;ctx.textAlign='left';
+    ctx.fillStyle=cats[sel].col;ctx.font='600 8.5px DM Mono,monospace';ctx.fillText('μᶜ position',rx,m.t+14);
+    ctx.fillStyle='rgba(30,24,16,.8)';ctx.font='7.5px DM Mono,monospace';
+    wrap(ctx,'fixed at the '+cats[sel].l+' column — unchanged when you drag the year.',rx,m.t+26,138,10);
+    ctx.fillStyle='#8b6618';ctx.font='600 8.5px DM Mono,monospace';ctx.fillText('μʸ position',rx,m.t+70);
+    ctx.fillStyle='rgba(30,24,16,.8)';ctx.font='7.5px DM Mono,monospace';
+    wrap(ctx,'fixed at year '+yr+' — unchanged when you switch category.',rx,m.t+82,138,10);
+    if(flash){ctx.fillStyle='#2a5a2a';ctx.font='600 8px DM Mono,monospace';ctx.fillText('✓ '+flash,rx,m.t+py-4);}
+    C('def1H').innerHTML=`Joint = product of marginals: <b>p(μᶜ,c,μʸ,y) = p(μᶜ,c)·p(μʸ,y)</b>. The column (object) and the row (year) are set <em>independently</em> — neither knob moves the other.`;}
+  function wrap(ctx,txt,x,y,maxw,lh){const words=txt.split(' ');let line='',yy=y;words.forEach(w=>{const t=line+w+' ';if(ctx.measureText(t).width>maxw&&line){ctx.fillText(line,x,yy);line=w+' ';yy+=lh;}else line=t;});ctx.fillText(line,x,yy);}
+  window.def1Pick=function(i){sel=i;flash='μʸ unchanged';pills();draw();setTimeout(()=>{flash='';draw();},900);};
+  window.def1Year=function(){yr=+C('def1Yr').value;C('def1YrV').textContent=yr;flash='μᶜ unchanged';draw();clearTimeout(window._d1t);window._d1t=setTimeout(()=>{flash='';draw();},900);};
+  pills();new ResizeObserver(draw).observe(C('def1C').parentElement);draw();
+})();
+
+/* ── DEF 2 (Transitivity) ── */
+(function(){
+  let mA={x:.18},mB={x:.52},mC={x:.84},drag=null;const cv=C('def2C');
+  function draw(){const ctx=fit('def2C');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(238,230,208,.4)';ctx.fillRect(0,0,W,H);
+    const lY=H*.52;ctx.strokeStyle='rgba(139,102,24,.38)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(W*.05,lY);ctx.lineTo(W*.95,lY);ctx.stroke();
+    const pts=[{r:mA,k:'A',col:'#1e3a58'},{r:mB,k:'B',col:'#8b6618'},{r:mC,k:'C',col:'#c04020'}];
+    const aY=lY-40,bY=lY+40;
+    function arrow(x1,y1,x2,y2,col,lbl){const d=Math.sign(x2-x1);ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y1);ctx.stroke();ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x2,y1);ctx.lineTo(x2-8*d,y1-5);ctx.lineTo(x2-8*d,y1+5);ctx.closePath();ctx.fill();ctx.font='9px DM Mono,monospace';ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(lbl,(x1+x2)/2,y1-9);}
+    arrow(mA.x*W,aY,mB.x*W,aY,'#1e3a58','Δ⇒ᴮ (A→B)');
+    arrow(mB.x*W,aY,mC.x*W,aY,'#8b6618','Δ⇒ᴮ (B→C)');
+    const ok=Math.abs((mB.x-mA.x)+(mC.x-mB.x)-(mC.x-mA.x))<.01;
+    arrow(mA.x*W,bY,mC.x*W,bY,ok?'#3a5c3a':'#c04020','Δ⇒ᴮ (A→C) '+(ok?'✓':'?'));
+    pts.forEach(p=>{const px=p.r.x*W;ctx.beginPath();ctx.arc(px,lY,9,0,7);ctx.fillStyle=p.col;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.stroke();ctx.font='600 9px DM Mono,monospace';ctx.fillStyle=p.col;ctx.textAlign='center';ctx.fillText('μʸ₁'+p.k,px,lY-16);});
+    C('def2H').innerHTML=`Drag µ<sup>y</sup><sub>B</sub> between A and C. Sum = ${((mB.x-mA.x)*100).toFixed(0)} + ${((mC.x-mB.x)*100).toFixed(0)} = ${((mC.x-mA.x)*100).toFixed(0)} ${ok?'✓ holds':'(drag B between A and C)'}`;ctx.textAlign='left';}
+  function near(ex,W){const pts2=[{r:mA},{r:mB},{r:mC}];let bd=25,bn=null;pts2.forEach(p=>{const d=Math.abs(p.r.x*W-ex);if(d<bd){bd=d;bn=p.r;}});return bn;}
+  cv.addEventListener('mousedown',e=>{drag=near(e.offsetX,cv.clientWidth);cv.style.cursor='grabbing';});
+  window.addEventListener('mousemove',e=>{if(!drag)return;const r=cv.getBoundingClientRect();drag.x=clamp((e.clientX-r.left)/cv.clientWidth,.05,.95);draw();});
+  window.addEventListener('mouseup',()=>{drag=null;if(cv)cv.style.cursor='grab';});
+  cv.addEventListener('touchstart',e=>{const r=cv.getBoundingClientRect();drag=near(e.touches[0].clientX-r.left,cv.clientWidth);e.preventDefault();},{passive:false});
+  cv.addEventListener('touchmove',e=>{if(!drag)return;const r=cv.getBoundingClientRect();drag.x=clamp((e.touches[0].clientX-r.left)/cv.clientWidth,.05,.95);draw();e.preventDefault();},{passive:false});
+  cv.addEventListener('touchend',()=>drag=null);
+  new ResizeObserver(draw).observe(cv.parentElement);draw();
+})();
+
+/* ── PROP 1 (Venn) ── */
+/* ── PROP 1 — illustrated chain-rule proof ── */
+let p1Step=0;
+function p1Draw(){const ctx=fit('prop1C');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#14100a';ctx.fillRect(0,0,W,H);
+  const cx=W*.5,cy=H*.52,r=Math.min(W*.2,H*.34);
+  const cxA=cx-r*.85,cxB=cx+r*.85;
+  function circle(x,col,fill,lbl,sub){ctx.beginPath();ctx.arc(x,cy,r,0,7);ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();ctx.fillStyle=col;ctx.font='600 11px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(lbl,x,cy-2);if(sub){ctx.fillStyle='rgba(244,236,218,.55)';ctx.font='7.5px DM Mono,monospace';ctx.fillText(sub,x,cy+14);}}
+  // overlap lens helper text region
+  const blue='#6ea0d8',red='#e0907a',gold='#e8c030';
+  if(p1Step===0){
+    // one combined blob = joint info I(mu^c,mu^y; c,y)
+    ctx.beginPath();ctx.ellipse(cx,cy,r*1.5,r*1.05,0,0,7);ctx.fillStyle='rgba(232,192,48,.16)';ctx.fill();ctx.strokeStyle=gold;ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=gold;ctx.font='600 11px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('I(μᶜ, μʸ ; c, y)',cx,cy);
+    ctx.fillStyle='rgba(244,236,218,.5)';ctx.font='8px DM Mono,monospace';ctx.fillText('all information the two proxies carry about (category, year)',cx,cy+r*1.05+16);
+  } else if(p1Step===1){
+    // chain rule: split into I(mu^c;c,y) + I(mu^y;c,y|mu^c) — two overlapping circles
+    circle(cxA,blue,'rgba(110,160,216,.18)','I(μᶜ ; c,y)','category part');
+    circle(cxB,red,'rgba(224,144,122,.18)','I(μʸ ; c,y|μᶜ)','year part');
+    // overlap region
+    ctx.fillStyle='rgba(232,192,48,.28)';ctx.beginPath();ctx.ellipse(cx,cy,r*.32,r*.7,0,0,7);ctx.fill();
+    ctx.fillStyle=gold;ctx.font='7px DM Mono,monospace';ctx.fillText('overlap?',cx,cy+r+2);
+  } else if(p1Step===2){
+    circle(cxA,blue,'rgba(110,160,216,.18)','I(μᶜ ; c)','+ I(μᶜ;y|c)');
+    circle(cxB,red,'rgba(224,144,122,.18)','I(μʸ ; y)','+ I(μʸ;c|μᶜ)');
+    // strike the cross terms
+    ctx.strokeStyle='#c04020';ctx.lineWidth=2.4;
+    ctx.beginPath();ctx.moveTo(cxA-18,cy+30);ctx.lineTo(cxA+18,cy+10);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cxB-18,cy+30);ctx.lineTo(cxB+18,cy+10);ctx.stroke();
+    ctx.fillStyle='#e0907a';ctx.font='600 8px DM Mono,monospace';ctx.fillText('= 0  (Def. 1: μᶜ ⊥ y | c)',cx,H-14);
+  } else {
+    // disjoint
+    circle(cxA-r*.15,blue,'rgba(110,160,216,.2)','I(μᶜ ; c)','category info');
+    circle(cxB+r*.15,red,'rgba(224,144,122,.2)','I(μʸ ; y)','year info');
+    ctx.fillStyle='#2a5a2a';ctx.font='600 9px DM Mono,monospace';ctx.fillText('no overlap → fully decomposable',cx,H-12);
+  }
+  const caps=[
+    'We start with the <b>joint</b> information — everything the category proxy μᶜ and year proxy μʸ together reveal about an image’s (category, year).',
+    'Apply the <b>chain rule</b> once: split the blob into a category piece I(μᶜ;c,y) and a year piece conditioned on it. They might still overlap — that overlap would be shared (entangled) information.',
+    'Apply <b>Definition 1</b>: μᶜ knows nothing about the year given the category, and μʸ nothing about the category. Both cross-terms are exactly <b>zero</b> — strike them out.',
+    'What remains are two <b>disjoint</b> pools: I(μᶜ;c) + I(μʸ;y). The information cleanly splits — this is temporal decomposability.'];
+  C('prop1H').innerHTML=caps[p1Step];
+  document.querySelectorAll('#p1steps .sx').forEach((x,i)=>x.classList.toggle('on',i===p1Step));}
+window.p1Go=function(n){p1Step=n;p1Draw();};
+(function(){new ResizeObserver(p1Draw).observe(C('prop1C').parentElement);p1Draw();})();
+
+
+/* ── LEMMA: ORTHOGONALITY ── */
+function drawOrth(){const ctx=fit('orthC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(238,230,208,.42)';ctx.fillRect(0,0,W,H);
+  const noise=+C('noiseR').value/100;C('noiseV').textContent=Math.round(noise*100)+'%';
+  const ox=W*.42,oy=H*.58;
+  ctx.strokeStyle='rgba(139,102,24,.22)';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(W*.06,oy);ctx.lineTo(W*.88,oy);ctx.stroke();ctx.beginPath();ctx.moveTo(ox,H*.06);ctx.lineTo(ox,H*.94);ctx.stroke();
+  const myL=H*.34;const ang=noise*.38;
+  ctx.strokeStyle='#c04020';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy-myL);ctx.stroke();
+  ctx.fillStyle='#c04020';ctx.beginPath();ctx.moveTo(ox,oy-myL);ctx.lineTo(ox-6,oy-myL+12);ctx.lineTo(ox+6,oy-myL+12);ctx.closePath();ctx.fill();
+  ctx.font='600 10px DM Mono,monospace';ctx.fillStyle='#c04020';ctx.textAlign='left';ctx.fillText('µʸ',ox+8,oy-myL+4);
+  const mcL=W*.32;const mcx=ox+Math.cos(ang)*mcL,mcy=oy-Math.sin(ang)*mcL;
+  ctx.strokeStyle='#1e3a58';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(mcx,mcy);ctx.stroke();
+  const ha=Math.atan2(mcy-oy,mcx-ox);ctx.fillStyle='#1e3a58';ctx.beginPath();ctx.moveTo(mcx,mcy);ctx.lineTo(mcx-9*Math.cos(ha-.4),mcy-9*Math.sin(ha-.4));ctx.lineTo(mcx-9*Math.cos(ha+.4),mcy-9*Math.sin(ha+.4));ctx.closePath();ctx.fill();
+  ctx.fillStyle='#1e3a58';ctx.textAlign='center';ctx.font='600 10px DM Mono,monospace';ctx.fillText('µᶜ',mcx,mcy-14);
+  if(noise<.05){ctx.strokeStyle='rgba(58,92,58,.7)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(ox+14,oy);ctx.lineTo(ox+14,oy-14);ctx.lineTo(ox,oy-14);ctx.stroke();}
+  const proj=noise*noise*14*mcL/W;C('innerV').innerHTML=`⟨µᶜ, µʸ⟩ = ${proj.toFixed(2)}`;
+  const col=proj<.5?'#3a5c3a':'#c04020';
+  ctx.font='9px DM Mono,monospace';ctx.fillStyle=col;ctx.textAlign='left';ctx.fillText('⟨μᶜ, μʸ⟩ = '+proj.toFixed(2)+' '+(proj<.5?'✓ orthogonal':'entangled'),ox+16,oy+22);
+  if(noise>.06){ctx.setLineDash([4,3]);ctx.strokeStyle='rgba(192,64,32,.45)';ctx.lineWidth=1;const py=oy-proj*30;ctx.beginPath();ctx.moveTo(mcx,mcy);ctx.lineTo(ox,py);ctx.stroke();ctx.setLineDash([]);}
+  ctx.textAlign='left';}
+(function(){new ResizeObserver(drawOrth).observe(C('orthC').parentElement);drawOrth();})();
+
+/* ── PROP 2: δ is independent of the proxy choice ── */
+function drawProp2(){
+  const ctx=fit('prop2C');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(238,230,208,.5)';ctx.fillRect(0,0,W,H);
+  const theta=+C('p2Theta').value/100, dval=+C('p2Delta').value/100;
+  // total info normalised to 1; delta takes up to .45; remainder R split between Ic and Iy by orientation
+  const delta=dval*0.45, R=1-delta;
+  const frac=0.5+0.42*Math.sin((theta-0.5)*Math.PI); // how R splits
+  const Ic=R*frac, Iy=R*(1-frac);
+  // ---- TOP: geometric decomposition v = µc + µy + ε ----
+  const ox=W*.28,oy=H*.34,Larm=Math.min(W,H)*.2;
+  const ang=lerp(-0.95,-0.15,theta); // orientation of the orthogonal frame
+  const uc={x:Math.cos(ang)*Larm,y:Math.sin(ang)*Larm};
+  const uy={x:Math.cos(ang+Math.PI/2)*Larm*0.9,y:Math.sin(ang+Math.PI/2)*Larm*0.9};
+  const eps={x:Larm*0.62,y:-Larm*0.05}; // ε FIXED, independent of orientation
+  function V(vx,vy,col,lbl,lw){ctx.strokeStyle=col;ctx.lineWidth=lw||2.2;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+vx,oy+vy);ctx.stroke();const an=Math.atan2(vy,vx);ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(ox+vx,oy+vy);ctx.lineTo(ox+vx-8*Math.cos(an-.4),oy+vy-8*Math.sin(an-.4));ctx.lineTo(ox+vx-8*Math.cos(an+.4),oy+vy-8*Math.sin(an+.4));ctx.closePath();ctx.fill();ctx.font='600 9px DM Mono,monospace';ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(lbl,ox+vx*1.18,oy+vy*1.18);}
+  // right-angle mark between uc and uy
+  V(uc.x,uc.y,'#1e3a58','µᶜ');V(uy.x,uy.y,'#c04020','µʸ');V(eps.x,eps.y,'#8b6618','ε');
+  ctx.font='7px DM Mono,monospace';ctx.fillStyle='rgba(112,96,80,.7)';ctx.textAlign='left';ctx.fillText('rotate the (µᶜ,µʸ) frame — ε stays put',ox-Larm*0.6,oy+Larm*1.35);
+  // ---- BOTTOM: stacked information bar ----
+  const barL=W*.08,barR=W*.92,barW=barR-barL,barY=H*.74,barH=26;
+  const wc=Ic*barW, wy=Iy*barW, wd=delta*barW;
+  ctx.fillStyle='#1e3a58';ctx.fillRect(barL,barY,wc,barH);
+  ctx.fillStyle='#c04020';ctx.fillRect(barL+wc,barY,wy,barH);
+  // delta hatched
+  const dx0=barL+wc+wy;ctx.fillStyle='rgba(139,102,24,.22)';ctx.fillRect(dx0,barY,wd,barH);
+  ctx.save();ctx.beginPath();ctx.rect(dx0,barY,wd,barH);ctx.clip();ctx.strokeStyle='rgba(139,102,24,.7)';ctx.lineWidth=1;for(let x=dx0-barH;x<dx0+wd;x+=6){ctx.beginPath();ctx.moveTo(x,barY+barH);ctx.lineTo(x+barH,barY);ctx.stroke();}ctx.restore();
+  ctx.strokeStyle='rgba(20,16,10,.5)';ctx.lineWidth=1;ctx.strokeRect(barL,barY,barW,barH);
+  // labels
+  ctx.font='8px DM Mono,monospace';ctx.textAlign='center';ctx.fillStyle='#fff';if(wc>26)ctx.fillText('I(µᶜ;c)',barL+wc/2,barY+barH/2+3);if(wy>26)ctx.fillText('I(µʸ;y)',barL+wc+wy/2,barY+barH/2+3);
+  ctx.fillStyle='#8b6618';ctx.fillText('δ',dx0+wd/2,barY+barH/2+3);
+  ctx.fillStyle='rgba(112,96,80,.8)';ctx.font='7px DM Mono,monospace';ctx.fillText('I(v; c,y)  =  I(µᶜ;c)  +  I(µʸ;y)  +  δ',W/2,barY-9);
+  // the δ-boundary guide: pinned unless data changes
+  ctx.setLineDash([3,3]);ctx.strokeStyle='#8b6618';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(dx0,barY-4);ctx.lineTo(dx0,barY+barH+16);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#8b6618';ctx.font='7px DM Mono,monospace';ctx.fillText('δ boundary',dx0,barY+barH+25);
+  // readout
+  C('prop2V').innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:.8rem;line-height:1.7;"><span style="color:#1e3a58">I(µᶜ;c)=${Ic.toFixed(2)}</span><br><span style="color:#c04020">I(µʸ;y)=${Iy.toFixed(2)}</span><br><span style="color:#8b6618">δ = ${delta.toFixed(2)}</span></div>
+    <div style="margin-top:.7rem;font-size:.84rem;line-height:1.5;color:var(--mu);">Drag <b style="color:#1e3a58">orientation</b>: the µᶜ/µʸ split slides, the <b style="color:#8b6618">δ boundary stays fixed</b>. Drag <b style="color:#8b6618">data</b>: only δ moves.</div>`;
+  C('prop2H').innerHTML=delta<0.04?'δ ≈ 0: ε leaks no label information, so I(v;c,y) ≈ I(µᶜ;c)+I(µʸ;y) — the ideal decomposition. The proxies can be rotated to orthogonality at no cost.':'δ = '+delta.toFixed(2)+' is set purely by the data entanglement I(ε;c,y). No rotation of the proxy frame changes it — which is exactly why Proposition 2 can assume ⟨µᶜ,µʸ⟩=0 “for free.”';
+  ctx.textAlign='left';
+}
+(function(){new ResizeObserver(drawProp2).observe(C('prop2C').parentElement);drawProp2();})();
+/* ── THEOREM: DRAG µc + Q(α,β) ENERGY BOWL + LEMMA ── */
+(function(){
+  const cv=C('thmC');let drag=false,parallel=false;
+  let muc={a:0.0,b:0.0};
+  // proxy angles; independent vs parallel (Lemma)
+  function angles(){return parallel?{aA:-0.34,aB:-0.30}:{aA:-0.5,aB:0.5};}
+  function geom(W,H){const ox=W*.40,oy=H*.5,L=Math.min(W,H)*.30;const {aA,aB}=angles();
+    return {ox,oy,L,yA:{x:Math.cos(aA)*L,y:Math.sin(aA)*L},yB:{x:Math.cos(aB)*L,y:Math.sin(aB)*L}};}
+  function Qval(a,b){const {aA,aB}=angles();const dot=Math.cos(aA-aB);return 2*a*a+2*b*b+4*a*b*dot;}
+  function draw(){const ctx=fit('thmC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(238,230,208,.5)';ctx.fillRect(0,0,W,H);
+    const g=geom(W,H);const {ox,oy,yA,yB}=g;const a=muc.a,b=muc.b;
+    function V(vx,vy,col,lbl,lw,head){ctx.strokeStyle=col;ctx.lineWidth=lw||2;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+vx,oy+vy);ctx.stroke();if(head!==false){const an=Math.atan2(vy,vx);ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(ox+vx,oy+vy);ctx.lineTo(ox+vx-9*Math.cos(an-.4),oy+vy-9*Math.sin(an-.4));ctx.lineTo(ox+vx-9*Math.cos(an+.4),oy+vy-9*Math.sin(an+.4));ctx.closePath();ctx.fill();}if(lbl){ctx.font='600 10px DM Mono,monospace';ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(lbl,ox+vx*1.14,oy+vy*1.14);}}
+    ctx.fillStyle='rgba(192,64,32,.05)';ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+yA.x*1.3,oy+yA.y*1.3);ctx.lineTo(ox+yA.x*1.3+yB.x*1.3,oy+yA.y*1.3+yB.y*1.3);ctx.lineTo(ox+yB.x*1.3,oy+yB.y*1.3);ctx.closePath();ctx.fill();
+    ctx.font='8px DM Mono,monospace';ctx.fillStyle='rgba(192,64,32,.55)';ctx.textAlign='left';ctx.fillText(parallel?'year subspace (collapsed!)':'year subspace',ox+10,oy+g.L*0.95);
+    V(yA.x,yA.y,'#c04020','µʸ_A',2.4);V(yB.x,yB.y,'#8b6618','µʸ_B',2.4);
+    const mcx=a*yA.x+b*yB.x,mcy=a*yA.y+b*yB.y;
+    V(mcx,mcy,'#1e3a58','µᶜ',2.8);
+    ctx.beginPath();ctx.arc(ox+mcx,oy+mcy,8,0,7);ctx.fillStyle='#1e3a58';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    const rAx=(1-a)*yA.x-b*yB.x,rAy=(1-a)*yA.y-b*yB.y,rBx=(1-b)*yB.x-a*yA.x,rBy=(1-b)*yB.y-a*yA.y;
+    ctx.setLineDash([4,3]);ctx.strokeStyle='rgba(192,64,32,.8)';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+rAx,oy+rAy);ctx.stroke();
+    ctx.strokeStyle='rgba(139,102,24,.8)';ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+rBx,oy+rBy);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(ox+rAx,oy+rAy,5,0,7);ctx.fillStyle='#c04020';ctx.fill();ctx.font='8px DM Mono,monospace';ctx.fillStyle='#c04020';ctx.textAlign='left';ctx.fillText('r_A',ox+rAx+7,oy+rAy);
+    ctx.beginPath();ctx.arc(ox+rBx,oy+rBy,5,0,7);ctx.fillStyle='#8b6618';ctx.fill();ctx.fillStyle='#8b6618';ctx.fillText('r_B',ox+rBx+7,oy+rBy);
+    const mmA=Math.hypot(rAx-yA.x,rAy-yA.y),mmB=Math.hypot(rBx-yB.x,rBy-yB.y);
+    if(mmA>4){ctx.setLineDash([2,2]);ctx.strokeStyle='rgba(192,64,32,.4)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ox+rAx,oy+rAy);ctx.lineTo(ox+yA.x,oy+yA.y);ctx.stroke();ctx.setLineDash([]);}
+    if(mmB>4){ctx.setLineDash([2,2]);ctx.strokeStyle='rgba(139,102,24,.4)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ox+rBx,oy+rBy);ctx.lineTo(ox+yB.x,oy+yB.y);ctx.stroke();ctx.setLineDash([]);}
+    ctx.textAlign='left';
+    const Q=Qval(a,b),ortho=Math.abs(a)<.04&&Math.abs(b)<.04;
+    C('thmPanel').innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.13em;color:var(--sepia);margin-bottom:.4rem;">µᶜ PROJECTION ONTO YEAR SUBSPACE</div>
+      <div style="font-family:'DM Mono',monospace;font-size:.86rem;line-height:1.6;">α = ${a.toFixed(2)} &nbsp; β = ${b.toFixed(2)}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:.8rem;margin-top:.4rem;color:${ortho?'#2a5a2a':'#8b2c14'};">Q(α,β) = ${Q.toFixed(2)}</div>
+      <div style="font-size:.82rem;line-height:1.5;margin-top:.5rem;color:${ortho?'#2a5a2a':'var(--mu)'};">${ortho?'<b>✓ minimum.</b> r_A lands on µʸ_A, r_B on µʸ_B. µᶜ ⊥ year subspace.':'r_A, r_B miss their year proxies (dotted) → Q > 0.'}</div>`;
+    drawBowl();
+    C('thmH').innerHTML=parallel?'<b>Lemma violated.</b> With µʸ_A ∥ µʸ_B the Gram matrix is singular, so Q has a whole <em>valley</em> of minima — orthogonality is no longer forced. This is why the year loss keeps the proxies linearly independent.':(ortho?'Unique minimum at α=β=0: the category proxy carries <b>no</b> projection onto the year subspace.':'Drag µᶜ to the origin — r_A, r_B snap onto the proxies and Q falls into the bowl\'s single minimum.');
+  }
+  function drawBowl(){const ctx=fit('thmBowl');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;
+    const cx=W*.5,cy=H*.52,sc=Math.min(W,H)*0.30; // alpha,beta in [-1.3,1.3]
+    // heat field of Q
+    const step=5;let qmax=Qval(1.3,1.3)+0.001;
+    for(let py=0;py<H;py+=step){for(let px=0;px<W;px+=step){
+      const al=(px-cx)/sc, be=(cy-py)/sc;const q=Qval(al,be);const t=clamp(q/qmax,0,1);
+      // green(low) -> sepia -> red(high)
+      const r=Math.round(lerp(42,180,t)),gg=Math.round(lerp(90,44,t)),bl=Math.round(lerp(42,20,t));
+      ctx.fillStyle=`rgb(${r},${gg},${bl})`;ctx.globalAlpha=.85;ctx.fillRect(px,py,step,step);}}
+    ctx.globalAlpha=1;
+    // contour rings
+    ctx.strokeStyle='rgba(255,255,255,.16)';ctx.lineWidth=.7;
+    [0.4,1.0,1.8,2.8].forEach(lvl=>{ctx.beginPath();for(let a2=0;a2<=6.3;a2+=.05){
+      // solve radius along direction theta where Q=lvl: Q(r cos,r sin)=lvl -> r=sqrt(lvl/Qdir)
+      const dirA=Math.cos(a2),dirB=Math.sin(a2);const qd=Qval(dirA,dirB);if(qd<1e-3)continue;const r=Math.sqrt(lvl/qd)*sc;const x=cx+dirA*r,y=cy-dirB*r;a2===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.stroke();});
+    // axes
+    ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx-sc*1.3,cy);ctx.lineTo(cx+sc*1.3,cy);ctx.moveTo(cx,cy-sc*1.3);ctx.lineTo(cx,cy+sc*1.3);ctx.stroke();
+    ctx.fillStyle='rgba(244,236,218,.8)';ctx.font='8px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('α',cx+sc*1.3-6,cy-6);ctx.fillText('β',cx+10,cy-sc*1.3+8);
+    // minimum marker at origin
+    ctx.beginPath();ctx.arc(cx,cy,4,0,7);ctx.fillStyle='#2a5a2a';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.stroke();
+    // current (alpha,beta)
+    const px=cx+muc.a*sc,py=cy-muc.b*sc;
+    ctx.beginPath();ctx.arc(px,py,6,0,7);ctx.fillStyle='#1e3a58';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();ctx.setLineDash([]);
+    C('thmBowlP').innerHTML=parallel?'<div style="font-size:.82rem;line-height:1.5;color:#8b2c14;"><b>Degenerate.</b> The bowl has flattened into a trough — a line of equal-loss minima. No unique α=β=0.</div>':'<div style="font-size:.82rem;line-height:1.5;color:var(--mu);">A genuine <b>bowl</b>: Q = 2‖αµʸ_A + βµʸ_B‖² ≥ 0 with one minimum (green dot) at the origin. The blue dot is your current µᶜ; the optimiser rolls it downhill to orthogonality.</div>';
+  }
+  function setFromXY(mx,my){const W=cv.clientWidth,H=cv.clientHeight;const g=geom(W,H);const dx=mx-g.ox,dy=my-g.oy;const {yA,yB}=g;const det=yA.x*yB.y-yA.y*yB.x;if(Math.abs(det)<1e-6)return;muc.a=clamp((dx*yB.y-dy*yB.x)/det,-1.3,1.4);muc.b=clamp((yA.x*dy-yA.y*dx)/det,-1.3,1.4);draw();}
+  window.thmToggleLemma=function(){parallel=!parallel;const btn=C('thmLemBtn');btn.textContent=parallel?'Parallel (degenerate)':'Linearly independent';btn.classList.toggle('on',!parallel);btn.classList.toggle('ax',parallel);btn.classList.toggle('sw',!parallel);draw();};
+  cv.addEventListener('mousedown',e=>{drag=true;cv.style.cursor='grabbing';setFromXY(e.offsetX,e.offsetY);});
+  window.addEventListener('mousemove',e=>{if(!drag)return;const r=cv.getBoundingClientRect();setFromXY(e.clientX-r.left,e.clientY-r.top);});
+  window.addEventListener('mouseup',()=>{drag=false;if(cv)cv.style.cursor='grab';});
+  cv.addEventListener('dblclick',()=>{muc={a:0,b:0};draw();});
+  cv.addEventListener('touchstart',e=>{drag=true;const r=cv.getBoundingClientRect();setFromXY(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top);e.preventDefault();},{passive:false});
+  cv.addEventListener('touchmove',e=>{if(!drag)return;const r=cv.getBoundingClientRect();setFromXY(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top);e.preventDefault();},{passive:false});
+  cv.addEventListener('touchend',()=>drag=false);
+  new ResizeObserver(draw).observe(cv.parentElement);new ResizeObserver(drawBowl).observe(C('thmBowl').parentElement);draw();
+})();
+
+/* ── COROLLARY: SHARED kʸ, with α/α' drawn explicitly ── */
+function drawCor(){
+  const ctx=fit('corC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(238,230,208,.5)';ctx.fillRect(0,0,W,H);
+  const a=+C('corA').value/100,b=+C('corB').value/100;       // α (blue), α' (red)
+  const m={l:60,r:40,t:30,b:42},pw=W-m.l-m.r;
+  const yAx=m.l, yBx=m.l+pw, axisY=H*.52, sc=pw*0.32;        // μʸ_A at left, target μʸ_B at right
+  // the year axis (the 1-D subspace spanned by μʸ)
+  ctx.strokeStyle='rgba(139,102,24,.5)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(m.l-14,axisY);ctx.lineTo(W-m.r+14,axisY);ctx.stroke();
+  ctx.fillStyle='rgba(139,102,24,.7)';ctx.font='7px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('year axis  (direction of μʸ)',W/2,H-10);
+  // ideal year-only point μʸ_A (where a residual SHOULD sit) and target μʸ_B
+  function proxy(x,col,lbl){ctx.beginPath();ctx.arc(x,axisY,8,0,7);ctx.fillStyle=col;ctx.fill();ctx.fillStyle='#fff';ctx.font='600 8px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(lbl,x,axisY+3);}
+  // residual start = μʸ_A shifted along the axis by its projection (−α · scale); drawn off-axis for clarity
+  const blueY=axisY-46, redY=axisY+46;
+  const rb={x:yAx - a*sc, y:blueY}, rr={x:yAx - b*sc, y:redY};
+  // shared displacement kʸ_B : the SINGLE vector that maps μʸ_A's ideal residual onto μʸ_B
+  const kx = (yBx - yAx);
+  const landB={x:rb.x+kx,y:blueY}, landR={x:rr.x+kx,y:redY};
+  // --- draw α / α' brackets from μʸ_A down/up to each residual ---
+  function bracket(x0,x1,y,col,lbl){ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();
+    [x0,x1].forEach(xx=>{ctx.beginPath();ctx.moveTo(xx,y-4);ctx.lineTo(xx,y+4);ctx.stroke();});
+    ctx.fillStyle=col;ctx.font='600 10px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(lbl,(x0+x1)/2,y-7);}
+  // connect μʸ_A vertical guide
+  ctx.setLineDash([2,3]);ctx.strokeStyle='rgba(139,102,24,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(yAx,blueY-14);ctx.lineTo(yAx,redY+14);ctx.stroke();ctx.setLineDash([]);
+  bracket(rb.x,yAx,blueY-16,'#1e3a58','α = '+a.toFixed(2));
+  bracket(rr.x,yAx,redY+22,'#c04020',"α' = "+b.toFixed(2));
+  // residual dots + their +kʸ_B arrows
+  function arrow(p,col){ctx.setLineDash([5,3]);ctx.strokeStyle=col;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+kx,p.y);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(p.x+kx,p.y);ctx.lineTo(p.x+kx-8,p.y-4);ctx.lineTo(p.x+kx-8,p.y+4);ctx.closePath();ctx.fill();}
+  arrow(rb,'rgba(30,58,88,.8)');arrow(rr,'rgba(192,64,32,.8)');
+  ctx.fillStyle='rgba(139,102,24,.7)';ctx.font='7px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('+ shared kʸ_B',(rb.x+landB.x)/2,blueY-8);ctx.fillText('+ shared kʸ_B',(rr.x+landR.x)/2,redY+16);
+  // residual start dots
+  ctx.beginPath();ctx.arc(rb.x,rb.y,6,0,7);ctx.fillStyle='#1e3a58';ctx.fill();ctx.fillStyle='#1e3a58';ctx.font='8px DM Mono,monospace';ctx.textAlign='right';ctx.fillText('r_A(c)',rb.x-9,rb.y+3);
+  ctx.beginPath();ctx.arc(rr.x,rr.y,6,0,7);ctx.fillStyle='#c04020';ctx.fill();ctx.fillStyle='#c04020';ctx.fillText("r_A(c')",rr.x-9,rr.y+3);ctx.textAlign='left';
+  // proxies
+  proxy(yAx,'#8b6618','μʸ_A');proxy(yBx,'#8b6618','μʸ_B');
+  ctx.fillStyle='#8b6618';ctx.font='7px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('ideal',yAx,axisY-15);ctx.fillText('target',yBx,axisY-15);
+  // landing points + miss to target
+  [[landB,'#1e3a58'],[landR,'#c04020']].forEach(([p,col])=>{ctx.beginPath();ctx.arc(p.x,p.y,5,0,7);ctx.fillStyle=col;ctx.fill();
+    const miss=Math.abs(p.x-yBx);if(miss>2){ctx.setLineDash([2,2]);ctx.strokeStyle=col+'99';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(yBx,axisY);ctx.stroke();ctx.setLineDash([]);}});
+  // readout
+  const consistent=Math.abs(a-b)<.04, both0=Math.abs(a)<.05&&Math.abs(b)<.05;
+  const missTot=(Math.abs(landB.x-yBx)+Math.abs(landR.x-yBx))/sc;
+  C('corV').innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:.84rem;line-height:1.7;"><span style="color:#1e3a58">α = ${a.toFixed(2)}</span> &nbsp; <span style="color:#c04020">α' = ${b.toFixed(2)}</span></div>
+    <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.13em;color:var(--sepia);margin:.7rem 0 .3rem;">LANDING ERROR vs μʸ_B</div>
+    <div style="height:9px;background:rgba(139,102,24,.12);"><div style="height:100%;width:${clamp(missTot*70,0,100)}%;background:${both0?'#2a5a2a':'#8b2c14'};transition:width .12s;"></div></div>
+    <div style="font-size:.84rem;line-height:1.5;margin-top:.7rem;color:${both0?'#2a5a2a':'var(--mu)'};">${both0?'<b>✓ α = α\' = 0.</b> Neither µ<sup>c</sup> leans into the year axis, so the one shared kʸ_B lands both residuals exactly on µʸ_B.':(consistent?'α = α\' here, so both miss by the <em>same</em> amount — but the residuals are then <em>not</em> on µʸ_B. Only α=α\'=0 hits the target.':'<b>α ≠ α\'.</b> One shared kʸ_B shifts both by the same amount, so they cannot both reach µʸ_B — the dotted gaps are the irreducible loss.')}</div>`;
+  C('corH').innerHTML=both0?'α is the shadow of µ<sup>c</sup> on the year axis. With one shared displacement reused across <em>every</em> category, the only way all residuals reach their target proxy is α = 0 everywhere — i.e. µ<sup>c</sup> ⊥ µ<sup>y</sup>. That is emergent orthogonality.':'The blue and red residuals carry different shadows (α ≠ α\') yet must be moved by the <em>same</em> kʸ_B — impossible to satisfy for both. Drag both sliders to 0.';
+  ctx.textAlign='left';
+}
+(function(){new ResizeObserver(drawCor).observe(C('corC').parentElement);drawCor();})();
+
+/* ── ALGORITHM 1 ── */
+let aStep=0,aTimer=null;
+const aData=[
+ {c:'b',code:['// Initialize all learnable parameters','','Pᶜ ← R^{C×d}  (C category proxies)','Pʸ ← R^{Y×d}  (Y year proxies)','K  ← R^{Y×d}  (Y displacement proxies)','','// These are jointly optimised;','// K is discarded at inference'],
+  cap:'<b>INIT.</b> Three sets of learnable vectors. Category proxies (one per object class, year-agnostic), year proxies (shared across categories), and displacement proxies for the swapping trick — discarded after training.'},
+ {c:'b',code:['// Forward pass — embed both images','','v_A ← f(x_A)  // embed image A','v_B ← f(x_B)  // embed image B','','// x_A and x_B share category c,','// but have different years y_A ≠ y_B'],
+  cap:'<b>FORWARD.</b> Both images from tuple T = (x_A, x_B) are embedded by the backbone. They share the same object category c but come from different years.'},
+ {c:'r',code:['// Category loss — on full embeddings','','Lᶜ = L(v_A, μᶜ; Pᶜ)','    + L(v_B, μᶜ; Pᶜ)','','// Proxy NCA: pull v toward μᶜ,','// push from all other proxies.','// μᶜ integrates all years — year-agnostic.'],
+  cap:'<b>ℒ<sup>c</sup>.</b> The category proxy µ<sup>c</sup> is pulled toward all samples from category c, regardless of year. This shapes a year-agnostic category subspace that the subsequent residual step will leverage.'},
+ {c:'g',code:['// Compute direct residuals','// (centering by category proxy)','','r_A = v_A − μᶜ_c','r_B = v_B − μᶜ_c','','// Subtracting μᶜ removes category info,','// revealing the temporal component.'],
+  cap:'<b>CENTER.</b> Subtracting the category centroid µ<sup>c</sup> re-centers each cluster at the origin, isolating the temporal component. In r_A and r_B, the information necessary to infer category has been removed.'},
+ {c:'g',code:['// Swapping trick — enforce transitivity','','r_{A→B} = (v_A − μᶜ_c) + kʸ_B','r_{B→A} = (v_B − μᶜ_c) + kʸ_A','','// If transitive: r_{A→B} ≈ r_B','//              ≈ close to μ^{y_B}'],
+  cap:'<b>SWAP.</b> Auxiliary displacement k<sup>y</sup><sub>B</sub> translates the temporal residual of A toward year y_B. If transitivity holds, this should be indistinguishable from an actual sample from y_B.'},
+ {c:'o',code:['// ℓ₂-normalise all four residuals','','r̂_A     ← r_A     / ‖r_A‖','r̂_B     ← r_B     / ‖r_B‖','r̂_{A→B} ← r_{A→B} / ‖r_{A→B}‖','r̂_{B→A} ← r_{B→A} / ‖r_{B→A}‖','','// Angular encoding: direction only.'],
+  cap:'<b>NORM.</b> Normalising encodes temporal information purely as angular structure. Only the direction matters, not the magnitude. This design choice is validated by the ablation study (Table 3).'},
+ {c:'r',code:['// Direct temporal loss','','Lʸ_direct = L(r̂_A, μʸ_{y_A}; Pʸ)','            + L(r̂_B, μʸ_{y_B}; Pʸ)','','// Makes year subspace estimable,','// but not yet cross-category consistent.'],
+  cap:'<b>ℒ<sup>y</sup> direct.</b> Year proxies µ<sup>y</sup> are pulled toward normalised residuals. This makes temporal information retrievable, but cross-category consistency requires the transitive terms.'},
+ {c:'r',code:['// Transitive temporal loss','','Lʸ_trans = L(r̂_{A→B}, μʸ_{y_B}; Pʸ)','            + L(r̂_{B→A}, μʸ_{y_A}; Pʸ)','','// Satisfied only if kʸ is consistent','// across ALL categories.','// ⇒ Enforces Corollary 1.'],
+  cap:'<b>ℒ<sup>y</sup> trans.</b> Swapped residuals are pulled toward their <em>target</em> year proxies. This cannot be satisfied unless k<sup>y</sup> is shared and consistent across all categories — enforcing the implicit orthogonality of Corollary 1.'},
+ {c:'b',code:['// Backward pass — joint update','','L = Lᶜ + Lʸ_direct + Lʸ_trans','','{f, Pᶜ, Pʸ, K} ← {…} − α∇(Lᶜ + Lʸ)','','// K discarded after training.','// Inference: only Pᶜ and Pʸ used.'],
+  cap:'<b>BACKWARD.</b> Total loss L = L<sup>c</sup> + L<sup>y</sup> backpropagated. All parameters updated jointly. After training, K is discarded — inference uses only the category proxies 𝒫<sup>c</sup> and year proxies 𝒫<sup>y</sup>.'}];
+
+// ── ONE unified embedding space: the unit circle is centred on the same
+//    origin where the centering step lands the residuals, so there is a
+//    single coherent space rather than two disjoint panels.
+const A_BG='#14100a';
+function aGeom(W,H){const ox=W*.40,oy=H*.50,R=Math.min(W*.30,H*.40);return{ox,oy,R,
+  // three category centroids, neatly placed around the space (NOT faded blobs)
+  clu:[{x:ox-R*1.05,y:oy-R*.55,col:'#1e3a58',l:'car'},{x:ox-R*1.25,y:oy+R*.45,col:'#c04020',l:'jacket'},{x:ox-R*.55,y:oy+R*1.0,col:'#3a5c3a',l:'poster'}]};}
+// year proxies as fixed angles on the (origin-centred) unit circle
+function aProxy(g,which){const ang=which==='A'?-1.05:0.45;return{x:g.ox+Math.cos(ang)*g.R,y:g.oy+Math.sin(ang)*g.R,ang};}
+function aLayout(step,g){
+  const mYA=aProxy(g,'A'),mYB=aProxy(g,'B');
+  const car=g.clu[0];
+  // raw samples sit inside the car cluster
+  const raw={A:{x:car.x-g.R*.12,y:car.y-g.R*.16},B:{x:car.x+g.R*.16,y:car.y+g.R*.18}};
+  // centered: same shape, translated to origin
+  const cen={A:{x:g.ox+(raw.A.x-car.x),y:g.oy+(raw.A.y-car.y)},B:{x:g.ox+(raw.B.x-car.x),y:g.oy+(raw.B.y-car.y)}};
+  // on the unit circle (normalised) — keep their angular identity
+  const angA=Math.atan2(cen.A.y-g.oy,cen.A.x-g.ox),angB=Math.atan2(cen.B.y-g.oy,cen.B.x-g.ox);
+  const onA={x:g.ox+Math.cos(angA)*g.R,y:g.oy+Math.sin(angA)*g.R};
+  const onB={x:g.ox+Math.cos(angB)*g.R,y:g.oy+Math.sin(angB)*g.R};
+  let A=raw.A,B=raw.B,show={muC:false,centered:false,kSwap:false,onRing:false,pulls:null,axes:false};
+  if(step<=2){show.muC=(step===2);}
+  else if(step===3){A=cen.A;B=cen.B;show.muC=true;show.centered=true;}
+  else if(step===4){A=cen.A;B=cen.B;show.muC=true;show.centered=true;show.kSwap=true;}
+  else if(step===5){A=onA;B=onB;show.onRing=true;}
+  else if(step===6){A=onA;B=onB;show.onRing=true;show.pulls='direct';}
+  else if(step===7){A=onA;B=onB;show.onRing=true;show.pulls='trans';}
+  else {A=onA;B=onB;show.onRing=true;show.axes=true;}
+  return{A,B,mYA,mYB,raw,cen,car,show};
+}
+let aCur=null,aAnim=null;
+function aArr(ctx,x1,y1,x2,y2,col,w){ctx.strokeStyle=col;ctx.lineWidth=w||1.4;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const an=Math.atan2(y2-y1,x2-x1);ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-7*Math.cos(an-.4),y2-7*Math.sin(an-.4));ctx.lineTo(x2-7*Math.cos(an+.4),y2-7*Math.sin(an+.4));ctx.closePath();ctx.fill();}
+function aDot(ctx,x,y,r,col,lbl,lblcol,below){ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fillStyle=col;ctx.fill();if(lbl){ctx.font='600 8px DM Mono,monospace';ctx.fillStyle=lblcol||'rgba(244,236,218,.85)';ctx.textAlign='center';ctx.fillText(lbl,x,below?y+r+11:y-r-5);}}
+function drawAcan(step){
+  const ctx=fit('acan');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;
+  const g=aGeom(W,H);const L=aLayout(step,g);
+  if(!aCur||aCur._w!==W){aCur={A:{...L.A},B:{...L.B},_w:W};}
+  function frame(){
+    ctx.clearRect(0,0,W,H);ctx.fillStyle=A_BG;ctx.fillRect(0,0,W,H);
+    // subtle grid centred on origin
+    ctx.strokeStyle='rgba(255,255,255,.045)';ctx.lineWidth=.4;
+    for(let x=g.ox%(g.R/2);x<W;x+=g.R/2){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=g.oy%(g.R/2);y<H;y+=g.R/2){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    // the unit circle (the normalised temporal subspace) — drawn faint always, bright once used
+    const ringHot=step>=5;
+    ctx.beginPath();ctx.arc(g.ox,g.oy,g.R,0,7);ctx.strokeStyle=ringHot?'rgba(232,192,48,.4)':'rgba(255,255,255,.12)';ctx.lineWidth=1.2;ctx.setLineDash(ringHot?[]:[3,4]);ctx.stroke();ctx.setLineDash([]);
+    if(ringHot){ctx.fillStyle='rgba(232,192,48,.55)';ctx.font='7px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('unit circle  ‖r̂‖=1',g.ox+g.R*.2,g.oy-g.R-6);}
+    // tidy category clusters (compact, crisp) — the car cluster is the active one
+    g.clu.forEach((c,ci)=>{const active=(ci===0);ctx.globalAlpha=active?1:.5;
+      for(let i=0;i<7;i++){const an=i/7*6.28+ci;aDot(ctx,c.x+Math.cos(an)*g.R*.13,c.y+Math.sin(an)*g.R*.10,2.4,c.col);}
+      ctx.globalAlpha=1;ctx.fillStyle=active?'rgba(244,236,218,.7)':'rgba(244,236,218,.35)';ctx.font='7px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(c.l,c.x,c.y+g.R*.10+13);});
+    // origin
+    if(step>=3){aDot(ctx,g.ox,g.oy,3,'rgba(244,236,218,.5)');ctx.fillStyle='rgba(244,236,218,.5)';ctx.font='7px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('origin (after −μᶜ)',g.ox+7,g.oy+14);}
+    // muC (sits at the active cluster centre)
+    if(L.show.muC){aDot(ctx,L.car.x,L.car.y,9,'#1e3a58','μᶜ','rgba(168,196,224,.95)');}
+    // year proxies on the circle
+    aDot(ctx,L.mYA.x,L.mYA.y,7,ringHot?'rgba(192,64,32,.95)':'rgba(192,64,32,.45)','μʸ_A','rgba(224,144,122,.95)');
+    aDot(ctx,L.mYB.x,L.mYB.y,7,ringHot?'rgba(58,92,58,.98)':'rgba(58,92,58,.5)','μʸ_B','rgba(120,180,120,.95)');
+    // step2: category pull arrows
+    if(step===2){ctx.setLineDash([4,3]);aArr(ctx,aCur.A.x,aCur.A.y,(aCur.A.x*.4+L.car.x*.6),(aCur.A.y*.4+L.car.y*.6),'rgba(168,196,224,.85)');aArr(ctx,aCur.B.x,aCur.B.y,(aCur.B.x*.4+L.car.x*.6),(aCur.B.y*.4+L.car.y*.6),'rgba(168,196,224,.85)');ctx.setLineDash([]);}
+    // step3/4: centering ghost arrow from cluster to centered
+    if(step===3||step===4){ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(168,196,224,.35)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L.car.x,L.car.y);ctx.lineTo(g.ox,g.oy);ctx.stroke();ctx.setLineDash([]);}
+    // step4: swap displacement
+    if(L.show.kSwap){aArr(ctx,aCur.A.x,aCur.A.y,aCur.A.x+(L.mYB.x-L.mYA.x)*.55,aCur.A.y+(L.mYB.y-L.mYA.y)*.55,'#e8c030',1.6);ctx.fillStyle='#e8c030';ctx.font='7px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('+ kʸ_B',aCur.A.x+(L.mYB.x-L.mYA.x)*.3+6,aCur.A.y+(L.mYB.y-L.mYA.y)*.3);}
+    // step5+: radial snap guides
+    if(L.show.onRing&&step===5){[aCur.A,aCur.B].forEach(p=>{ctx.setLineDash([2,3]);ctx.strokeStyle='rgba(232,192,48,.4)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(g.ox,g.oy);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([]);});}
+    // pulls toward proxies
+    if(L.show.pulls==='direct'){ctx.setLineDash([4,3]);aArr(ctx,aCur.A.x,aCur.A.y,(aCur.A.x+L.mYA.x)/2,(aCur.A.y+L.mYA.y)/2,'rgba(192,64,32,.9)');aArr(ctx,aCur.B.x,aCur.B.y,(aCur.B.x+L.mYB.x)/2,(aCur.B.y+L.mYB.y)/2,'rgba(58,92,58,.9)');ctx.setLineDash([]);}
+    if(L.show.pulls==='trans'){ctx.setLineDash([4,3]);aArr(ctx,aCur.A.x,aCur.A.y,(aCur.A.x+L.mYB.x)/2,(aCur.A.y+L.mYB.y)/2,'#e8c030');ctx.setLineDash([]);ctx.fillStyle='#e8c030';ctx.font='7px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('swapped r̂_{A→B} → μʸ_B',g.ox,g.oy-g.R-6);}
+    // converged: perpendicular axes through origin
+    if(L.show.axes){ctx.strokeStyle='rgba(255,255,255,.18)';ctx.lineWidth=.8;
+      // category axis (toward clusters) and year axis (toward proxies) drawn perpendicular
+      ctx.beginPath();ctx.moveTo(g.ox-g.R,g.oy);ctx.lineTo(g.ox+g.R*.4,g.oy);ctx.stroke();
+      ctx.fillStyle='rgba(232,192,48,.9)';ctx.font='600 8px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('μᶜ ⊥ μʸ  (emergent)',g.ox,g.oy+g.R+18);}
+    // travelling samples (identity preserved throughout)
+    if(step>=1){
+      const la=step<=2?'v_A':(step===3||step===4?'r_A':'r̂_A'),lb=step<=2?'v_B':(step===3||step===4?'r_B':'r̂_B');
+      aDot(ctx,aCur.A.x,aCur.A.y,7,'#3a78c8',la,'rgba(168,196,224,.98)');
+      aDot(ctx,aCur.B.x,aCur.B.y,7,'rgba(58,120,200,.7)',lb,'rgba(168,196,224,.8)',true);
+    }
+    ctx.textAlign='left';
+  }
+  if(aAnim)cancelAnimationFrame(aAnim);
+  const from={A:{...aCur.A},B:{...aCur.B}},to={A:L.A,B:L.B},t0=performance.now();
+  (function tw(now){const t=clamp((now-t0)/440,0,1),e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    aCur.A.x=lerp(from.A.x,to.A.x,e);aCur.A.y=lerp(from.A.y,to.A.y,e);
+    aCur.B.x=lerp(from.B.x,to.B.x,e);aCur.B.y=lerp(from.B.y,to.B.y,e);aCur._w=W;
+    frame();if(t<1)aAnim=requestAnimationFrame(tw);})(t0);
+}
+function aRender(){
+  const d=aData[aStep];document.querySelectorAll('#atabs .ast').forEach(a=>a.classList.toggle('on',+a.dataset.s===aStep));
+  C('acod').innerHTML=d.code.map(l=>l.startsWith('//')?`<span class="c">${l}</span>`:l||'&nbsp;').join('<br>');
+  C('acap').innerHTML=d.cap;drawAcan(aStep);}
+window.aGo=function(n){aStep=n;aRender();};
+window.aToggle=function(){const b=C('aplay');if(aTimer){clearInterval(aTimer);aTimer=null;b.textContent='▶ Play algorithm';return;}if(aStep>=8)aStep=0;b.textContent='❚❚ Pause';aRender();aTimer=setInterval(()=>{if(aStep>=8){clearInterval(aTimer);aTimer=null;b.textContent='▶ Play algorithm';return;}aStep++;aRender();},1600);};
+(function(){new ResizeObserver(()=>drawAcan(aStep)).observe(C('acan').parentElement);aRender();})();
+
+/* ── INFERENCE MODES ── */
+let infMode='ll';
+const infData={
+  ll:{formula:'q = μᶜ + μʸ',steps:['Name the object → column (μᶜ)','Name the year → row (μʸ)','q = μᶜ + μʸ','Retrieve top-K nearest to q'],cap:'Because ⟨μᶜ,μʸ⟩ = 0, the column and row are perpendicular, so the query lands cleanly at their intersection. Retrieved photos are simultaneously the right object and the right era.'},
+  il:{formula:'q = f(x_c) + μʸ',steps:['Give a content photo x_c → pins an exact column','Name the year → row (μʸ)','q = f(x_c) + μʸ','Retrieve top-K nearest to q'],cap:'The column is anchored to one specific image — including its ε quirks — while the row is fixed by the year proxy μʸ. Strictly more expressive than a generic centroid.'},
+  ii:{formula:'q = f(x_c) + r_y',steps:['Give content photo x_c → its column','Give reference photo x_y → its year','Infer ĉ = argmin ‖f(x_y) − μᶜ‖','Extract r_y = f(x_y) − μᶜ̂  (the row)','q = f(x_c) + r_y → retrieve'],cap:'Zero labels. By temporal transitivity the borrowed row r_y is a consistent operator: dropping it onto x_c’s column slides it to x_y’s era while keeping the object intact.'}};
+function drawInf(){const r=retrievalScene('infC',infMode);const d=infData[infMode];
+  C('infD').innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.14em;color:var(--sepia);margin-bottom:.45rem;">QUERY</div><div style="font-family:'DM Mono',monospace;font-size:.9rem;margin-bottom:.85rem;">${d.formula}</div><div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.14em;color:var(--sepia);margin-bottom:.4rem;">STEPS</div><ol style="padding-left:1.1rem;font-size:.84rem;line-height:1.78;">${d.steps.map(x=>'<li>'+x+'</li>').join('')}</ol><div style="margin-top:.6rem;font-family:'DM Mono',monospace;font-size:.58rem;color:var(--rust);">${r?r.hits:0} inside radius → returned</div>`;
+  C('infCap').innerHTML=d.cap;}
+window.setInf=function(m){infMode=m;document.querySelectorAll('#infTabs .it').forEach(t=>t.classList.toggle('on',t.dataset.m===m));drawInf();};
+(function(){new ResizeObserver(drawInf).observe(C('infC').parentElement);drawInf();})();
+
+/* ── DATASET BAR ── */
+(function(){
+  const data=[{l:'1930s',n:312000},{l:'1940s',n:518000},{l:'1950s',n:724000},{l:'1960s',n:896000},{l:'1970s',n:1100000},{l:'1980s',n:1320000},{l:'1990s',n:1408887}];
+  let sel=null;
+  function draw(){const ctx=fit('dsetC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+    const pL=44,pR=16,pT=16,pB=24;const maxV=1500000;const bw=(W-pL-pR)/data.length-5;
+    data.forEach((d,i)=>{const x=pL+i*(bw+5),bh=d.n/maxV*(H-pT-pB),y=H-pB-bh;ctx.fillStyle=sel===i?'rgba(139,102,24,.88)':'rgba(139,102,24,.44)';ctx.fillRect(x,y,bw,bh);ctx.font='8px DM Mono,monospace';ctx.fillStyle='rgba(112,96,80,.8)';ctx.textAlign='center';ctx.fillText(d.l,x+bw/2,H-10);if(sel===i){ctx.fillStyle='#8b6618';ctx.fillText((d.n/1000).toFixed(0)+'K',x+bw/2,y-5);}});
+    ctx.strokeStyle='rgba(139,102,24,.22)';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(pL,pT);ctx.lineTo(pL,H-pB+3);ctx.stroke();}
+  C('dsetC').addEventListener('click',e=>{const W=C('dsetC').clientWidth,pL=44,pR=16,bw=(W-pL-pR)/7-5;const x=e.offsetX-pL;const i=Math.floor(x/(bw+5));if(i>=0&&i<7){sel=i===sel?null:i;draw();}});
+  new ResizeObserver(draw).observe(C('dsetC').parentElement);draw();
+})();
+
+/* ── BACKBONE CHART ── */
+const bbData={0:{rows:[['CLIP arith',.152,.115],['CLIP prompt',.415,.105],['VGG+TDIR',.397,.712],['ResNet+TDIR',.489,.803],['ConvNeXt+TDIR',.443,.824],['ViT+TDIR',.413,.863]]},1:{rows:[['CLIP arith',.387,.076],['CLIP prompt',.372,.079],['VGG+TDIR',.388,.579],['ResNet+TDIR',.444,.665],['ConvNeXt+TDIR',.416,.664],['ViT+TDIR',.355,.708]]},2:{rows:[['CLIP arith',.389,.102],['CLIP prompt',.520,.081],['VGG+TDIR',.669,.234],['ResNet+TDIR',.721,.306],['ConvNeXt+TDIR',.725,.393],['ViT+TDIR',.646,.429]]}};
+function drawBB(){
+  const mode=+C('bbMode').value;const ctx=fit('bbC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const rows=bbData[mode].rows;const pL=100,pR=16,pT=18,pB=22;const rh=(H-pT-pB)/rows.length-4;
+  rows.forEach((r,i)=>{const y=pT+i*(rh+4);const tdir=r[0].includes('TDIR');
+    const bwObj=r[1]*(W-pL-pR);const bwDat=r[2]*(W-pL-pR);
+    ctx.fillStyle=tdir?'rgba(30,58,88,.8)':'rgba(139,102,24,.38)';ctx.fillRect(pL,y,bwObj,rh/2-1);
+    ctx.fillStyle=tdir?'rgba(192,64,32,.8)':'rgba(139,102,24,.22)';ctx.fillRect(pL,y+rh/2,bwDat,rh/2-1);
+    ctx.font=(tdir?'600 ':'')+'8.5px DM Mono,monospace';ctx.fillStyle='#14100a';ctx.textAlign='right';ctx.fillText(r[0],pL-5,y+rh*.5+3);
+    ctx.fillStyle='#1e3a58';ctx.textAlign='left';ctx.fillText(r[1].toFixed(3),pL+bwObj+4,y+rh*.25+3);
+    ctx.fillStyle='#c04020';ctx.fillText(r[2].toFixed(3),pL+bwDat+4,y+rh*.75+3);});
+  ctx.font='7.5px DM Mono,monospace';ctx.fillStyle='rgba(30,58,88,.8)';ctx.textAlign='left';ctx.fillText('■ Obj P@K',pL,pT-3);ctx.fillStyle='rgba(192,64,32,.8)';ctx.fillText('■ Date P@K',pL+58,pT-3);
+  C('bbH').innerHTML=['Label+Label','Image+Label','Image+Image'][mode]+': All TDIR architectures substantially outperform CLIP on date precision. CLIP is competitive on objects but fails temporally — composability requires the explicit geometric structure of TDIR.';}
+(function(){new ResizeObserver(drawBB).observe(C('bbC').parentElement);drawBB();})();
+
+/* ── ABLATION ── */
+const abRows=[{sw:false,ax:true,nm:true,v:[[.362,.712],[.342,.568],[.683,.358]]},{sw:true,ax:false,nm:true,v:[[.355,.822],[.343,.676],[.691,.354]]},{sw:true,ax:true,nm:false,v:[[.358,.816],[.349,.675],[.708,.362]]},{sw:true,ax:true,nm:true,v:[[.443,.824],[.416,.664],[.725,.393]]}];
+let ablRemoved='full';
+const abMap={full:{sw:true,ax:true,nm:true},sw:{sw:false,ax:true,nm:true},ax:{sw:true,ax:false,nm:true},nm:{sw:true,ax:true,nm:false}};
+const abName={full:'Full model (all three components)',sw:'Swapping trick',ax:'Auxiliary k*',nm:'Normalisation'};
+window.ablSel=function(k){ablRemoved=k;document.querySelectorAll('#ablBtns .abt').forEach(btn=>btn.classList.toggle('on',btn.dataset.k===k));drawAbl();};
+function drawAbl(){
+  const cfg=abMap[ablRemoved];const cur=abRows.find(r=>r.sw===cfg.sw&&r.ax===cfg.ax&&r.nm===cfg.nm)||abRows[3];const best=abRows[3];
+  const ctx=fit('ablC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const pL=72,pR=16,pT=16,pB=26;const bw=(W-pL-pR)/3-12;const ph=H-pT-pB;
+  cur.v.forEach((v,i)=>{const bx=pL+i*(bw+12),bv=best.v[i];
+    // faded = full model reference
+    ctx.fillStyle='rgba(30,58,88,.2)';ctx.fillRect(bx,pT+ph*(1-bv[0]),bw/2-2,ph*bv[0]);
+    ctx.fillStyle='rgba(192,64,32,.2)';ctx.fillRect(bx+bw/2+2,pT+ph*(1-bv[1]),bw/2-2,ph*bv[1]);
+    // solid = current config
+    ctx.fillStyle='rgba(30,58,88,.78)';ctx.fillRect(bx,pT+ph*(1-v[0]),bw/2-2,ph*v[0]);
+    ctx.fillStyle='rgba(192,64,32,.78)';ctx.fillRect(bx+bw/2+2,pT+ph*(1-v[1]),bw/2-2,ph*v[1]);
+    ctx.font='8px DM Mono,monospace';ctx.fillStyle='#14100a';ctx.textAlign='center';ctx.fillText(['L+L','I+L','I+I'][i],bx+bw/2,H-10);
+    ctx.fillStyle='#1e3a58';ctx.fillText(v[0].toFixed(3),bx+bw/4,pT+ph*(1-v[0])-5);
+    ctx.fillStyle='#c04020';ctx.fillText(v[1].toFixed(3),bx+bw*3/4,pT+ph*(1-v[1])-5);});
+  ctx.strokeStyle='rgba(139,102,24,.28)';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(pL-4,pT+ph);ctx.lineTo(W-pR,pT+ph);ctx.stroke();
+  // legend
+  ctx.font='7.5px DM Mono,monospace';ctx.textAlign='left';ctx.fillStyle='rgba(30,58,88,.78)';ctx.fillText('■ obj',pL,pT-4);ctx.fillStyle='rgba(192,64,32,.78)';ctx.fillText('■ date',pL+34,pT-4);ctx.fillStyle='rgba(112,96,80,.6)';ctx.fillText('faded = full model',pL+72,pT-4);
+  if(ablRemoved==='full'){C('ablH').innerHTML='Showing the <b>full model</b> — all three components active. Remove one to see what it costs.';}
+  else{
+    const dLL=((best.v[0][1]-cur.v[0][1])*100).toFixed(1);
+    C('ablH').innerHTML=`Removed <b>${abName[ablRemoved]}</b>. Label+Label date precision drops by <b>${dLL} pts</b> vs the full model — evidence each piece carries weight, even outside the transitive (image→image) path.`;}}
+(function(){new ResizeObserver(drawAbl).observe(C('ablC').parentElement);drawAbl();})();
+
+/* ── CALIBRATION ── */
+function calSynthetic(axis,i){
+  if(axis==='src')return{obj:.7+Math.sin(i*.4)*.03,date:.22+i*.016};
+  if(axis==='tgt')return{obj:.71+Math.sin(i*.35)*.025,date:.45-Math.pow(i/13-.5,2)*.55+.08*Math.sin(i*.6)};
+  return{obj:.72,date:lerp(.46,.16,i/13)};}
+function drawCal(){
+  const axis=C('calMode').value;const ctx=fit('calC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const pad={l:38,r:14,t:18,b:24};const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+  const X=i=>pad.l+i/13*pw,Y=v=>pad.t+ph*(1-v);
+  ctx.strokeStyle='rgba(139,102,24,.1)';ctx.lineWidth=.6;[0,.25,.5,.75,1].forEach(v=>{const y=Y(v);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.font='8px DM Mono,monospace';ctx.fillStyle='rgba(112,96,80,.58)';ctx.textAlign='right';ctx.fillText((v*100).toFixed(0)+'%',pad.l-4,y+3);});
+  const pts=Array.from({length:14},(_,i)=>calSynthetic(axis,i));
+  ctx.beginPath();ctx.strokeStyle='rgba(30,58,88,.88)';ctx.lineWidth=2;pts.forEach((p,i)=>{const x=X(i),y=Y(p.obj);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  pts.forEach((p,i)=>{ctx.beginPath();ctx.arc(X(i),Y(p.obj),4,0,7);ctx.fillStyle='#1e3a58';ctx.fill();});
+  ctx.beginPath();ctx.strokeStyle='rgba(192,64,32,.88)';ctx.lineWidth=2;pts.forEach((p,i)=>{const x=X(i),y=Y(p.date);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  pts.forEach((p,i)=>{ctx.beginPath();ctx.arc(X(i),Y(p.date),4,0,7);ctx.fillStyle='#c04020';ctx.fill();});
+  ctx.font='7.5px DM Mono,monospace';ctx.fillStyle='rgba(30,58,88,.8)';ctx.textAlign='left';ctx.fillText('— Object P@K',pad.l,pad.t-3);ctx.fillStyle='rgba(192,64,32,.8)';ctx.fillText('— Date P@K',pad.l+62,pad.t-3);
+  const h={'src':'Object precision is stable across source years — the category subspace is insulated from temporal injection.','tgt':'Date precision follows a U-shaped curve — decades at the extremes of the temporal range are harder to reach.','gap':'Date precision degrades monotonically with gap — the additive operator loses fidelity at large temporal distances.'};
+  C('calH').innerHTML=h[axis];}
+(function(){new ResizeObserver(drawCal).observe(C('calC').parentElement);drawCal();})();
+
+/* ── PER OBJECT BARS ── */
+const refD=[{n:'Tire',v:4.2},{n:'Shorts',v:5.1},{n:'Glasses',v:5.8},{n:'Face',v:6.2},{n:'Taxi',v:7.4},{n:'Dress',v:14},{n:'Building',v:17},{n:'Man',v:18.5},{n:'Wheel',v:21},{n:'Plate',v:24}];
+const tgtD=[{n:'Poster',v:4.8},{n:'Girl',v:5.5},{n:'Train',v:6.4},{n:'House',v:7.2},{n:'Dress',v:8.1},{n:'Ladder',v:18.4},{n:'Face',v:20},{n:'Tire',v:22},{n:'Wheel',v:23.5},{n:'Hat',v:26}];
+function drawOBar(id,data){const ctx=fit(id);if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const pL=68,pR=14,pT=14,pB=16;const maxV=30;const rh=(H-pT-pB)/data.length-2.5;
+  data.forEach((d,i)=>{const y=pT+i*(rh+2.5);const bw=d.v/maxV*(W-pL-pR);const col=d.v<10?'#3a5c3a':d.v<18?'#8b6618':'#c04020';ctx.fillStyle=col+'88';ctx.fillRect(pL,y,bw,rh);ctx.font='7.5px DM Mono,monospace';ctx.fillStyle='#14100a';ctx.textAlign='right';ctx.fillText(d.n,pL-4,y+rh*.66);ctx.fillStyle=col;ctx.textAlign='left';ctx.fillText(d.v+'yr',pL+bw+3,y+rh*.66);ctx.textAlign='right';});
+  ctx.strokeStyle='rgba(139,102,24,.22)';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(pL,pT-3);ctx.lineTo(pL,H-pB+3);ctx.stroke();}
+(function(){if(!C('refC')||!C('tgtC'))return;const ob=new ResizeObserver(()=>{drawOBar('refC',refD);drawOBar('tgtC',tgtD);});ob.observe(C('refC').parentElement);drawOBar('refC',refD);drawOBar('tgtC',tgtD);})();
+
+</script></body></html>
