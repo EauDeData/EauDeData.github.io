@@ -1,0 +1,676 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unapologetically Distributed · Decentralized Document Analysis · BMVC 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f4f1e8;--paper2:#ece6d6;--card:#f9f6ee;--ink:#16191f;--ink2:#2b313b;--mut:#736a58;--cen:#2f5d8a;--cenL:#9bb8d4;--dist:#cc5b1e;--distL:#e7ab7e;--teal:#2f6b63;--gold:#b58a2e;--line:rgba(60,50,30,.16);--line2:rgba(60,50,30,.28);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:'Spectral',serif;overflow-x:hidden;}
+.grid-bg{position:fixed;inset:0;z-index:-1;background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:26px 26px;opacity:.5;}
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--dist);z-index:500;width:0;}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(244,241,232,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line2);padding:0 1.6rem;display:flex;align-items:center;height:46px;gap:1.2rem;}
+.logo{font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dist);margin-right:auto;}
+nav a{font-family:'IBM Plex Mono',monospace;font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);text-decoration:none;transition:color .2s;}
+nav a:hover,nav a.active{color:var(--cen);}
+#toc{position:fixed;right:1.1rem;top:50%;transform:translateY(-50%);z-index:140;display:flex;flex-direction:column;gap:.7rem;align-items:flex-end;}
+#toc a{display:flex;align-items:center;gap:.5rem;text-decoration:none;cursor:pointer;}
+#toc .tl{font-family:'IBM Plex Mono',monospace;font-size:.46rem;letter-spacing:.1em;color:var(--mut);opacity:0;transform:translateX(6px);transition:all .25s;white-space:nowrap;text-transform:uppercase;}
+#toc .td{width:7px;height:7px;border:1px solid var(--mut);background:transparent;transition:all .25s;flex-shrink:0;transform:rotate(45deg);}
+#toc a:hover .tl,#toc a.active .tl{opacity:1;transform:none;color:var(--dist);}
+#toc a.active .td{background:var(--dist);border-color:var(--dist);}
+section{padding:5rem 0;}.dark{background:var(--ink);color:var(--paper);}.alt{background:var(--paper2);}
+.container{max-width:880px;margin:0 auto;padding:0 1.6rem;}
+.divider{height:1px;background:var(--line2);margin:2.4rem 0;}
+#hero{min-height:100vh;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:4.5rem;padding-top:80px;}
+#hcan{position:absolute;inset:0;width:100%;height:100%;}
+.hc{position:relative;z-index:10;max-width:880px;margin:0 auto;padding:0 1.6rem;width:100%;}
+.badge{font-family:'IBM Plex Mono',monospace;font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dist);margin-bottom:.9rem;display:flex;align-items:center;gap:.6rem;}
+.badge::before{content:'';width:22px;height:1.5px;background:var(--dist);}
+h1.ht{font-family:'Fraunces',serif;font-size:clamp(2rem,5.4vw,3.5rem);line-height:1.08;color:var(--ink);margin-bottom:.5rem;font-weight:600;letter-spacing:-.01em;}
+h1.ht em{color:var(--dist);font-style:italic;font-weight:400;}
+.sub{font-size:1.1rem;color:var(--ink2);max-width:560px;line-height:1.7;margin-bottom:2rem;}
+.hmeta{display:flex;gap:2.4rem;flex-wrap:wrap;}
+.hk{font-family:'IBM Plex Mono',monospace;font-size:.48rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dist);margin-bottom:.2rem;}
+.hv{font-size:1rem;color:var(--ink);}
+.sh{font-family:'IBM Plex Mono',monospace;font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:.5rem;margin-top:2.4rem;}
+.sh::after{content:'↓';animation:bou 1.6s infinite;}@keyframes bou{0%,100%{transform:none}50%{transform:translateY(4px)}}
+h2.st{font-family:'Fraunces',serif;font-size:2.1rem;line-height:1.2;margin-bottom:.8rem;font-weight:600;letter-spacing:-.01em;}
+h3.nt{font-family:'Fraunces',serif;font-size:1.4rem;color:var(--ink);margin-bottom:.55rem;line-height:1.2;font-weight:600;}
+h4.h4{font-family:'Fraunces',serif;font-size:1.06rem;margin:1rem 0 .45rem;font-weight:600;}
+.dark h3.nt,.dark h2.st{color:var(--paper);}
+.ey{font-family:'IBM Plex Mono',monospace;font-size:.54rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dist);margin-bottom:.6rem;}
+.ne{font-family:'IBM Plex Mono',monospace;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dist);margin-bottom:.7rem;display:flex;align-items:center;gap:.5rem;}
+.ne::before{content:'◇';font-size:.5rem;}
+.intro{font-size:1.12rem;line-height:1.8;max-width:650px;margin-bottom:1.6rem;}
+.dark .intro{color:rgba(244,241,232,.84);}
+.nb{font-size:1rem;color:var(--ink2);line-height:1.74;margin-bottom:1.05rem;max-width:650px;}
+.dark .nb{color:rgba(244,241,232,.78);}
+.pq{border-left:3px solid var(--dist);padding:.75rem 1.2rem;font-style:italic;font-size:1.02rem;color:var(--mut);line-height:1.65;margin:1.2rem 0;}
+code{font-family:'IBM Plex Mono',monospace;font-size:.82em;background:rgba(60,50,30,.09);padding:.08em .3em;border-radius:2px;}
+.mbl{background:var(--card);border:1px solid var(--line2);padding:.9rem 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.84rem;line-height:1.95;margin:.9rem 0;overflow-x:auto;}
+.cb{background:var(--card);border:1px solid var(--line2);overflow:hidden;position:relative;}
+.cb canvas{display:block;width:100%;}
+.clbl{font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dist);padding:.5rem .8rem;border-bottom:1px solid var(--line);}
+.chnt{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--mut);padding:.5rem .8rem;border-top:1px solid var(--line);line-height:1.5;}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .55s,transform .55s;}.reveal.vis{opacity:1;transform:none;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line2);margin:1.6rem 0;}
+.stat{padding:1.1rem;border-right:1px solid var(--line);text-align:center;}.stat:last-child{border-right:none;}
+.sn{font-family:'Fraunces',serif;font-size:1.85rem;color:var(--dist);margin-bottom:.15rem;font-weight:600;}
+.sl{font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);}
+.tabs{display:flex;gap:0;border:1px solid var(--line2);border-bottom:none;overflow:hidden;}
+.tab{flex:1;padding:.75rem .4rem;text-align:center;cursor:pointer;background:var(--card);border-right:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:.58rem;text-transform:uppercase;letter-spacing:.07em;transition:all .2s;}
+.tab:last-child{border-right:none;}.tab.on{background:var(--ink);color:var(--paper);}
+.tab .tk{font-size:.46rem;color:var(--dist);margin-bottom:.16rem;}.tab.on .tk{color:var(--distL);}
+.toggle{display:inline-flex;border:1px solid var(--line2);overflow:hidden;font-family:'IBM Plex Mono',monospace;font-size:.58rem;}
+.toggle button{padding:.4rem .8rem;border:none;background:var(--card);color:var(--mut);cursor:pointer;border-right:1px solid var(--line);text-transform:uppercase;letter-spacing:.06em;}
+.toggle button:last-child{border-right:none;}
+.toggle button.cen.on{background:var(--cen);color:#fff;}.toggle button.dist.on{background:var(--dist);color:#fff;}
+.pill{font-family:'IBM Plex Mono',monospace;font-size:.56rem;letter-spacing:.06em;padding:.34rem .66rem;border:1.4px solid;background:transparent;cursor:pointer;transition:all .18s;text-transform:uppercase;}
+.dt{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:.66rem;margin:1rem 0;}
+.dt th{background:var(--ink);color:var(--paper);padding:.5rem .6rem;text-align:center;letter-spacing:.04em;}
+.dt td{padding:.46rem .6rem;text-align:center;border-bottom:1px solid var(--line);}
+.dt tr:hover td{background:rgba(60,50,30,.04);}.dt .d{color:var(--dist);font-weight:500;}.dt .c{color:var(--cen);}
+.leg{display:flex;gap:1rem;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--mut);margin:.6rem 0;}
+.leg span{display:flex;align-items:center;gap:.35rem;}.leg i{width:11px;height:11px;display:inline-block;}
+.snav{display:flex;gap:.5rem;margin-top:.65rem;}
+.snav button{font-family:'IBM Plex Mono',monospace;font-size:.54rem;letter-spacing:.08em;text-transform:uppercase;padding:.42rem .85rem;border:1px solid var(--line2);background:var(--card);color:var(--ink);cursor:pointer;transition:all .2s;}
+.snav button:hover{background:var(--dist);color:#fff;border-color:var(--dist);}
+.snav button.pl{background:var(--dist);color:#fff;border-color:var(--dist);}
+.grd2{display:grid;grid-template-columns:1.35fr 1fr;gap:0;border:1px solid var(--line2);}
+.grd2 .pan{padding:1.1rem 1.2rem;background:var(--card);}
+input[type=range]{accent-color:var(--dist);}
+.rgrid{display:grid;grid-template-columns:auto repeat(6,1fr);border:1px solid var(--line2);font-family:'IBM Plex Mono',monospace;font-size:.6rem;}
+.rgrid>div{padding:.6rem .3rem;text-align:center;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;}
+.rgrid .rh{background:var(--ink);color:var(--paper);font-size:.5rem;letter-spacing:.05em;text-transform:uppercase;}
+.rgrid .rl{justify-content:flex-start;padding-left:.7rem;font-weight:500;letter-spacing:.05em;text-transform:uppercase;font-size:.55rem;}
+.cell-S{background:rgba(204,91,30,.82);color:#fff;}.cell-M{background:rgba(204,91,30,.32);}.cell-L{background:rgba(60,50,30,.07);color:var(--mut);}
+.cell-S.cn{background:rgba(47,93,138,.82);}.cell-M.cn{background:rgba(47,93,138,.3);}
+@media(max-width:1180px){#toc{display:none;}}
+@media(max-width:720px){.stats{grid-template-columns:1fr 1fr;}.grd2{grid-template-columns:1fr;}.tabs{flex-direction:column;}.rgrid{font-size:.5rem;}}
+</style></head><body>
+<div class="grid-bg"></div><div id="prog"></div>
+<nav>
+  <div class="logo">BMVC 2026 · #259</div>
+  <a href="#abstract">Abstract</a><a href="#intro">Intro</a><a href="#merge">Merging</a>
+  <a href="#strategies">Strategies</a><a href="#results">Results</a><a href="#regime">When</a>
+</nav>
+<div id="toc">
+  <a data-t="hero"><span class="tl">Title</span><span class="td"></span></a>
+  <a data-t="abstract"><span class="tl">Abstract</span><span class="td"></span></a>
+  <a data-t="intro"><span class="tl">Introduction</span><span class="td"></span></a>
+  <a data-t="related"><span class="tl">Framing</span><span class="td"></span></a>
+  <a data-t="merge"><span class="tl">Model Merging</span><span class="td"></span></a>
+  <a data-t="strategies"><span class="tl">3 Strategies</span><span class="td"></span></a>
+  <a data-t="setup"><span class="tl">Setup</span><span class="td"></span></a>
+  <a data-t="results"><span class="tl">Results</span><span class="td"></span></a>
+  <a data-t="regime"><span class="tl">When it wins</span><span class="td"></span></a>
+  <a data-t="conclusion"><span class="tl">Conclusions</span><span class="td"></span></a>
+</div>
+
+<section id="hero">
+<canvas id="hcan"></canvas>
+<div class="hc">
+  <div class="badge">BMVC 2026 · Submission #259</div>
+  <h1 class="ht">Unapologetically<br><em>Distributed</em></h1>
+  <p class="sub">A call for decentralized Document Analysis — where keeping data apart is not a tax on accuracy, but a route to <em>better generalization</em>.</p>
+  <div class="hmeta">
+    <div><div class="hk">Core idea</div><div class="hv">Train separate, merge weights</div></div>
+    <div><div class="hk">Datasets</div><div class="hv">27 · WS / OCR / Tables</div></div>
+    <div><div class="hk">OOD-unseen gain</div><div class="hv">+104% mAP</div></div>
+    <div><div class="hk">Data shared</div><div class="hv">None — only θ</div></div>
+  </div>
+  <div class="sh">Explore the paper</div>
+</div>
+</section>
+
+<section id="abstract" class="alt">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Abstract</div>
+  <h2 class="st">Decentralization as an opportunity, not a tax</h2>
+  <p class="intro">Privacy constraints keep archives, governments, and small businesses from pooling document data. Federated learning is usually treated as a <em>necessary evil</em> — a price paid for privacy. This paper argues the opposite: train models separately on each silo, average their weights, and the merged model often <strong>generalizes better</strong> — especially out-of-distribution and in low-resource regimes.</p>
+</div>
+<div class="reveal">
+  <p style="font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dist);margin-bottom:.7rem;">Centralized vs distributed — drag the slider</p>
+  <div class="cb" style="overflow:visible;">
+    <canvas id="splitC" style="height:300px;display:block;width:100%;"></canvas>
+    <div style="display:flex;align-items:center;gap:.9rem;padding:.7rem 1rem;background:var(--card);border-top:1px solid var(--line);">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:.56rem;color:var(--cen);">Pool everything</span>
+      <input type="range" id="splitR" min="0" max="100" value="100" oninput="drawSplit(this.value/100)" style="flex:1;">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:.56rem;color:var(--dist);">Keep apart, merge</span>
+    </div>
+    <div class="chnt" id="splitH"></div>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<div class="reveal">
+  <p class="nb">This is the first study to evaluate distributed learning in Document Analysis along three axes <em>at once</em>: the <strong>tasks</strong> (word spotting, handwriting/OCR, table recognition), the <strong>architectures</strong> (RNNs, transformers, graph networks), and the <strong>fine-tuning strategies</strong> (distillation, layer-wise, end-to-end).</p>
+</div>
+</div>
+</section>
+
+<section id="intro">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 1 · Introduction</div>
+  <h2 class="st">Why the data can't move</h2>
+  <p class="intro">Modern training assumes you can pile all the data in one place. For documents — sensitive administrative records, cultural-heritage collections meant to stay near their origin, confidential SME paperwork — that assumption simply fails. Distributed learning trains where the data lives and shares only the resulting weights.</p>
+</div>
+<div class="reveal">
+  <div class="ne">The threefold hypothesis</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);margin:1.2rem 0;">
+    <div style="background:var(--card);padding:1.1rem;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.12em;color:var(--dist);margin-bottom:.4rem;">i · BETTER TEACHERS</div><div style="font-size:.92rem;line-height:1.6;">Merged features are more general, so they distill better into small student models.</div></div>
+    <div style="background:var(--card);padding:1.1rem;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.12em;color:var(--dist);margin-bottom:.4rem;">ii · MULTI-SCRIPT</div><div style="font-size:.92rem;line-height:1.6;">General enough to absorb entirely new alphabets, even far from the training distribution.</div></div>
+    <div style="background:var(--card);padding:1.1rem;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.12em;color:var(--dist);margin-bottom:.4rem;">iii · BETTER INIT</div><div style="font-size:.92rem;line-height:1.6;">A superior starting point for subsequent in-distribution fine-tuning.</div></div>
+  </div>
+  <p class="pq">"Decentralization is not merely a constraint, but a valuable opportunity to improve model robustness and adaptability."</p>
+</div>
+</div>
+</section>
+
+<section id="related" class="alt">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 2 · Framing</div>
+  <h2 class="st">One principle, many names</h2>
+  <p class="intro">Model soups, task arithmetic, model-agnostic meta-learning, FedAvg — they look different but share one move: <strong>train models on different units, aggregate them afterwards without sharing data</strong> (Eq. 3). This work treats them as one family and asks where it pays off in Document Analysis.</p>
+</div>
+<div class="reveal">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line2);border:1px solid var(--line2);margin:1.2rem 0;">
+    <div style="background:var(--card);padding:1.1rem;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.12em;color:var(--mut);margin-bottom:.4rem;">PRIOR FRAMING</div><div style="font-size:.92rem;line-height:1.6;">Federated OCR / GNNs framed as an <em>approximation</em> of centralized training — "comparable results," a necessary evil.</div></div>
+    <div style="background:var(--card);padding:1.1rem;border-left:3px solid var(--dist);"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.12em;color:var(--dist);margin-bottom:.4rem;">THIS WORK</div><div style="font-size:.92rem;line-height:1.6;">First holistic demo across tasks + architectures; first distributed Table Recognition and distillation from federated document systems.</div></div>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="merge">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 3.1 · Methodology</div>
+  <h2 class="st">Model merging, in weight space</h2>
+  <p class="intro">A model is just a vector of weights θ ∈ ℝ<sup>m</sup>. Train it on the whole dataset and you get the <span style="color:var(--cen);font-weight:500;">centralized</span> θ<sup>D</sup>. Train one model per silo and average them — that's the <span style="color:var(--dist);font-weight:500;">distributed</span> θ̄<sub>D</sub>. The data never leaves its silo; only the weight vectors are shared.</p>
+  <div class="mbl">θ̄<sub>D</sub> &nbsp;=&nbsp; (1/n) · Σ<sub>i=1…n</sub> θ<sup>d<sub>i</sub></sup> &nbsp;&nbsp;&nbsp;&nbsp;(Eq. 3 — the move behind FedAvg, task arithmetic & model soups)</div>
+</div>
+<div class="reveal">
+  <h4 class="h4">Drag the silo optima — watch the merged model form</h4>
+  <p class="nb">Each silo trains independently from the pretrained init θ⁰ to its own optimum θ<sup>d<sub>i</sub></sup> (dashed paths). The distributed model is literally their average (orange ★). Toggle to see what centralized does instead: pool the raw data into one pile and train a single model to the combined-loss basin.</p>
+  <div style="display:flex;gap:.7rem;align-items:center;margin-bottom:.7rem;flex-wrap:wrap;">
+    <div class="toggle" id="mModeT"><button class="dist on" onclick="setMMode('dist')">Distributed</button><button class="cen" onclick="setMMode('cent')">Centralized</button></div>
+    <label style="font-family:'IBM Plex Mono',monospace;font-size:.56rem;color:var(--mut);display:flex;align-items:center;gap:.5rem;">SILOS n
+      <input type="range" id="mN" min="2" max="5" value="4" oninput="setMN(+this.value)" style="width:120px;">
+      <span id="mNv" style="color:var(--dist);">4</span></label>
+  </div>
+  <div class="grd2">
+    <canvas id="mergeC" style="height:340px;display:block;width:100%;border-right:1px solid var(--line);cursor:grab;"></canvas>
+    <div class="pan" id="mergeP"></div>
+  </div>
+  <div class="chnt" id="mergeH"></div>
+</div>
+<div class="divider reveal"></div>
+<div class="reveal">
+  <div class="ne">Same compute, same data seen</div>
+  <h3 class="nt">Decentralizing is not more expensive</h3>
+  <p class="nb">A common objection: surely <em>n</em> separate trainings cost more? No. Centralized sees N points for T epochs = N·T steps. Splitting N = n₁+n₂+… into silos gives n₁·T + n₂·T + … = (n₁+n₂+…)·T = N·T. Product is distributive — the budgets are identical. Drag to re-split the data.</p>
+  <div class="cb">
+    <div class="clbl">Forward/backward steps — centralized vs distributed (T epochs)</div>
+    <canvas id="costC" style="height:200px;"></canvas>
+    <div style="display:flex;align-items:center;gap:.9rem;padding:.6rem 1rem;background:var(--card);border-top:1px solid var(--line);">
+      <label style="font-family:'IBM Plex Mono',monospace;font-size:.56rem;color:var(--mut);display:flex;align-items:center;gap:.5rem;flex:1;">SPLIT N INTO SILOS
+        <input type="range" id="costR" min="2" max="6" value="3" oninput="drawCost()" style="flex:1;">
+        <span id="costV" style="color:var(--dist);">3</span></label>
+    </div>
+    <div class="chnt" id="costH"></div>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="strategies" class="alt">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 3.2 · Methodology</div>
+  <h2 class="st">Three ways to fine-tune a merged model</h2>
+  <p class="intro">The same merged weights are tested through three fine-tuning regimes spanning the breadth of Document Analysis. Pick a strategy:</p>
+  <div class="tabs" id="stratTabs">
+    <div class="tab on" data-s="kd" onclick="setStrat('kd')"><div class="tk">Word Spotting</div>Knowledge Distillation</div>
+    <div class="tab" data-s="ml" onclick="setStrat('ml')"><div class="tk">HTR / OCR</div>Layer-wise · Multi-script</div>
+    <div class="tab" data-s="gnn" onclick="setStrat('gnn')"><div class="tk">Table Recognition</div>Graph · End-to-end</div>
+  </div>
+  <div id="stratBody" style="border:1px solid var(--line2);border-top:none;background:var(--card);"></div>
+</div>
+</div>
+</section>
+
+<section id="setup">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 4 · Experimental Setup</div>
+  <h2 class="st">Breadth on purpose</h2>
+  <div class="stats">
+    <div class="stat"><div class="sn">27</div><div class="sl">Datasets</div></div>
+    <div class="stat"><div class="sn">3</div><div class="sl">Tasks</div></div>
+    <div class="stat"><div class="sn">9+</div><div class="sl">Scripts / ciphers</div></div>
+    <div class="stat"><div class="sn">50</div><div class="sl">Pages in M96 (low-res.)</div></div>
+  </div>
+  <p class="nb">Datasets span in-pretraining Latin, out-of-domain Latin (artistic fonts, glares, printed distractors), and out-of-vocabulary scripts (Arabic, Chinese, Japanese, Korean, Hindi, Bangla) plus historical ciphers (Copiale, Borg, Vatican). Protocol: train each silo for the same steps as centralized, merge (Eq. 3), then fine-tune 25 epochs on a held-out target and evaluate on its test split.</p>
+  <div class="cb">
+    <div class="clbl">Dataset map — click a band</div>
+    <canvas id="dsetC" style="height:200px;cursor:pointer;"></canvas>
+    <div class="chnt" id="dsetH">Three difficulty bands: in-domain (seen), out-of-domain Latin, and out-of-vocabulary scripts/ciphers.</div>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="results" class="alt">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 5 · Results</div>
+  <h2 class="st">Where the merge pays off</h2>
+</div>
+<div class="reveal">
+  <div class="ne">Word Spotting · Table 2</div>
+  <h3 class="nt">Gains grow as data drifts away from training</h3>
+  <p class="nb">In-domain, results are mixed (a small +0.5% on average). But out-of-domain Latin jumps +36.7%, and on unseen alphabets the relative mAP gain is <strong>+104%</strong> — distributed pretraining shines exactly where generalization is hardest.</p>
+  <div class="cb">
+    <div class="clbl">mAP gain from distributed pretraining, by domain difficulty</div>
+    <canvas id="gainC" style="height:240px;"></canvas>
+  </div>
+  <div style="display:flex;gap:.6rem;margin:1rem 0 .6rem;flex-wrap:wrap;align-items:center;">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:.56rem;color:var(--mut);">TEXT ENCODER:</span>
+    <button class="pill" id="aGRU" style="color:var(--cen);border-color:var(--cen);" onclick="setArch('GRU')">GRU</button>
+    <button class="pill" id="aLSTM" style="color:var(--cen);border-color:var(--cen);" onclick="setArch('LSTM')">LSTM</button>
+    <button class="pill" id="aTrans" style="color:var(--cen);border-color:var(--cen);" onclick="setArch('Transformer')">Transformer</button>
+  </div>
+  <div class="cb">
+    <div class="clbl">Mean mAP — centralized ● vs distributed ◆</div>
+    <canvas id="archC" style="height:150px;"></canvas>
+    <div class="chnt" id="archH"></div>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<div class="reveal">
+  <div class="ne">Multi-script OCR · Table 3</div>
+  <h3 class="nt">On a brand-new alphabet, merging can be the difference between learning and not</h3>
+  <p class="nb">Personalizing to an unseen script: distributed pretraining beats centralized by ×1.62 on average. The Borg cipher is the extreme — centralized fails outright (0.000), distributed reaches 0.505.</p>
+  <div class="cb">
+    <div class="clbl">Per-language word accuracy after personalization — click a language above the bars</div>
+    <canvas id="langC" style="height:260px;cursor:pointer;"></canvas>
+    <div class="chnt" id="langH"></div>
+  </div>
+</div>
+<div class="divider reveal"></div>
+<div class="reveal">
+  <div class="ne">Table Recognition · Table 5</div>
+  <h3 class="nt">The honest nuance: distributed wins zero-shot, centralized wins end-to-end</h3>
+  <p class="nb">A leave-one-out evaluation. With no target adaptation (zero-shot) the distributed merge leads; as you grant more adaptation (partial → full end-to-end), the advantage shifts to centralized. Pick a regime:</p>
+  <div style="display:flex;gap:.6rem;margin-bottom:.7rem;flex-wrap:wrap;">
+    <div class="toggle" id="trRegT"><button class="dist on" onclick="setTR('zs')">Zero-shot</button><button class="dist" onclick="setTR('pa')">Partial</button><button class="dist" onclick="setTR('e2e')">End-to-end</button></div>
+  </div>
+  <div class="cb">
+    <div class="clbl">Node & edge accuracy across the four table datasets</div>
+    <canvas id="trC" style="height:230px;"></canvas>
+    <div class="chnt" id="trH"></div>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="regime">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Chapter 6 · When it wins</div>
+  <h2 class="st">A decision map, not a prescription</h2>
+  <p class="intro">The paper's title is a targeted call. Distributed learning is not a universal winner — it dominates in specific regimes. Describe your situation and see which side the evidence favors.</p>
+</div>
+<div class="reveal">
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;" id="scenPills"></div>
+  <div class="rgrid" id="regimeGrid"></div>
+  <div class="chnt" id="regimeH" style="border:1px solid var(--line2);border-top:none;"></div>
+</div>
+</div>
+</section>
+
+<section id="conclusion" class="dark">
+<div class="container">
+<div class="reveal">
+  <div class="ey" style="color:var(--distL);">Chapter 6 · Conclusions</div>
+  <h2 class="st" style="color:var(--paper);">A targeted call</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(244,241,232,.12);border:1px solid rgba(244,241,232,.12);margin:2rem 0;" class="reveal">
+  <div style="padding:1.3rem;background:rgba(22,25,31,.5);"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--distL);margin-bottom:.5rem;">DATA-CENTRIC</div><div style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--paper);margin-bottom:.4rem;">Best in low-resource regimes</div><p style="font-size:.9rem;color:rgba(244,241,232,.7);line-height:1.6;">Largest gains on the smallest data (M96, 50 pages) and on independently-learned new alphabets — the gap narrows once data is abundant.</p></div>
+  <div style="padding:1.3rem;background:rgba(22,25,31,.5);"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--distL);margin-bottom:.5rem;">ARCHITECTURE-CENTRIC</div><div style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--paper);margin-bottom:.4rem;">Best when few params train</div><p style="font-size:.9rem;color:rgba(244,241,232,.7);line-height:1.6;">Strongest zero-shot and with light heads (GRU/LSTM); degrades under full end-to-end fine-tuning of heavy models.</p></div>
+  <div style="padding:1.3rem;background:rgba(22,25,31,.5);border-top:1px solid rgba(244,241,232,.12);"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--distL);margin-bottom:.5rem;">DOMAINS</div><div style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--paper);margin-bottom:.4rem;">Heritage & SMEs</div><p style="font-size:.9rem;color:rgba(244,241,232,.7);line-height:1.6;">Scarce annotations, distribution shift, and privacy/access constraints align precisely with where distributed learning helps.</p></div>
+  <div style="padding:1.3rem;background:rgba(22,25,31,.5);border-top:1px solid rgba(244,241,232,.12);"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--distL);margin-bottom:.5rem;">PRIVACY FOR FREE</div><div style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--paper);margin-bottom:.4rem;">No data leaves the silo</div><p style="font-size:.9rem;color:rgba(244,241,232,.7);line-height:1.6;">The same compute, the same data seen — only weights are shared, and often the merged model is better.</p></div>
+</div>
+<div class="reveal" style="max-width:650px;">
+  <p style="font-size:1.06rem;color:rgba(244,241,232,.7);line-height:1.85;"><em>Decentralization in Document Analysis is not a universal prescription, but a targeted call</em> — to practitioners under low-resource, low-adaptability, or deployment-constrained conditions, for whom distributed learning is competitive and often <strong style="color:var(--paper);">superior</strong>.</p>
+</div>
+</div>
+</section>
+
+<script>
+const C=id=>document.getElementById(id),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t;
+if(!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){r=Math.min(r,w/2,h/2);this.beginPath();this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath();return this;};}
+function fit(id){const c=C(id);if(!c)return null;const w=c.clientWidth||c.parentElement.offsetWidth;c.width=w;c.height=c.clientHeight||300;return c.getContext('2d');}
+const CEN='#2f5d8a',CENL='#9bb8d4',DIST='#cc5b1e',DISTL='#e7ab7e',INK='#16191f',MUT='#736a58';
+
+/* scroll + reveal + toc */
+window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-window.innerHeight;C('prog').style.width=(scrollY/h*100)+'%';
+  document.querySelectorAll('nav a').forEach(a=>{const s=C(a.getAttribute('href').slice(1));if(s)a.classList.toggle('active',scrollY>=s.offsetTop-80);});
+  document.querySelectorAll('#toc a').forEach(a=>{const s=C(a.dataset.t);if(s)a.classList.toggle('active',scrollY>=s.offsetTop-120);});});
+document.querySelectorAll('#toc a').forEach(a=>a.addEventListener('click',()=>C(a.dataset.t)?.scrollIntoView({behavior:'smooth'})));
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+/* ── HERO: drifting weight nodes merging ── */
+(function(){const cv=C('hcan');let t=0;const nodes=Array.from({length:26},(_,i)=>({a:Math.random()*6.28,r:.2+Math.random()*.5,s:.3+Math.random()*.7,ph:Math.random()*6.28}));
+  function draw(){const w=cv.width=cv.clientWidth,h=cv.height=cv.clientHeight;const ctx=cv.getContext('2d');ctx.clearRect(0,0,w,h);
+    const cx=w*.72,cy=h*.42;
+    nodes.forEach((n,i)=>{const conv=(Math.sin(t*.3+n.ph)+1)/2;const r=lerp(n.r,.05,conv*.6)*Math.min(w,h);const x=cx+Math.cos(n.a+t*.05*n.s)*r,y=cy+Math.sin(n.a+t*.05*n.s)*r*.7;
+      ctx.strokeStyle='rgba(47,93,138,.1)';ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();
+      ctx.beginPath();ctx.arc(x,y,2.4,0,7);ctx.fillStyle=i%3===0?'rgba(204,91,30,.5)':'rgba(47,93,138,.4)';ctx.fill();});
+    ctx.beginPath();ctx.arc(cx,cy,6,0,7);ctx.fillStyle=DIST;ctx.fill();
+    t+=1;requestAnimationFrame(draw);}
+  draw();})();
+
+/* ── ABSTRACT: centralized↔distributed split morph ── */
+const SILOS=[{n:'Archive',c:DIST},{n:'Museum',c:DIST},{n:'SME',c:DIST},{n:'Library',c:DIST}];
+function drawSplit(v){const ctx=fit('splitC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);C('splitR').value=Math.round(v*100);
+  // left: one big pool (centralized) -> right: separate silos (distributed)
+  const cx=W*.5;
+  // draw 4 silos; at v=0 they collapse into a single central pool, at v=1 they're apart and connected only by weight links
+  SILOS.forEach((s,i)=>{const ang=(i/4)*6.28-1.2;const apart={x:cx+Math.cos(ang)*W*.26,y:H*.5+Math.sin(ang)*H*.30};const pooled={x:cx,y:H*.5};
+    const x=lerp(pooled.x,apart.x,v),y=lerp(pooled.y,apart.y,v);
+    // weight link to merged model at top
+    if(v>.05){ctx.strokeStyle='rgba(204,91,30,'+(v*.5)+')';ctx.lineWidth=1.2;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(cx,H*.16);ctx.stroke();ctx.setLineDash([]);}
+    // silo box (document)
+    ctx.fillStyle='#fff';ctx.strokeStyle=lerp(0,1,v)>.5?DIST:CEN;ctx.lineWidth=1.6;ctx.beginPath();ctx.roundRect(x-22,y-16,44,32,4);ctx.fill();ctx.stroke();
+    ctx.strokeStyle='rgba(60,50,30,.4)';ctx.lineWidth=1;[-6,0,6].forEach(d=>{ctx.beginPath();ctx.moveTo(x-12,y+d);ctx.lineTo(x+12,y+d);ctx.stroke();});
+    ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='center';ctx.fillText(s.n,x,y+28);});
+  // merged / centralized model marker at top
+  ctx.beginPath();ctx.arc(cx,v>.05?H*.16:H*.5,11,0,7);ctx.fillStyle=v>.5?DIST:CEN;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+  ctx.font='600 9px IBM Plex Mono,monospace';ctx.fillStyle=v>.5?DIST:CEN;ctx.textAlign='center';
+  if(v>.05)ctx.fillText(v>.5?'θ̄ (merged weights)':'θ (mixing)',cx,H*.16-16);
+  C('splitH').innerHTML=v<.2?'<b style="color:var(--cen)">Centralized:</b> raw data pooled into one place — efficient, but often impossible under privacy and heritage constraints.':(v>.8?'<b style="color:var(--dist)">Distributed:</b> data stays in each silo; only weight vectors travel to be averaged into θ̄.':'Pulling the silos apart — data stops flowing, only weights will.');}
+
+/* ── MERGING: weight-space ── */
+let mClients=[{x:.45,y:.28,n:'IAM'},{x:.66,y:.42,n:'Esposalles'},{x:.58,y:.68,n:'CoCoText'},{x:.38,y:.6,n:'MLT19'},{x:.72,y:.6,n:'GW'}],mN=4,mMode='dist',mDrag=-1;
+function drawMerge(){const ctx=fit('mergeC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(249,246,238,.7)';ctx.fillRect(0,0,W,H);
+  // loss contours (two basins)
+  const b1={x:W*.55,y:H*.5},comb={x:W*.5,y:H*.46};
+  ctx.strokeStyle='rgba(60,50,30,.07)';ctx.lineWidth=1;
+  for(let r=24;r<W*.5;r+=26){ctx.beginPath();ctx.ellipse(comb.x,comb.y,r,r*.78,0,0,7);ctx.stroke();}
+  const th0={x:W*.16,y:H*.5};
+  // pretrained init
+  ctx.beginPath();ctx.arc(th0.x,th0.y,6,0,7);ctx.fillStyle='#666';ctx.fill();ctx.font='9px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='center';ctx.fillText('θ⁰ init',th0.x,th0.y-12);
+  const pts=mClients.slice(0,mN).map(c=>({x:c.x*W,y:c.y*H,n:c.n}));
+  if(mMode==='dist'){
+    // each silo trains independently
+    pts.forEach(p=>{ctx.setLineDash([4,3]);ctx.strokeStyle='rgba(204,91,30,.45)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(th0.x,th0.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([]);
+      ctx.beginPath();ctx.roundRect(p.x-13,p.y-10,26,20,3);ctx.fillStyle='#fff';ctx.strokeStyle=DIST;ctx.lineWidth=1.5;ctx.fill();ctx.stroke();
+      ctx.strokeStyle='rgba(60,50,30,.35)';ctx.lineWidth=.8;[-3.5,0,3.5].forEach(d=>{ctx.beginPath();ctx.moveTo(p.x-7,p.y+d);ctx.lineTo(p.x+7,p.y+d);ctx.stroke();});
+      ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=DIST;ctx.fillText(p.n,p.x,p.y-14);});
+    // average -> star
+    const mx=pts.reduce((s,p)=>s+p.x,0)/pts.length,my=pts.reduce((s,p)=>s+p.y,0)/pts.length;
+    pts.forEach(p=>{ctx.strokeStyle='rgba(204,91,30,.6)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(mx,my);ctx.stroke();});
+    star(ctx,mx,my,11,DIST);ctx.font='600 10px IBM Plex Mono,monospace';ctx.fillStyle=DIST;ctx.fillText('θ̄ (avg)',mx,my+24);
+    C('mergeP').innerHTML='<div style="font-family:\'IBM Plex Mono\',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--dist);margin-bottom:.5rem;">DISTRIBUTED θ̄</div><div style="font-size:.88rem;line-height:1.6;">Each silo reaches its own optimum <b>θ<sup>dᵢ</sup></b> from the same init. The merged model is their arithmetic mean — Eq. 3.</div><div style="margin-top:.7rem;font-family:\'IBM Plex Mono\',monospace;font-size:.62rem;color:var(--teal);">✓ data never leaves the silo<br>✓ only θ vectors shared</div><div style="margin-top:.6rem;font-size:.82rem;color:var(--mut);">Drag any document to move its optimum — the ★ follows the average.</div>';
+    C('mergeH').innerHTML='The distributed model sits at the <b>centroid of independent optima</b> — an implicit ensemble that tends to land in flatter, more generalizable regions.';
+  } else {
+    // centralized: documents pulled into a pile, single trajectory to combined basin
+    pts.forEach(p=>{const px=lerp(p.x,W*.34,.55),py=lerp(p.y,H*.5,.55);ctx.globalAlpha=.5;ctx.beginPath();ctx.roundRect(px-12,py-9,24,18,3);ctx.fillStyle='#fff';ctx.strokeStyle=CEN;ctx.lineWidth=1.3;ctx.fill();ctx.stroke();ctx.globalAlpha=1;
+      ctx.strokeStyle='rgba(47,93,138,.4)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(px,py);ctx.stroke();});
+    ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=CEN;ctx.textAlign='center';ctx.fillText('pooled data',W*.34,H*.5+30);
+    ctx.setLineDash([4,3]);ctx.strokeStyle=CEN;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(th0.x,th0.y);ctx.lineTo(comb.x,comb.y);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(comb.x,comb.y,11,0,7);ctx.fillStyle=CEN;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.font='600 10px IBM Plex Mono,monospace';ctx.fillStyle=CEN;ctx.fillText('θ^D',comb.x,comb.y-16);
+    C('mergeP').innerHTML='<div style="font-family:\'IBM Plex Mono\',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--cen);margin-bottom:.5rem;">CENTRALIZED θ^D</div><div style="font-size:.88rem;line-height:1.6;">All raw data is aggregated, then a single model is trained to the optimum of the <b>combined</b> loss.</div><div style="margin-top:.7rem;font-family:\'IBM Plex Mono\',monospace;font-size:.62rem;color:var(--dist);">✗ raw data leaves the silos</div><div style="margin-top:.6rem;font-size:.82rem;color:var(--mut);">The pooled optimum is generally a <em>different</em> point from the average of independent optima.</div>';
+    C('mergeH').innerHTML='Centralized fits the mixture tightly — strong in-domain, but it never sees the silos as separate viewpoints, which is what helps distributed generalize.';
+  }
+  ctx.textAlign='left';}
+function star(ctx,x,y,r,col){ctx.beginPath();for(let i=0;i<10;i++){const a=Math.PI/5*i-Math.PI/2,rr=i%2?r*.45:r;ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}ctx.closePath();ctx.fillStyle=col;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();}
+window.setMMode=m=>{mMode=m;document.querySelectorAll('#mModeT button').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase().startsWith(m==='dist'?'distr':'centr')));drawMerge();};
+window.setMN=n=>{mN=n;C('mNv').textContent=n;drawMerge();};
+(function(){const cv=C('mergeC');function xy(e){const r=cv.getBoundingClientRect();return{x:(e.touches?e.touches[0].clientX:e.clientX)-r.left,y:(e.touches?e.touches[0].clientY:e.clientY)-r.top};}
+  function down(e){if(mMode!=='dist')return;const p=xy(e),W=cv.clientWidth,H=cv.clientHeight;mDrag=-1;mClients.slice(0,mN).forEach((c,i)=>{if(Math.hypot(c.x*W-p.x,c.y*H-p.y)<18)mDrag=i;});if(mDrag>=0){cv.style.cursor='grabbing';e.preventDefault&&e.preventDefault();}}
+  function move(e){if(mDrag<0)return;const p=xy(e),W=cv.clientWidth,H=cv.clientHeight;mClients[mDrag].x=clamp(p.x/W,.25,.85);mClients[mDrag].y=clamp(p.y/H,.1,.9);drawMerge();}
+  function up(){mDrag=-1;cv.style.cursor='grab';}
+  cv.addEventListener('mousedown',down);window.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
+  cv.addEventListener('touchstart',down,{passive:false});cv.addEventListener('touchmove',e=>{if(mDrag>=0)e.preventDefault();move(e);},{passive:false});cv.addEventListener('touchend',up);
+  new ResizeObserver(drawMerge).observe(cv.parentElement);drawMerge();})();
+
+/* ── COST LEDGER ── */
+function drawCost(){const ctx=fit('costC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const n=+C('costR').value;C('costV').textContent=n;
+  // split N=120 into n random-ish parts (deterministic)
+  let parts=[];let rem=120;for(let i=0;i<n;i++){const base=Math.round(120/n);const jit=((i*37)%11-5);const v=i===n-1?rem:clamp(base+jit,8,rem-(n-i-1)*8);parts.push(v);rem-=v;}
+  const T=6,total=120*T;const pL=70,pR=20,pad=14,barW=W-pL-pR;const scale=barW/total;
+  function row(y,label,segs,col){ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=INK;ctx.textAlign='right';ctx.fillText(label,pL-8,y+14);
+    let x=pL;segs.forEach((s,i)=>{const w=s*T*scale;ctx.fillStyle=col+(i%2?'cc':'99');ctx.fillRect(x,y,w-1.5,20);x+=w;});
+    ctx.strokeStyle='rgba(60,50,30,.3)';ctx.lineWidth=1;ctx.strokeRect(pL,y,total*scale,20);
+    ctx.fillStyle=col;ctx.textAlign='left';ctx.font='600 8px IBM Plex Mono,monospace';ctx.fillText('= '+total+' steps',pL+total*scale+6,y+14);}
+  row(H*.22,'Centralized',[120],CEN);
+  row(H*.6,'Distributed',parts,DIST);
+  ctx.textAlign='center';ctx.fillStyle=MUT;ctx.font='7px IBM Plex Mono,monospace';ctx.fillText('each segment = one silo (nᵢ points × T epochs)',pL+barW/2,H-8);
+  C('costH').innerHTML='N·T  =  (n₁+n₂+…)·T. Splitting the work across '+n+' silos costs <b>exactly the same</b> compute and sees the same data.';}
+new ResizeObserver(drawCost).observe(C('costC').parentElement);drawCost();
+
+/* ── STRATEGIES (3 tabs) ── */
+let stratMode='kd';
+function setStrat(m){stratMode=m;document.querySelectorAll('#stratTabs .tab').forEach(t=>t.classList.toggle('on',t.dataset.s===m));renderStrat();}
+function renderStrat(){
+  const body=C('stratBody');
+  if(stratMode==='kd'){
+    body.innerHTML=`<div style="padding:1.2rem 1.3rem;">
+      <p class="nb">Multiple off-the-shelf OCR encoders are merged into one <b>frozen teacher</b>. A tiny text encoder (RNN/Transformer over characters) is then trained so its text embedding lands on the matching word-image embedding — a triplet loss pulls matches together, pushes mismatches apart. A more general teacher gives a cleaner embedding space to imitate, which is what helps Query-by-String retrieval, especially out-of-domain.</p>
+      <div style="display:flex;gap:.7rem;align-items:center;margin:.4rem 0 .8rem;flex-wrap:wrap;">
+        <div class="toggle" id="kdT"><button class="dist on" onclick="setKDteach('dist')">Distributed teacher</button><button class="cen" onclick="setKDteach('cent')">Centralized teacher</button></div>
+        <label style="font-family:'IBM Plex Mono',monospace;font-size:.56rem;color:var(--mut);display:flex;align-items:center;gap:.5rem;flex:1;min-width:160px;">DISTILLATION PROGRESS
+          <input type="range" id="kdR" min="0" max="100" value="20" oninput="drawKD()" style="flex:1;"></label>
+      </div>
+      <div class="cb"><canvas id="kdC" style="height:300px;"></canvas><div class="chnt" id="kdH"></div></div></div>`;
+    kdTeach='dist';requestAnimationFrame(()=>{new ResizeObserver(drawKD).observe(C('kdC').parentElement);drawKD();});
+  } else if(stratMode==='ml'){
+    body.innerHTML=`<div style="padding:1.2rem 1.3rem;">
+      <p class="nb">Backbones trained on Latin silos are <b>averaged and frozen</b>; only a small <b>language head</b> is swapped in and fine-tuned for an unseen alphabet — layer-wise personalization with little data and few epochs. The hypothesis: a distributed backbone absorbs a brand-new script more readily.</p>
+      <div style="display:flex;gap:.5rem;align-items:center;margin:.4rem 0 .7rem;flex-wrap:wrap;">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--mut);">NEW SCRIPT:</span>
+        <span id="mlPills"></span></div>
+      <div class="grd2">
+        <canvas id="mlC" style="height:300px;display:block;width:100%;border-right:1px solid var(--line);"></canvas>
+        <div class="pan" id="mlP"></div></div>
+      <div class="chnt" id="mlH"></div></div>`;
+    mlScript='Korean';requestAnimationFrame(()=>{renderMlPills();new ResizeObserver(drawML).observe(C('mlC').parentElement);drawML();});
+  } else {
+    body.innerHTML=`<div style="padding:1.2rem 1.3rem;">
+      <p class="nb">Text regions are graph <b>nodes</b> (box geometry + character histogram); a visibility graph wires neighbours. Several GNNs are trained on different silos and their <b>message-passing (edge) weights θ are averaged</b>, while node features stay fixed. Each node is classified table / non-table from geometry and connectivity alone.</p>
+      <div class="mbl" style="font-size:.74rem;">single&nbsp;&nbsp; hᵢ⁽ᵏ⁺¹⁾ = σ( Σ<sub>j∈N(i)</sub> θ⁽ᵏ⁾ hⱼ⁽ᵏ⁾ )&nbsp;&nbsp;&nbsp;(Eq. 4)<br>merged&nbsp; hᵢ⁽ᵏ⁺¹⁾ = σ( Σ<sub>j∈N(i)</sub> <span style="color:var(--dist)">(1/N) Σ<sub>dn</sub> θ⁽ᵏ,ᵈⁿ⁾</span> hⱼ⁽ᵏ⁾ )&nbsp;&nbsp;(Eq. 5)</div>
+      <div style="display:flex;gap:.7rem;align-items:center;margin:.4rem 0 .8rem;flex-wrap:wrap;">
+        <div class="toggle" id="gnnT"><button class="dist on" onclick="setGNN('dist')">Merged θ (N silos)</button><button class="cen" onclick="setGNN('cent')">Single-silo θ</button></div>
+        <button class="snav" style="font-family:'IBM Plex Mono',monospace;font-size:.54rem;padding:.42rem .85rem;border:1px solid var(--dist);background:var(--dist);color:#fff;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;" onclick="gnnStep()">▶ Pass a message</button>
+      </div>
+      <div class="cb"><canvas id="gnnC" style="height:300px;"></canvas><div class="chnt" id="gnnH"></div></div></div>`;
+    gnnMode='dist';gnnK=0;requestAnimationFrame(()=>{new ResizeObserver(drawGNN).observe(C('gnnC').parentElement);drawGNN();});
+  }
+}
+/* KD viz */
+let kdTeach='dist';
+window.setKDteach=m=>{kdTeach=m;document.querySelectorAll('#kdT button').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase().includes(m==='dist'?'distr':'centr')));drawKD();};
+function drawKD(){const ctx=fit('kdC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);
+  const prog=+C('kdR').value/100;
+  // left third: merge stack
+  const lx=W*.16;[0,1,2].forEach(i=>{const y=H*(.26+i*.18);ctx.beginPath();ctx.roundRect(lx-30,y-11,60,22,3);ctx.fillStyle='#fff';ctx.strokeStyle=DIST;ctx.lineWidth=1.3;ctx.fill();ctx.stroke();ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=DIST;ctx.textAlign='center';ctx.fillText('OCR'+(i+1),lx,y+3);
+    ctx.strokeStyle='rgba(204,91,30,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(lx+32,y);ctx.lineTo(lx+58,H*.5);ctx.stroke();});
+  const tx=lx+70,ty=H*.5;ctx.beginPath();ctx.roundRect(tx-26,ty-16,52,32,4);ctx.fillStyle=kdTeach==='dist'?'rgba(204,91,30,.14)':'rgba(47,93,138,.14)';ctx.strokeStyle=kdTeach==='dist'?DIST:CEN;ctx.lineWidth=1.8;ctx.fill();ctx.stroke();
+  ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=kdTeach==='dist'?DIST:CEN;ctx.fillText('frozen',tx,ty-3);ctx.fillText('teacher',tx,ty+7);
+  // embedding space (right)
+  const ex=W*.66,ey=H*.5,ER=Math.min(W,H)*.3;
+  ctx.strokeStyle='rgba(60,50,30,.12)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(ex,ey,ER,0,7);ctx.stroke();
+  ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='center';ctx.fillText('embedding space',ex,ey-ER-6);
+  // image embeddings: 3 clusters; distributed -> more separated
+  const spread=kdTeach==='dist'?1:.5;
+  const imgs=[{a:-0.6,l:'FILLA',col:DIST},{a:1.6,l:'OKLA',col:CEN},{a:3.4,l:'SOUTH',col:'#2f6b63'}];
+  imgs.forEach(im=>{const r=ER*(.55+ .3*spread);const x=ex+Math.cos(im.a)*r,y=ey+Math.sin(im.a)*r;im._x=x;im._y=y;
+    for(let k=0;k<5;k++){const aa=k/5*6.28;ctx.beginPath();ctx.arc(x+Math.cos(aa)*9*spread,y+Math.sin(aa)*9*spread,3,0,7);ctx.fillStyle=im.col+'66';ctx.fill();}
+    ctx.beginPath();ctx.arc(x,y,5,0,7);ctx.fillStyle=im.col;ctx.fill();ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=im.col;ctx.fillText('🖼 '+im.l,x,y-12);});
+  // text query 'FILLA' starts at center, moves to its match with progress
+  const match=imgs[0];const txp={x:lerp(ex,match._x,prog),y:lerp(ey,match._y,prog)};
+  // pull arrow to positive, push from negative
+  ctx.setLineDash([4,3]);ctx.strokeStyle='rgba(204,91,30,.7)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(txp.x,txp.y);ctx.lineTo(match._x,match._y);ctx.stroke();
+  ctx.strokeStyle='rgba(47,93,138,.4)';ctx.beginPath();ctx.moveTo(txp.x,txp.y);ctx.lineTo(imgs[1]._x,imgs[1]._y);ctx.stroke();ctx.setLineDash([]);
+  ctx.beginPath();ctx.roundRect(txp.x-16,txp.y-9,32,18,3);ctx.fillStyle='#fff';ctx.strokeStyle=INK;ctx.lineWidth=1.5;ctx.fill();ctx.stroke();ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=INK;ctx.fillText('"FILLA"',txp.x,txp.y+3);
+  const map=(kdTeach==='dist'?.40:.31)*(0.4+0.6*prog);
+  C('kdH').innerHTML=`Triplet loss pulls the text embedding onto its matching image, away from others. ${prog>.9?'<b>Converged.</b> ':''}${kdTeach==='dist'?'A <b style="color:var(--dist)">distributed teacher</b> gives a more separated space → easier retrieval':'<b style="color:var(--cen)">Centralized teacher</b>: tighter, less separable space'} · est. mAP ≈ ${map.toFixed(2)}`;
+  ctx.textAlign='left';}
+/* ML viz */
+let mlScript='Korean';
+const ML_DATA={Korean:{c:.214,d:.374,g:'하 숙'},Arabic:{c:.175,d:.422,g:'مرحبا'},Borg:{c:.000,d:.505,g:'⚷ ☩ ⚸'},Copiale:{c:.794,d:.838,g:'⊕ ∴ ⊗'},Bangla:{c:.115,d:.462,g:'বাংলা'},Hindi:{c:.384,d:.514,g:'नमस्ते'},Japanese:{c:.095,d:.197,g:'こんに'},Chinese:{c:.010,d:.073,g:'文字'},Vatican:{c:.465,d:.591,g:'✠ ❧'}};
+function renderMlPills(){C('mlPills').innerHTML=Object.keys(ML_DATA).map(k=>`<button class="pill" style="margin:2px;color:var(--dist);border-color:var(--dist);${k===mlScript?'background:var(--dist);color:#fff;':''}" onclick="setMl('${k}')">${k}</button>`).join('');}
+window.setMl=k=>{mlScript=k;renderMlPills();drawML();};
+function drawML(){const ctx=fit('mlC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);
+  // three latin stacks averaged into frozen backbone + swappable head
+  const colX=[W*.16,W*.34,W*.52],mx=W*.78;const layers=4;const top=H*.16,lh=(H*.62)/layers;
+  colX.forEach((cx,ci)=>{for(let l=0;l<layers;l++){const y=top+l*lh;ctx.beginPath();ctx.roundRect(cx-22,y,44,lh-5,3);ctx.fillStyle='rgba(47,93,138,.13)';ctx.strokeStyle=CEN;ctx.lineWidth=1;ctx.fill();ctx.stroke();}
+    if(ci<2){ctx.fillStyle=DIST;ctx.font='600 13px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText('+',cx+ (colX[1]-colX[0])/2,H*.48);}});
+  ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=CEN;ctx.textAlign='center';ctx.fillText('Latin silo backbones (averaged)',W*.34,top-4);
+  // merged frozen backbone
+  for(let l=0;l<layers;l++){const y=top+l*lh;const head=(l===0);ctx.beginPath();ctx.roundRect(mx-26,y,52,lh-5,3);
+    ctx.fillStyle=head?'rgba(204,91,30,.18)':'rgba(60,50,30,.08)';ctx.strokeStyle=head?DIST:'rgba(60,50,30,.4)';ctx.lineWidth=head?1.8:1;ctx.fill();ctx.stroke();
+    ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=head?DIST:MUT;ctx.textAlign='center';ctx.fillText(head?'new head':('layer '+(layers-l)),mx,y+lh/2);
+    if(!head){ctx.fillText('🔒',mx+18,y+lh/2-4);}}
+  ctx.fillStyle=DIST;ctx.font='600 9px IBM Plex Mono,monospace';ctx.fillText(ML_DATA[mlScript].g,mx,top-4);
+  // arrows from merge to backbone
+  ctx.strokeStyle='rgba(204,91,30,.5)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(colX[2]+24,H*.47);ctx.lineTo(mx-28,H*.47);ctx.stroke();
+  const d=ML_DATA[mlScript];
+  C('mlP').innerHTML=`<div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--dist);margin-bottom:.5rem;">${mlScript.toUpperCase()} · WORD ACCURACY</div>
+    <div style="margin-bottom:.5rem;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--cen);">centralized ${d.c.toFixed(3)}</div><div style="height:9px;background:rgba(60,50,30,.1);margin:.2rem 0;"><div style="height:100%;width:${d.c*100}%;background:var(--cen);"></div></div></div>
+    <div><div style="font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--dist);">distributed ${d.d.toFixed(3)}</div><div style="height:9px;background:rgba(60,50,30,.1);margin:.2rem 0;"><div style="height:100%;width:${d.d*100}%;background:var(--dist);"></div></div></div>
+    <div style="margin-top:.7rem;font-size:.82rem;line-height:1.5;color:${d.c<.001?'#8b2c14':'var(--mut)'};">${d.c<.001?'<b>Centralized fails entirely (0.000).</b> The merged backbone is essential just to learn this cipher.':'Distributed backbone absorbs the new script '+(d.d/Math.max(d.c,.001)>1.3?'far ':'')+'better — same data, same epochs.'}</div>`;
+  C('mlH').innerHTML='Only the head (orange) trains; every backbone layer is frozen (🔒). Distributed pretraining beats centralized by <b>×1.62</b> on average across these scripts.';
+  ctx.textAlign='left';}
+/* GNN viz */
+let gnnMode='dist',gnnK=0,gnnAnim=null;
+const GN=[{x:.30,y:.30,t:1},{x:.46,y:.30,t:1},{x:.62,y:.30,t:1},{x:.30,y:.5,t:1},{x:.46,y:.5,t:1},{x:.62,y:.5,t:1},{x:.20,y:.74,t:0},{x:.5,y:.8,t:0},{x:.78,y:.62,t:0}];
+const GE=[[0,1],[1,2],[3,4],[4,5],[0,3],[1,4],[2,5],[3,6],[4,7],[5,8],[6,7],[7,8]];
+window.setGNN=m=>{gnnMode=m;document.querySelectorAll('#gnnT button').forEach(b=>b.classList.toggle('on',b.textContent.includes(m==='dist'?'Merged':'Single')));gnnK=0;drawGNN();};
+window.gnnStep=()=>{if(gnnAnim)return;let t0=performance.now();(function a(now){const t=clamp((now-t0)/900,0,1);drawGNN(t);if(t<1)gnnAnim=requestAnimationFrame(a);else{gnnAnim=null;gnnK++;drawGNN();}})(t0);};
+function drawGNN(pulse){const ctx=fit('gnnC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);
+  const P=GN.map(n=>({x:n.x*W,y:n.y*H,t:n.t}));
+  // edges
+  GE.forEach(([a,b])=>{ctx.strokeStyle='rgba(60,50,30,.25)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(P[a].x,P[a].y);ctx.lineTo(P[b].x,P[b].y);ctx.stroke();
+    if(pulse!=null){const t=pulse;const x=lerp(P[a].x,P[b].x,t),y=lerp(P[a].y,P[b].y,t);ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fillStyle=gnnMode==='dist'?DIST:CEN;ctx.fill();}});
+  // predicted classes: single-silo gets 2 wrong (zero-shot), merged correct
+  const wrongSingle=[2,8];
+  P.forEach((p,i)=>{let pred=p.t;if(gnnMode==='cent'&&wrongSingle.includes(i))pred=1-p.t;const ok=pred===p.t;
+    const col=pred===1?DIST:'#9b9382';
+    ctx.beginPath();ctx.roundRect(p.x-13,p.y-9,26,18,3);ctx.fillStyle=pred===1?'rgba(204,91,30,.2)':'rgba(155,147,130,.18)';ctx.strokeStyle=col;ctx.lineWidth=ok?1.4:2.2;ctx.fill();
+    if(!ok){ctx.setLineDash([3,2]);}ctx.stroke();ctx.setLineDash([]);
+    ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(pred===1?'table':'text',p.x,p.y+3);
+    if(!ok){ctx.fillStyle='#8b2c14';ctx.fillText('✗',p.x+16,p.y-6);}});
+  ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='left';ctx.fillText('message-passing step k = '+gnnK,12,H-10);
+  C('gnnH').innerHTML=gnnMode==='dist'?'<b style="color:var(--dist)">Merged θ</b> from many silos classifies every region correctly zero-shot — averaging edge weights generalizes the message function.':'<b style="color:var(--cen)">Single-silo θ</b> mislabels regions (✗) on this unseen layout — it never saw enough structural variety.';
+  ctx.textAlign='left';}
+
+/* ── SETUP dataset bands ── */
+function drawDset(sel){const ctx=fit('dsetC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const bands=[{n:'In-domain Latin',c:CEN,k:6},{n:'OOD Latin',c:'#2f6b63',k:8},{n:'OOD scripts & ciphers',c:DIST,k:13}];
+  const bw=(W-40)/3;bands.forEach((b,i)=>{const x=20+i*bw;ctx.globalAlpha=sel==null||sel===i?1:.35;
+    ctx.fillStyle=b.c+'22';ctx.fillRect(x,20,bw-10,H-50);ctx.strokeStyle=b.c;ctx.lineWidth=1.4;ctx.strokeRect(x,20,bw-10,H-50);
+    for(let k=0;k<b.k;k++){const cx=x+18+(k%4)*((bw-40)/4),cy=40+Math.floor(k/4)*22;ctx.fillStyle=b.c;ctx.beginPath();ctx.roundRect(cx-7,cy-5,14,10,2);ctx.fill();}
+    ctx.fillStyle=b.c;ctx.font='600 8px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText(b.n,x+(bw-10)/2,H-16);ctx.font='7px IBM Plex Mono,monospace';ctx.fillText(b.k+' datasets',x+(bw-10)/2,H-6);ctx.globalAlpha=1;});}
+(function(){const cv=C('dsetC');cv.addEventListener('click',e=>{const W=cv.clientWidth;const i=Math.floor(e.offsetX/((W-40)/3));const sel=clamp(i,0,2);drawDset(sel);
+  C('dsetH').innerHTML=['In-domain: well-cropped Latin HTR/OCR used for pretraining.','OOD Latin: printed distractors, glares, artistic fonts — same alphabet, harder conditions.','OOD scripts: Arabic→Bangla plus historical ciphers (Copiale, Borg, Vatican) — unseen vocabularies.'][sel];});
+  new ResizeObserver(()=>drawDset(null)).observe(cv.parentElement);drawDset(null);})();
+
+/* ── RESULTS: gain by domain ── */
+function drawGain(){const ctx=fit('gainC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const data=[{n:'In-domain',abs:.005,pct:11.58},{n:'OOD Latin',abs:.119,pct:36.68},{n:'OOD unseen',abs:.034,pct:104.02}];
+  const pL=50,pB=46,pT=20,pR=20,bw=(W-pL-pR)/3;const maxPct=110;
+  data.forEach((d,i)=>{const x=pL+i*bw+bw*.2,w=bw*.6;const h=(H-pT-pB)*(d.pct/maxPct);
+    ctx.fillStyle=DIST;ctx.fillRect(x,H-pB-h,w,h);
+    ctx.font='600 10px IBM Plex Mono,monospace';ctx.fillStyle=DIST;ctx.textAlign='center';ctx.fillText('+'+d.pct.toFixed(0)+'%',x+w/2,H-pB-h-6);
+    ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=INK;ctx.fillText(d.n,x+w/2,H-pB+14);
+    ctx.fillStyle=MUT;ctx.fillText('(+'+d.abs.toFixed(3)+' mAP)',x+w/2,H-pB+26);});
+  ctx.strokeStyle='rgba(60,50,30,.3)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pL,H-pB);ctx.lineTo(W-pR,H-pB);ctx.stroke();
+  ctx.save();ctx.translate(14,H/2);ctx.rotate(-Math.PI/2);ctx.fillStyle=MUT;ctx.font='7px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText('relative mAP gain',0,0);ctx.restore();}
+new ResizeObserver(drawGain).observe(C('gainC').parentElement);drawGain();
+/* arch dumbbell */
+let arch='LSTM';const ARCH={GRU:{c:.356,d:.399},LSTM:{c:.358,d:.412},Transformer:{c:.184,d:.246}};
+window.setArch=a=>{arch=a;['GRU','LSTM','Trans'].forEach(k=>{const b=C('a'+k);b.style.background='transparent';b.style.color='var(--cen)';});const id={GRU:'aGRU',LSTM:'aLSTM',Transformer:'aTrans'}[a];C(id).style.background='var(--dist)';C(id).style.color='#fff';C(id).style.borderColor='var(--dist)';drawArch();};
+function drawArch(){const ctx=fit('archC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const d=ARCH[arch];const pL=60,pR=80,y=H*.5,x0=pL,x1=W-pR,max=.5;
+  const xc=x0+(d.c/max)*(x1-x0),xd=x0+(d.d/max)*(x1-x0);
+  ctx.strokeStyle='rgba(60,50,30,.2)';ctx.lineWidth=1;[0,.1,.2,.3,.4,.5].forEach(v=>{const x=x0+(v/max)*(x1-x0);ctx.beginPath();ctx.moveTo(x,pL?20:20);ctx.moveTo(x,18);ctx.lineTo(x,H-26);ctx.stroke();ctx.fillStyle=MUT;ctx.font='7px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText(v.toFixed(1),x,H-14);});
+  ctx.strokeStyle=DIST;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(xc,y);ctx.lineTo(xd,y);ctx.stroke();
+  ctx.beginPath();ctx.arc(xc,y,7,0,7);ctx.fillStyle=CEN;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(xd,y-8);ctx.lineTo(xd+8,y);ctx.lineTo(xd,y+8);ctx.lineTo(xd-8,y);ctx.closePath();ctx.fillStyle=DIST;ctx.fill();ctx.strokeStyle='#fff';ctx.stroke();
+  ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=CEN;ctx.textAlign='center';ctx.fillText('C '+d.c.toFixed(3),xc,y-13);ctx.fillStyle=DIST;ctx.fillText('D '+d.d.toFixed(3),xd,y+20);
+  C('archH').innerHTML=arch+': distributed +'+((d.d-d.c)).toFixed(3)+' mAP ('+(((d.d-d.c)/d.c)*100).toFixed(0)+'%). '+(arch==='Transformer'?'Lowest absolute scores (data-hungry), but similar relative gain.':'Light recurrent encoders benefit most.');}
+setArch('LSTM');
+/* languages */
+let langSel='Borg';
+function drawLang(){const ctx=fit('langC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const keys=Object.keys(ML_DATA);const pL=40,pR=14,pT=40,pB=40,bw=(W-pL-pR)/keys.length;const max=1;
+  ctx.font='7px IBM Plex Mono,monospace';
+  keys.forEach((k,i)=>{const d=ML_DATA[k];const x=pL+i*bw;const sel=k===langSel;
+    const cw=bw*.32;const hC=(H-pT-pB)*(d.c/max),hD=(H-pT-pB)*(d.d/max);
+    ctx.globalAlpha=sel?1:.55;
+    ctx.fillStyle=CEN;ctx.fillRect(x+bw*.12,H-pB-hC,cw,hC);
+    ctx.fillStyle=DIST;ctx.fillRect(x+bw*.5,H-pB-hD,cw,hD);
+    ctx.globalAlpha=1;
+    ctx.save();ctx.translate(x+bw*.5,H-pB+8);ctx.rotate(-0.5);ctx.fillStyle=sel?INK:MUT;ctx.font=(sel?'600 ':'')+'7px IBM Plex Mono,monospace';ctx.textAlign='right';ctx.fillText(k,0,0);ctx.restore();});
+  ctx.strokeStyle='rgba(60,50,30,.3)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pL,H-pB);ctx.lineTo(W-pR,H-pB);ctx.stroke();
+  ctx.fillStyle=CEN;ctx.font='8px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText('■ centralized',pL,18);ctx.fillStyle=DIST;ctx.fillText('■ distributed',pL+90,18);
+  const d=ML_DATA[langSel];C('langH').innerHTML=`<b>${langSel}:</b> centralized ${d.c.toFixed(3)} → distributed ${d.d.toFixed(3)}. ${d.c<.001?'Centralized cannot learn it at all; distributed reaches 0.505.':'A '+((d.d-d.c)).toFixed(3)+' absolute gain.'}`;}
+(function(){const cv=C('langC');cv.addEventListener('click',e=>{const keys=Object.keys(ML_DATA);const W=cv.clientWidth,pL=40,pR=14,bw=(W-pL-pR)/keys.length;const i=clamp(Math.floor((e.offsetX-pL)/bw),0,keys.length-1);langSel=keys[i];drawLang();});
+  new ResizeObserver(drawLang).observe(cv.parentElement);drawLang();})();
+/* table recognition */
+let trReg='zs';const TR={zs:{c:[[87.5,85.7],[76.7,72.9],[68.1,78.0],[75.5,70.1]],d:[[88.0,87.0],[78.1,78.0],[79.0,84.7],[73.0,77.2]]},pa:{c:[[87.6,85.2],[76.9,69.4],[82.6,81.7],[89.3,73.8]],d:[[88.0,86.5],[79.7,72.3],[83.4,78.7],[89.1,75.4]]},e2e:{c:[[86.1,69.9],[85.3,81.5],[92.0,95.5],[97.8,90.6]],d:[[88.9,78.3],[86.1,79.8],[90.6,94.6],[97.7,89.8]]}};
+const TRD=['M96','RLV','ICDAR','CON'];
+window.setTR=r=>{trReg=r;document.querySelectorAll('#trRegT button').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase().startsWith(r==='zs'?'zero':r==='pa'?'part':'end')));drawTR();};
+function drawTR(){const ctx=fit('trC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const reg=TR[trReg];const pL=44,pR=14,pT=30,pB=34,gw=(W-pL-pR)/4;const min=60,max=100;
+  function Y(v){return H-pB-(H-pT-pB)*((v-min)/(max-min));}
+  ctx.strokeStyle='rgba(60,50,30,.12)';ctx.lineWidth=.7;[60,70,80,90,100].forEach(v=>{ctx.beginPath();ctx.moveTo(pL,Y(v));ctx.lineTo(W-pR,Y(v));ctx.stroke();ctx.fillStyle=MUT;ctx.font='7px IBM Plex Mono,monospace';ctx.textAlign='right';ctx.fillText(v+'%',pL-4,Y(v)+3);});
+  TRD.forEach((name,i)=>{const x=pL+i*gw;[0,1].forEach(metric=>{const cx=x+gw*(.25+metric*.4);const c=reg.c[i][metric],d=reg.d[i][metric];const bw2=gw*.13;
+    ctx.fillStyle=CEN;ctx.fillRect(cx-bw2-1,Y(c),bw2,Y(min)-Y(c));ctx.fillStyle=DIST;ctx.fillRect(cx+1,Y(d),bw2,Y(min)-Y(d));
+    ctx.font='6.5px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='center';ctx.fillText(metric?'edge':'node',cx,H-pB+10);});
+    ctx.fillStyle=INK;ctx.font='600 8px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText(name,x+gw*.5,H-pB+22);});
+  ctx.fillStyle=CEN;ctx.font='8px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText('■ C',pL,18);ctx.fillStyle=DIST;ctx.fillText('■ D',pL+30,18);
+  // count wins
+  let dw=0,cw=0;reg.c.forEach((row,i)=>row.forEach((v,m)=>{if(reg.d[i][m]>v)dw++;else if(reg.d[i][m]<v)cw++;}));
+  C('trH').innerHTML=trReg==='zs'?`<b style="color:var(--dist)">Zero-shot</b> favours distributed (${dw}/8 cells higher) — best when no target adaptation is possible.`:trReg==='pa'?'<b>Partial fine-tuning</b>: mixed — the regimes trade blows as adaptation grows.':`<b style="color:var(--cen)">End-to-end</b> generally favours centralized (${cw}/8 cells higher) — with full adaptation, pooling wins, except on the tiny M96.`;
+  ctx.textAlign='left';}
+setTR('zs');
+
+/* ── REGIME MAP ── */
+const REG_COLS=['Low-Data','Zero-Shot','OOD','Param-Eff.','End-to-End','In-Domain'];
+const REG={Distributed:['S','S','S','S','M','L'],Centralized:['M','L','M','M','S','S']};
+const SCEN=[{n:'50 labelled pages',col:0},{n:'No target fine-tuning',col:1},{n:'Unseen alphabet',col:2},{n:'Frozen backbone',col:3},{n:'Full fine-tune, big data',col:4},{n:'Same domain, abundant data',col:5}];
+let scenSel=null;
+function renderRegime(){
+  C('scenPills').innerHTML=SCEN.map((s,i)=>`<button class="pill" style="color:var(--ink);border-color:var(--line2);${i===scenSel?'background:var(--ink);color:var(--paper);':''}" onclick="pickScen(${i})">${s.n}</button>`).join('');
+  let html='<div class="rh rl">Regime</div>'+REG_COLS.map((c,i)=>`<div class="rh" style="${i===(scenSel!=null?SCEN[scenSel].col:-1)?'background:var(--dist);':''}">${c}</div>`).join('');
+  ['Distributed','Centralized'].forEach(r=>{html+=`<div class="rl" style="color:${r==='Distributed'?'var(--dist)':'var(--cen)'}">${r}</div>`;
+    REG[r].forEach((v,i)=>{const cls=v==='S'?'cell-S':v==='M'?'cell-M':'cell-L';const cn=r==='Centralized'?'cn':'';const hl=(scenSel!=null&&SCEN[scenSel].col===i)?'outline:2px solid var(--ink);outline-offset:-2px;':'';
+      html+=`<div class="${cls} ${cn}" style="${hl}">${v==='S'?'Strong':v==='M'?'Moderate':'Low'}</div>`;});});
+  C('regimeGrid').innerHTML=html;
+  if(scenSel!=null){const col=SCEN[scenSel].col;const dv=REG.Distributed[col],cv2=REG.Centralized[col];const rank={S:3,M:2,L:1};const winner=rank[dv]>rank[cv2]?'distributed':rank[dv]<rank[cv2]?'centralized':'either';
+    C('regimeH').innerHTML=`Scenario <b>"${SCEN[scenSel].n}"</b> → column <b>${REG_COLS[col]}</b>: ${winner==='distributed'?'<b style="color:var(--dist)">distributed wins.</b>':winner==='centralized'?'<b style="color:var(--cen)">centralized wins.</b>':'comparable.'}`;
+  } else C('regimeH').innerHTML='Pick a scenario to highlight the column and the recommended regime (from Table 6).';}
+window.pickScen=i=>{scenSel=scenSel===i?null:i;renderRegime();};
+renderRegime();
+
+/* ── INITIALISE views that render on interaction ── */
+drawSplit(1);
+new ResizeObserver(()=>drawSplit(+C('splitR').value/100)).observe(C('splitC').parentElement);
+setStrat('kd');
+</script>
+</body></html>
