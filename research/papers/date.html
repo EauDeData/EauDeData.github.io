@@ -1,0 +1,548 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Date Estimation in the Wild · A Retrieval Approach · smooth-nDCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f4f1e8;--paper2:#ece6d6;--card:#f9f6ee;--ink:#16191f;--ink2:#2b313b;--mut:#736a58;--acc:#c9522e;--accL:#e3a07e;--base:#3a5a8c;--baseL:#9db2cf;--gold:#b58a2e;--line:rgba(60,50,30,.16);--line2:rgba(60,50,30,.28);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:'Spectral',serif;overflow-x:hidden;}
+.grid-bg{position:fixed;inset:0;z-index:-1;background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:26px 26px;opacity:.5;}
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--acc);z-index:500;width:0;}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(244,241,232,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line2);padding:0 1.6rem;display:flex;align-items:center;height:46px;gap:1.1rem;}
+.logo{font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--acc);margin-right:auto;}
+nav a{font-family:'IBM Plex Mono',monospace;font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);text-decoration:none;transition:color .2s;}
+nav a:hover,nav a.active{color:var(--base);}
+#toc{position:fixed;right:1.1rem;top:50%;transform:translateY(-50%);z-index:140;display:flex;flex-direction:column;gap:.7rem;align-items:flex-end;}
+#toc a{display:flex;align-items:center;gap:.5rem;text-decoration:none;cursor:pointer;}
+#toc .tl{font-family:'IBM Plex Mono',monospace;font-size:.46rem;letter-spacing:.1em;color:var(--mut);opacity:0;transform:translateX(6px);transition:all .25s;white-space:nowrap;text-transform:uppercase;}
+#toc .td{width:7px;height:7px;border:1px solid var(--mut);background:transparent;transition:all .25s;flex-shrink:0;transform:rotate(45deg);}
+#toc a:hover .tl,#toc a.active .tl{opacity:1;transform:none;color:var(--acc);}
+#toc a.active .td{background:var(--acc);border-color:var(--acc);}
+section{padding:5rem 0;}.dark{background:var(--ink);color:var(--paper);}.alt{background:var(--paper2);}
+.container{max-width:880px;margin:0 auto;padding:0 1.6rem;}
+.divider{height:1px;background:var(--line2);margin:2.4rem 0;}
+#hero{min-height:100vh;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:4.5rem;padding-top:80px;}
+#hcan{position:absolute;inset:0;width:100%;height:100%;}
+.hc{position:relative;z-index:10;max-width:880px;margin:0 auto;padding:0 1.6rem;width:100%;}
+.badge{font-family:'IBM Plex Mono',monospace;font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--acc);margin-bottom:.9rem;display:flex;align-items:center;gap:.6rem;}
+.badge::before{content:'';width:22px;height:1.5px;background:var(--acc);}
+h1.ht{font-family:'Fraunces',serif;font-size:clamp(2rem,5.4vw,3.5rem);line-height:1.08;color:var(--ink);margin-bottom:.5rem;font-weight:600;letter-spacing:-.01em;}
+h1.ht em{color:var(--acc);font-style:italic;font-weight:400;}
+.sub{font-size:1.1rem;color:var(--ink2);max-width:580px;line-height:1.7;margin-bottom:2rem;}
+.hmeta{display:flex;gap:2.4rem;flex-wrap:wrap;}
+.hk{font-family:'IBM Plex Mono',monospace;font-size:.48rem;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:.2rem;}
+.hv{font-size:1rem;color:var(--ink);}
+.sh{font-family:'IBM Plex Mono',monospace;font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:.5rem;margin-top:2.4rem;}
+.sh::after{content:'↓';animation:bou 1.6s infinite;}@keyframes bou{0%,100%{transform:none}50%{transform:translateY(4px)}}
+h2.st{font-family:'Fraunces',serif;font-size:2.1rem;line-height:1.2;margin-bottom:.8rem;font-weight:600;letter-spacing:-.01em;}
+h3.nt{font-family:'Fraunces',serif;font-size:1.4rem;color:var(--ink);margin-bottom:.55rem;line-height:1.2;font-weight:600;}
+h4.h4{font-family:'Fraunces',serif;font-size:1.06rem;margin:1rem 0 .45rem;font-weight:600;}
+.dark h3.nt,.dark h2.st{color:var(--paper);}
+.ey{font-family:'IBM Plex Mono',monospace;font-size:.54rem;letter-spacing:.22em;text-transform:uppercase;color:var(--acc);margin-bottom:.6rem;}
+.ne{font-family:'IBM Plex Mono',monospace;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-bottom:.7rem;display:flex;align-items:center;gap:.5rem;}
+.ne::before{content:'◇';font-size:.5rem;}
+.intro{font-size:1.12rem;line-height:1.8;max-width:660px;margin-bottom:1.6rem;}
+.dark .intro{color:rgba(244,241,232,.84);}
+.nb{font-size:1rem;color:var(--ink2);line-height:1.74;margin-bottom:1.05rem;max-width:660px;}
+.dark .nb{color:rgba(244,241,232,.78);}
+.pq{border-left:3px solid var(--acc);padding:.75rem 1.2rem;font-style:italic;font-size:1.02rem;color:var(--mut);line-height:1.65;margin:1.2rem 0;}
+code{font-family:'IBM Plex Mono',monospace;font-size:.82em;background:rgba(60,50,30,.09);padding:.08em .3em;border-radius:2px;}
+.mbl{background:var(--card);border:1px solid var(--line2);padding:.9rem 1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.84rem;line-height:1.95;margin:.9rem 0;overflow-x:auto;}
+.cb{background:var(--card);border:1px solid var(--line2);overflow:hidden;position:relative;}
+.cb canvas{display:block;width:100%;}
+.clbl{font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);padding:.5rem .8rem;border-bottom:1px solid var(--line);}
+.chnt{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--mut);padding:.5rem .8rem;border-top:1px solid var(--line);line-height:1.5;}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .55s,transform .55s;}.reveal.vis{opacity:1;transform:none;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line2);margin:1.6rem 0;}
+.stat{padding:1.1rem;border-right:1px solid var(--line);text-align:center;}.stat:last-child{border-right:none;}
+.sn{font-family:'Fraunces',serif;font-size:1.85rem;color:var(--acc);margin-bottom:.15rem;font-weight:600;}
+.sl{font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);}
+.toggle{display:inline-flex;border:1px solid var(--line2);overflow:hidden;font-family:'IBM Plex Mono',monospace;font-size:.58rem;}
+.toggle button{padding:.42rem .85rem;border:none;background:var(--card);color:var(--mut);cursor:pointer;border-right:1px solid var(--line);text-transform:uppercase;letter-spacing:.06em;}
+.toggle button:last-child{border-right:none;}
+.toggle button.acc.on{background:var(--acc);color:#fff;}.toggle button.base.on{background:var(--base);color:#fff;}
+.pill{font-family:'IBM Plex Mono',monospace;font-size:.56rem;letter-spacing:.06em;padding:.34rem .66rem;border:1.4px solid;background:transparent;cursor:pointer;transition:all .18s;text-transform:uppercase;}
+.dt{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:.66rem;margin:1rem 0;}
+.dt th{background:var(--ink);color:var(--paper);padding:.5rem .6rem;text-align:left;letter-spacing:.04em;}
+.dt td{padding:.46rem .6rem;border-bottom:1px solid var(--line);}
+.dt tr:hover td{background:rgba(60,50,30,.04);}.dt .hl td{background:rgba(201,82,46,.10);}.dt .a{color:var(--acc);font-weight:500;}
+input[type=range]{accent-color:var(--acc);}
+.grd2{display:grid;grid-template-columns:1.3fr 1fr;gap:0;border:1px solid var(--line2);}
+.grd2 .pan{padding:1.1rem 1.2rem;background:var(--card);}
+.gauge{height:10px;background:rgba(60,50,30,.1);border-radius:5px;overflow:hidden;margin:.25rem 0 .6rem;}
+.gauge>div{height:100%;border-radius:5px;transition:width .25s;}
+.rk{display:flex;align-items:center;gap:.6rem;padding:.4rem .55rem;border:1px solid var(--line);background:var(--card);margin-bottom:4px;}
+.rk .yr{font-family:'IBM Plex Mono',monospace;font-size:.7rem;width:46px;text-align:center;color:#fff;padding:.2rem 0;border-radius:3px;}
+.rk .rb{flex:1;height:8px;background:rgba(60,50,30,.1);border-radius:4px;overflow:hidden;}
+.rk .rb>div{height:100%;background:var(--acc);}
+.rk .mv{display:flex;flex-direction:column;gap:1px;}
+.rk .mv button{font-family:'IBM Plex Mono',monospace;font-size:.5rem;width:20px;height:13px;line-height:1;border:1px solid var(--line2);background:var(--card);cursor:pointer;color:var(--mut);}
+.rk .mv button:hover{background:var(--acc);color:#fff;border-color:var(--acc);}
+.cbar{height:12px;width:100%;border:1px solid var(--line2);margin:.5rem 0 .2rem;}
+@media(max-width:1180px){#toc{display:none;}}
+@media(max-width:720px){.stats{grid-template-columns:1fr 1fr;}.grd2{grid-template-columns:1fr;}}
+</style></head><body>
+<div class="grid-bg"></div><div id="prog"></div>
+<nav>
+  <div class="logo">ICDAR 2021 · arXiv 2106.05618</div>
+  <a href="#abstract">Idea</a><a href="#ndcg">nDCG vs mAP</a><a href="#smooth">Smoothing</a>
+  <a href="#train">Training</a><a href="#embed">Embedding</a><a href="#results">Results</a>
+</nav>
+<div id="toc">
+  <a data-t="hero"><span class="tl">Title</span><span class="td"></span></a>
+  <a data-t="abstract"><span class="tl">The reframing</span><span class="td"></span></a>
+  <a data-t="ndcg"><span class="tl">nDCG vs mAP</span><span class="td"></span></a>
+  <a data-t="smooth"><span class="tl">Smoothing</span><span class="td"></span></a>
+  <a data-t="relev"><span class="tl">Relevance</span><span class="td"></span></a>
+  <a data-t="train"><span class="tl">Training loop</span><span class="td"></span></a>
+  <a data-t="embed"><span class="tl">Embedding space</span><span class="td"></span></a>
+  <a data-t="knn"><span class="tl">k-NN</span><span class="td"></span></a>
+  <a data-t="results"><span class="tl">Results</span><span class="td"></span></a>
+  <a data-t="conclusion"><span class="tl">Conclusions</span><span class="td"></span></a>
+</div>
+
+<section id="hero">
+<canvas id="hcan"></canvas>
+<div class="hc">
+  <div class="badge">Molina · Riba · Gomez · Ramos-Terrades · Lladós</div>
+  <h1 class="ht">Date Estimation<br>in the <em>Wild</em></h1>
+  <p class="sub">Don't classify the year. Don't regress it. <em>Retrieve</em> it — learn an embedding where the closer two photographs sit, the closer their dates, and read the answer off the neighbours.</p>
+  <div class="hmeta">
+    <div><div class="hk">Core idea</div><div class="hv">Date estimation as ranking</div></div>
+    <div><div class="hk">Loss</div><div class="hv">smooth-nDCG</div></div>
+    <div><div class="hk">Dataset</div><div class="hv">DEW · 1M photos · 1930–99</div></div>
+    <div><div class="hk">Prediction</div><div class="hv">k-NN to a support set</div></div>
+  </div>
+  <div class="sh">Explore the paper</div>
+</div>
+</section>
+
+<section id="abstract" class="alt">
+<div class="container">
+<div class="reveal">
+  <div class="ey">The reframing</div>
+  <h2 class="st">Three ways to ask "when?"</h2>
+  <p class="intro">A classifier forces every photo into a decade bin and treats a one-year miss the same as a fifty-year miss. A regressor predicts a single number and is brittle far from its training mass. This paper takes a third route: train the network to <strong>rank</strong> a gallery by date-closeness to a query, so a wrong-but-near answer is still a <em>good</em> answer.</p>
+</div>
+<div class="reveal">
+  <div class="cb">
+    <div class="clbl">classification · regression · retrieval — hover the paradigms</div>
+    <canvas id="paraC" style="height:230px;cursor:crosshair;"></canvas>
+    <div class="chnt" id="paraH">Retrieval returns an ordering: even a near miss lands close, giving the archivist a usable "older / newer" answer.</div>
+  </div>
+  <p class="pq">"In the worst case, when the exact date is not estimated, the user can obtain a relative ordering — one photograph is older than another — which is useful in archival annotation."</p>
+</div>
+</div>
+</section>
+
+<section id="ndcg">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Why a new metric · Section 3</div>
+  <h2 class="st">mAP can't tell a near miss from a far one</h2>
+  <p class="intro">Years are <em>ordinal</em>. mAP only knows "relevant / not relevant", so to it a photo one year off and one twenty years off are identical — both just "wrong". nDCG instead uses a <strong>graded relevance</strong> r(n) and a logarithmic discount, rewarding rankings that put the <em>closest</em> dates on top. Reorder the gallery below and watch the two metrics react differently.</p>
+</div>
+<div class="reveal">
+  <div class="grd2">
+    <div style="padding:1.1rem 1.2rem;background:var(--card);border-right:1px solid var(--line);">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:.56rem;letter-spacing:.1em;color:var(--mut);margin-bottom:.6rem;">QUERY <span id="qyear" style="color:var(--acc);font-weight:600;">1950</span> · retrieved gallery (rank ↓) — move items</div>
+      <div id="rankList"></div>
+    </div>
+    <div class="pan">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.12em;color:var(--base);">mAP — binary relevance (Δ ≤ 2 yr)</div>
+      <div class="gauge"><div id="mapBar" style="background:var(--base);"></div></div>
+      <div style="font-family:'Fraunces',serif;font-size:1.5rem;color:var(--base);margin-bottom:.8rem;" id="mapVal">—</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.12em;color:var(--acc);">nDCG — graded relevance r = max(0, γ−Δ)</div>
+      <div class="gauge"><div id="ndcgBar" style="background:var(--acc);"></div></div>
+      <div style="font-family:'Fraunces',serif;font-size:1.5rem;color:var(--acc);margin-bottom:.8rem;" id="ndcgVal">—</div>
+      <label style="font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--mut);display:flex;align-items:center;gap:.5rem;">γ&nbsp;clip
+        <input type="range" id="gammaR" min="3" max="20" value="10" oninput="setGamma(+this.value)" style="flex:1;">
+        <span id="gammaV" style="color:var(--acc);">10</span></label>
+      <div style="margin-top:.6rem;font-size:.8rem;color:var(--mut);line-height:1.5;" id="ndcgNote"></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:.6rem;margin-top:.7rem;flex-wrap:wrap;">
+    <button class="pill" style="color:var(--acc);border-color:var(--acc);" onclick="sortByDate()">Sort by date-closeness</button>
+    <button class="pill" style="color:var(--base);border-color:var(--base);" onclick="shuffleRank()">Shuffle</button>
+  </div>
+  <p class="nb" style="margin-top:1rem;">Swap two <em>near</em> years and mAP often doesn't budge — it already counted both as "relevant". nDCG moves, because it cares <strong>how</strong> the good answers are ordered and how the bad ones are spread through the list. That sensitivity to graded, ordinal ground truth is the paper's whole motivation.</p>
+</div>
+</div>
+</section>
+
+<section id="smooth" class="alt">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Making it differentiable · Eq. 6–8</div>
+  <h2 class="st">A sigmoid stands in for the step</h2>
+  <p class="nb">Rank is a sum of hard comparisons <code>𝟙{sᵢ − sⱼ &lt; 0}</code> — counting how many items beat <em>i</em>. That indicator has no gradient. The trick (Qin et al.): replace it with a sigmoid <code>G(x; τ) = 1 / (1 + e^(−x/τ))</code>. Small τ hugs the true step (accurate but a near-flat gradient); large τ is smooth and trainable but blurrier. Drag τ to feel the trade-off (this is Fig. 1).</p>
+  <div class="cb">
+    <div class="clbl">G(x; τ) and its derivative</div>
+    <canvas id="sigC" style="height:280px;"></canvas>
+    <div style="display:flex;align-items:center;gap:.9rem;padding:.6rem 1rem;background:var(--card);border-top:1px solid var(--line);">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:.56rem;color:var(--mut);">τ</span>
+      <input type="range" id="tauR" min="0" max="100" value="55" oninput="drawSig()" style="flex:1;">
+      <span id="tauV" style="font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--acc);width:62px;text-align:right;">0.10</span>
+    </div>
+    <div class="chnt" id="sigH"></div>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="relev">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Designing relevance · Eq. 15–17</div>
+  <h2 class="st">What counts as "close enough"?</h2>
+  <p class="nb">nDCG needs a relevance score for every gallery item. The choice shapes the embedding: a hard clip says "anything within a decade is equally good"; an inverse or exponential law keeps pressing for the exact year. Pick a relevance function and see its profile against the year gap |y_q − y_n|.</p>
+  <div style="display:flex;gap:.5rem;margin-bottom:.7rem;flex-wrap:wrap;" id="relPills"></div>
+  <div class="cb">
+    <div class="clbl">relevance r vs |year gap|</div>
+    <canvas id="relC" style="height:230px;"></canvas>
+    <div class="chnt" id="relH"></div>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="train" class="alt">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Training loop · Algorithm 1</div>
+  <h2 class="st">Embed → rank all-vs-all → score → back-propagate</h2>
+  <p class="nb">No labels-as-targets here. A batch goes through a ResNet-101 into embeddings; an all-versus-all cosine matrix gives every image its ranking against the others; the relevance matrix (from the years) says what the ranking <em>should</em> be; smooth-nDCG measures the gap and the gradient flows back into the CNN. Step through one iteration.</p>
+  <div class="cb">
+    <div class="clbl">one optimisation step</div>
+    <canvas id="trainC" style="height:250px;"></canvas>
+    <div style="display:flex;gap:.6rem;padding:.6rem 1rem;background:var(--card);border-top:1px solid var(--line);">
+      <button class="pill" style="color:var(--acc);border-color:var(--acc);" onclick="trainStep()">▶ Run a step</button>
+      <span id="trainStepL" style="font-family:'IBM Plex Mono',monospace;font-size:.58rem;color:var(--mut);align-self:center;"></span>
+    </div>
+    <div class="chnt" id="trainH">Cosine similarity is the distance; it could be swapped for any differentiable distance over the embedding.</div>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="embed">
+<div class="container">
+<div class="reveal">
+  <div class="ey">What the loss does to the space · Fig. 7–8</div>
+  <h2 class="st">The embedding sorts itself by time</h2>
+  <p class="intro">This is the payoff. Each point is a photograph's projection; colour runs along the <strong>year gradient</strong>. Untrained ImageNet features cluster by visual <em>look</em> — dates scrambled. After smooth-nDCG, the cloud reorganises into a smooth temporal manifold: neighbours share a date. Morph between the two, then <strong>drag the query</strong> to see who its nearest neighbours are.</p>
+</div>
+<div class="reveal">
+  <div style="display:flex;gap:.7rem;align-items:center;margin-bottom:.7rem;flex-wrap:wrap;">
+    <div class="toggle" id="embT"><button class="base on" onclick="setEmb(0)">ImageNet features</button><button class="acc" onclick="setEmb(1)">smooth-nDCG trained</button></div>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:.52rem;color:var(--mut);">drag the ◎ query</span>
+  </div>
+  <div class="grd2">
+    <canvas id="embC" style="height:360px;display:block;width:100%;border-right:1px solid var(--line);cursor:grab;"></canvas>
+    <div class="pan" id="embP"></div>
+  </div>
+  <div style="padding:.4rem .2rem;">
+    <div class="cbar" id="cbar"></div>
+    <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--mut);"><span>1930</span><span>year of the photograph</span><span>1999</span></div>
+  </div>
+  <p class="nb" style="margin-top:1rem;">The paper also reports a cluster-similarity heatmap, but the organisation reads far more clearly as a PCA scatter of cluster centres (Fig. 7–8): in the trained space the colour flows continuously, so a query's 10 nearest neighbours nearly all share its decade — which is exactly why k-NN on this space estimates a plausible year.</p>
+</div>
+</div>
+</section>
+
+<section id="knn" class="alt">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Reading off the answer · Fig. 5</div>
+  <h2 class="st">Predict by k-Nearest Neighbours</h2>
+  <p class="nb">With the space sorted, prediction is just: embed the query, take its k nearest in a labelled support set, average their years. Too small a k is noisy; too large drags in unrelated dates. The sweet spot sits near k = 10. The slider below also drives the query's neighbourhood in the scatter above.</p>
+  <div class="cb">
+    <div class="clbl">MAE vs k (support set of 128 images)</div>
+    <canvas id="knnC" style="height:240px;"></canvas>
+    <div style="display:flex;align-items:center;gap:.9rem;padding:.6rem 1rem;background:var(--card);border-top:1px solid var(--line);">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:.56rem;color:var(--mut);">k</span>
+      <input type="range" id="kR" min="1" max="25" value="10" oninput="setK(+this.value)" style="flex:1;">
+      <span id="kV" style="font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--acc);width:30px;text-align:right;">10</span>
+    </div>
+    <div class="chnt" id="knnH"></div>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="results">
+<div class="container">
+<div class="reveal">
+  <div class="ey">Results · Table 1 (DEW test set)</div>
+  <h2 class="st">Competitive MAE, and a ranking the others can't give</h2>
+  <table class="dt">
+    <tr><th>Method</th><th>MAE ↓</th><th>mAP</th><th>nDCG ↑</th></tr>
+    <tr><td>Müller et al. — GoogLeNet (regression)</td><td>7.5</td><td>—</td><td>—</td></tr>
+    <tr><td>Müller et al. — GoogLeNet (classification)</td><td>7.3</td><td>—</td><td>—</td></tr>
+    <tr><td>Müller et al. — ResNet50 (cleaned test)</td><td>7.12</td><td>—</td><td>—</td></tr>
+    <tr><td>Visual-similarity baseline (ImageNet)</td><td>12.4</td><td>—</td><td>0.69</td></tr>
+    <tr><td class="a">Smooth-nDCG · 256-image support</td><td>8.44</td><td>0.12</td><td>0.72</td></tr>
+    <tr class="hl"><td class="a">Smooth-nDCG · 1M support</td><td><b>7.48</b></td><td>—</td><td><b>0.75</b></td></tr>
+    <tr><td class="a">Smooth-nDCG · 1M support (weighted k-NN)</td><td>7.52</td><td>—</td><td>0.75</td></tr>
+  </table>
+  <p class="nb">The retrieval model lands within a few months of dedicated regressors/classifiers on MAE — despite never being trained to predict a year — and tops every method on nDCG, the metric that actually reflects ordering quality. The visual-similarity baseline shows the gap: similar-<em>looking</em> ≠ similar-<em>dated</em>.</p>
+</div>
+</div>
+</section>
+
+<section id="conclusion" class="dark">
+<div class="container">
+<div class="reveal">
+  <div class="ey" style="color:var(--accL);">Conclusions</div>
+  <h2 class="st" style="color:var(--paper);">Ranking beyond categories</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(244,241,232,.12);border:1px solid rgba(244,241,232,.12);margin:2rem 0;" class="reveal">
+  <div style="padding:1.3rem;background:rgba(22,25,31,.5);"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--accL);margin-bottom:.5rem;">ORDINAL GROUND TRUTH</div><div style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--paper);margin-bottom:.4rem;">Graded, not binary</div><p style="font-size:.9rem;color:rgba(244,241,232,.7);line-height:1.6;">Unlike smooth-AP, smooth-nDCG scores the whole sorted list — how good the good ones are, and how the bad ones are spread.</p></div>
+  <div style="padding:1.3rem;background:rgba(22,25,31,.5);"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--accL);margin-bottom:.5rem;">CONTEXTUAL ANSWER</div><div style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--paper);margin-bottom:.4rem;">A ranking, not a point</div><p style="font-size:.9rem;color:rgba(244,241,232,.7);line-height:1.6;">Even a missed year yields an "older/newer" ordering against the collection — what archivists actually need.</p></div>
+  <div style="padding:1.3rem;background:rgba(22,25,31,.5);border-top:1px solid rgba(244,241,232,.12);"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--accL);margin-bottom:.5rem;">SWAPPABLE PARTS</div><div style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--paper);margin-bottom:.4rem;">Any domain, any distance</div><p style="font-size:.9rem;color:rgba(244,241,232,.7);line-height:1.6;">Change the relevance matrix and the same loss transfers to other ordered or tree-structured retrieval tasks.</p></div>
+  <div style="padding:1.3rem;background:rgba(22,25,31,.5);border-top:1px solid rgba(244,241,232,.12);"><div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--accL);margin-bottom:.5rem;">CAVEAT</div><div style="font-family:'Fraunces',serif;font-size:1.05rem;color:var(--paper);margin-bottom:.4rem;">Category bias</div><p style="font-size:.9rem;color:rgba(244,241,232,.7);line-height:1.6;">Unbalanced classes (trains, vehicles) can cluster by object rather than date — the embedding inherits dataset skew.</p></div>
+</div>
+<div class="reveal" style="max-width:660px;">
+  <p style="font-size:1.06rem;color:rgba(244,241,232,.7);line-height:1.85;"><em>Brown et al. smoothed the path to average precision; smooth-nDCG extends it to problems where different labels should not be punished equally</em> — ranking images by a continuous, ordered criterion rather than a categorical one.</p>
+</div>
+</div>
+</section>
+
+<script>
+const C=id=>document.getElementById(id),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t;
+if(!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){r=Math.min(r,w/2,h/2);this.beginPath();this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath();return this;};}
+function fit(id){const c=C(id);if(!c)return null;const w=c.clientWidth||c.parentElement.offsetWidth;c.width=w;c.height=c.clientHeight||300;return c.getContext('2d');}
+const INK='#16191f',MUT='#736a58',ACC='#c9522e',BASE='#3a5a8c';
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+/* viridis-ish gradient for the year axis */
+const VIR=[[68,1,84],[72,36,117],[65,68,135],[53,95,141],[42,120,142],[33,145,140],[34,168,132],[68,191,112],[122,209,81],[189,223,38],[253,231,37]];
+function viridis(t){t=clamp(t,0,1);const x=t*(VIR.length-1),i=Math.floor(x),f=x-i,a=VIR[i],b=VIR[Math.min(i+1,VIR.length-1)];return `rgb(${Math.round(lerp(a[0],b[0],f))},${Math.round(lerp(a[1],b[1],f))},${Math.round(lerp(a[2],b[2],f))})`;}
+
+/* scroll + reveal + toc */
+window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-window.innerHeight;C('prog').style.width=(scrollY/h*100)+'%';
+  document.querySelectorAll('nav a').forEach(a=>{const s=C(a.getAttribute('href').slice(1));if(s)a.classList.toggle('active',scrollY>=s.offsetTop-80);});
+  document.querySelectorAll('#toc a').forEach(a=>{const s=C(a.dataset.t);if(s)a.classList.toggle('active',scrollY>=s.offsetTop-120);});});
+document.querySelectorAll('#toc a').forEach(a=>a.addEventListener('click',()=>C(a.dataset.t)?.scrollIntoView({behavior:'smooth'})));
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+/* ── HERO: drifting photos sliding into a time-ordered line ── */
+(function(){const cv=C('hcan');let t=0;const N=46;const ph=Array.from({length:N},(_,i)=>({yr:i/(N-1),a:Math.random()*6.28,r:.15+Math.random()*.5,sp:.3+Math.random()*.7}));
+  function draw(){const w=cv.width=cv.clientWidth,h=cv.height=cv.clientHeight,ctx=cv.getContext('2d');ctx.clearRect(0,0,w,h);
+    const conv=(Math.sin(t*.18)+1)/2;const lineY=h*.45,x0=w*.5,x1=w*.95;
+    ph.forEach((p,i)=>{const cx=w*.72+Math.cos(p.a+t*.04*p.sp)*p.r*w*.3,cy=h*.42+Math.sin(p.a+t*.04*p.sp)*p.r*h*.4;
+      const lx=lerp(x0,x1,p.yr),ly=lineY+Math.sin(p.yr*6)*4;
+      const x=lerp(cx,lx,conv),y=lerp(cy,ly,conv);
+      ctx.fillStyle=viridis(p.yr).replace('rgb','rgba').replace(')',',.5)');ctx.fillRect(x-4,y-4,8,8);});
+    t+=1;requestAnimationFrame(draw);}
+  draw();})();
+
+/* ── PARADIGMS ── */
+let paraHover=-1;
+function drawPara(){const ctx=fit('paraC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const rows=[{n:'CLASSIFICATION',d:'decade bins · a 1-yr and 40-yr miss score the same'},{n:'REGRESSION',d:'one number · brittle far from training mass'},{n:'RETRIEVAL (ours)',d:'rank by date-closeness · near misses still useful'}];
+  const pL=20,pR=20,axY=v=>H*.18+v*H*.26;const x0=pL+70,x1=W-pR;
+  rows.forEach((r,ri)=>{const y=axY(ri);const hot=paraHover===ri;
+    ctx.fillStyle=ri===2?ACC:INK;ctx.font=(hot?'600 ':'')+'8px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText(r.n,pL,y-12);
+    ctx.fillStyle=MUT;ctx.font='7px IBM Plex Mono,monospace';ctx.fillText(r.d,pL,y+16);
+    // year axis line
+    ctx.strokeStyle='rgba(60,50,30,.2)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();
+    const q=x0+(x1-x0)*.5;
+    if(ri===0){ // bins
+      for(let b=0;b<6;b++){const bx=x0+(x1-x0)*b/6;ctx.strokeStyle='rgba(60,50,30,.25)';ctx.beginPath();ctx.moveTo(bx,y-6);ctx.lineTo(bx,y+6);ctx.stroke();}
+      ctx.beginPath();ctx.arc(q,y,4,0,7);ctx.fillStyle=BASE;ctx.fill();
+      // a far misclassification penalized same as near
+      ctx.beginPath();ctx.arc(x0+(x1-x0)*.83,y,4,0,7);ctx.fillStyle='#b5402e';ctx.fill();
+    } else if(ri===1){
+      ctx.beginPath();ctx.arc(q,y,4,0,7);ctx.fillStyle=BASE;ctx.fill();
+      ctx.beginPath();ctx.arc(x0+(x1-x0)*.62,y,4,0,7);ctx.fillStyle='#b5402e';ctx.fill();
+      ctx.setLineDash([2,2]);ctx.strokeStyle='#b5402e';ctx.beginPath();ctx.moveTo(q,y);ctx.lineTo(x0+(x1-x0)*.62,y);ctx.stroke();ctx.setLineDash([]);
+    } else {
+      ctx.beginPath();ctx.arc(q,y,5,0,7);ctx.fillStyle=ACC;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+      [-.18,-.10,.07,.14,.27].forEach((d,k)=>{const x=q+(x1-x0)*d;ctx.beginPath();ctx.arc(x,y,3.4,0,7);ctx.fillStyle=viridis(.5+d);ctx.fill();});
+    }});
+  ctx.textAlign='left';}
+(function(){const cv=C('paraC');cv.addEventListener('mousemove',e=>{const i=Math.floor((e.offsetY/cv.clientHeight-.10)/.26);paraHover=(i>=0&&i<3)?i:-1;drawPara();
+    C('paraH').innerHTML=paraHover<0?'Retrieval returns an ordering: even a near miss lands close, giving the archivist a usable "older / newer" answer.':['Classification quantises time into bins and ignores how far off a mistake is.','Regression outputs a single year; far from the training mass its errors blow up.','<b style="color:var(--acc)">Retrieval</b> ranks the gallery by date-closeness — the embedding orders itself in time.'][paraHover];});
+  cv.addEventListener('mouseleave',()=>{paraHover=-1;drawPara();C('paraH').innerHTML='Retrieval returns an ordering: even a near miss lands close, giving the archivist a usable "older / newer" answer.';});
+  new ResizeObserver(drawPara).observe(cv.parentElement);drawPara();})();
+
+/* ── nDCG vs mAP reorderable ranking ── */
+const Q=1950;let gamma=10;
+let RANK=[{y:1951},{y:1949},{y:1955},{y:1948},{y:1962},{y:1938},{y:1971}];
+const yrT=y=>(y-1930)/69;
+function relG(y){return Math.max(0,gamma-Math.abs(Q-y));}
+function binR(y){return Math.abs(Q-y)<=2?1:0;}
+function computeMetrics(){
+  // nDCG
+  let dcg=0;RANK.forEach((it,k)=>dcg+=relG(it.y)/Math.log2(k+2));
+  const ideal=[...RANK].sort((a,b)=>relG(b.y)-relG(a.y));let idcg=0;ideal.forEach((it,k)=>idcg+=relG(it.y)/Math.log2(k+2));
+  const ndcg=idcg>0?dcg/idcg:0;
+  // AP (binary)
+  let nrel=RANK.filter(it=>binR(it.y)).length,hit=0,ap=0;
+  RANK.forEach((it,k)=>{if(binR(it.y)){hit++;ap+=hit/(k+1);}});
+  ap=nrel>0?ap/nrel:0;
+  return {ndcg,ap};}
+function renderRank(){
+  C('rankList').innerHTML=RANK.map((it,i)=>{const d=Math.abs(Q-it.y);const r=relG(it.y);
+    return `<div class="rk"><span class="yr" style="background:${viridis(yrT(it.y))};">${it.y}</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--mut);width:54px;">Δ ${d}yr</span>
+      <span class="rb"><div style="width:${(r/gamma*100).toFixed(0)}%;"></div></span>
+      <span class="mv"><button onclick="moveRank(${i},-1)">▲</button><button onclick="moveRank(${i},1)">▼</button></span></div>`;}).join('');
+  const m=computeMetrics();
+  C('mapVal').textContent=m.ap.toFixed(3);C('mapBar').style.width=(m.ap*100)+'%';
+  C('ndcgVal').textContent=m.ndcg.toFixed(3);C('ndcgBar').style.width=(m.ndcg*100)+'%';
+  C('ndcgNote').innerHTML=`Relevant (Δ≤2): <b>${RANK.filter(it=>binR(it.y)).length}</b> items — mAP sees only these as "good" and can't rank them among themselves. nDCG grades all seven by closeness.`;
+}
+window.moveRank=(i,dir)=>{const j=i+dir;if(j<0||j>=RANK.length)return;[RANK[i],RANK[j]]=[RANK[j],RANK[i]];renderRank();};
+window.setGamma=v=>{gamma=v;C('gammaV').textContent=v;renderRank();};
+window.sortByDate=()=>{RANK.sort((a,b)=>Math.abs(Q-a.y)-Math.abs(Q-b.y));renderRank();};
+window.shuffleRank=()=>{for(let i=RANK.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[RANK[i],RANK[j]]=[RANK[j],RANK[i]];}renderRank();};
+renderRank();
+
+/* ── SMOOTH INDICATOR (Fig. 1) ── */
+function drawSig(){const ctx=fit('sigC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);
+  const tv=+C('tauR').value;const tau=Math.pow(10,lerp(0,-3,tv/100));C('tauV').textContent=tau<.01?tau.toExponential(0):tau.toFixed(3);
+  const pL=36,pR=14,xr=[-10,10];
+  const topH=H*.62,botY0=H*.66;
+  const X=x=>pL+(x-xr[0])/(xr[1]-xr[0])*(W-pL-pR);
+  // top: G
+  const Yt=v=>H*.07+(1-v)*(topH-H*.07);
+  ctx.strokeStyle='rgba(60,50,30,.2)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(X(0),H*.05);ctx.lineTo(X(0),topH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pL,Yt(0));ctx.lineTo(W-pR,Yt(0));ctx.stroke();
+  // ideal step
+  ctx.strokeStyle='rgba(60,50,30,.3)';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(pL,Yt(0));ctx.lineTo(X(0),Yt(0));ctx.lineTo(X(0),Yt(1));ctx.lineTo(W-pR,Yt(1));ctx.stroke();ctx.setLineDash([]);
+  ctx.strokeStyle=ACC;ctx.lineWidth=2;ctx.beginPath();
+  for(let px=pL;px<=W-pR;px++){const x=xr[0]+(px-pL)/(W-pL-pR)*(xr[1]-xr[0]);const g=1/(1+Math.exp(-x/tau));px===pL?ctx.moveTo(px,Yt(g)):ctx.lineTo(px,Yt(g));}ctx.stroke();
+  ctx.fillStyle=ACC;ctx.font='8px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText('G(x; τ)',pL+4,H*.10);
+  // bottom: derivative
+  const Yb=(v,mx)=>botY0+(1-v/mx)*(H-12-botY0);
+  ctx.strokeStyle='rgba(60,50,30,.2)';ctx.beginPath();ctx.moveTo(X(0),botY0-4);ctx.lineTo(X(0),H-10);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pL,H-10);ctx.lineTo(W-pR,H-10);ctx.stroke();
+  const mx=1/(4*tau);
+  ctx.strokeStyle=BASE;ctx.lineWidth=2;ctx.beginPath();
+  for(let px=pL;px<=W-pR;px++){const x=xr[0]+(px-pL)/(W-pL-pR)*(xr[1]-xr[0]);const g=1/(1+Math.exp(-x/tau));const d=g*(1-g)/tau;px===pL?ctx.moveTo(px,Yb(d,mx)):ctx.lineTo(px,Yb(d,mx));}ctx.stroke();
+  ctx.fillStyle=BASE;ctx.font='8px IBM Plex Mono,monospace';ctx.fillText("G'(x; τ)",pL+4,botY0+10);
+  ctx.fillStyle=MUT;ctx.textAlign='center';ctx.font='7px IBM Plex Mono,monospace';ctx.fillText('0',X(0),topH+10);
+  C('sigH').innerHTML=tau>.3?'Large τ: a soft, smooth approximation — easy to optimise, but a blurry stand-in for the true comparison.':tau>.03?'Moderate τ: a fair balance of sharpness and usable gradient.':'Tiny τ: nearly the true step — accurate, but the gradient is sharp and almost flat away from 0, so learning stalls. The paper uses τ = 0.01.';
+  ctx.textAlign='left';}
+new ResizeObserver(drawSig).observe(C('sigC').parentElement);drawSig();
+
+/* ── RELEVANCE FUNCTIONS (Eq. 15–17) ── */
+let relMode='clip';
+const REL={clip:{lab:'clipped linear · Eq.15',f:d=>Math.max(0,10-d),mx:10,note:'max(0, γ−Δ) with γ=10 — everything beyond a decade is equally irrelevant. Used in the paper.'},
+  inv:{lab:'inverse · Eq.16',f:d=>1/(1+d),mx:1,note:'1/(1+Δ) — never quite zero; keeps a gentle pull toward the exact year.'},
+  exp:{lab:'exponential · Eq.17',f:d=>Math.exp(1/(1+d)),mx:Math.E,note:'e^(1/(1+Δ)) — sharply rewards the very closest years, then flattens toward 1.'}};
+function renderRelPills(){C('relPills').innerHTML=Object.keys(REL).map(k=>`<button class="pill" style="color:var(--acc);border-color:var(--acc);${k===relMode?'background:var(--acc);color:#fff;':''}" onclick="setRel('${k}')">${REL[k].lab}</button>`).join('');}
+window.setRel=k=>{relMode=k;renderRelPills();drawRel();};
+function drawRel(){const ctx=fit('relC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);
+  const r=REL[relMode],pL=40,pR=16,pT=18,pB=30,DM=30;
+  const X=d=>pL+d/DM*(W-pL-pR),Y=v=>H-pB-(v/r.mx)*(H-pT-pB);
+  ctx.strokeStyle='rgba(60,50,30,.2)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pL,pT);ctx.lineTo(pL,H-pB);ctx.lineTo(W-pR,H-pB);ctx.stroke();
+  ctx.fillStyle=MUT;ctx.font='7px IBM Plex Mono,monospace';ctx.textAlign='center';[0,10,20,30].forEach(d=>ctx.fillText(d+'yr',X(d),H-pB+12));
+  ctx.save();ctx.translate(12,H/2);ctx.rotate(-Math.PI/2);ctx.fillText('relevance r',0,0);ctx.restore();
+  // area + line
+  ctx.beginPath();ctx.moveTo(X(0),Y(0));for(let d=0;d<=DM;d+=.25)ctx.lineTo(X(d),Y(r.f(d)));ctx.lineTo(X(DM),H-pB);ctx.lineTo(X(0),H-pB);ctx.closePath();ctx.fillStyle='rgba(201,82,46,.12)';ctx.fill();
+  ctx.beginPath();for(let d=0;d<=DM;d+=.25){const x=X(d),y=Y(r.f(d));d===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.strokeStyle=ACC;ctx.lineWidth=2;ctx.stroke();
+  C('relH').innerHTML=r.note;ctx.textAlign='left';}
+renderRelPills();new ResizeObserver(drawRel).observe(C('relC').parentElement);drawRel();
+
+/* ── TRAINING LOOP (Algorithm 1) ── */
+let trainStage=0;const TSTAGES=['1 · batch of photos','2 · ResNet-101 → embeddings h','3 · all-vs-all cosine M = D(h)','4 · relevance R from years','5 · L = smooth-nDCG','6 · ∇L → update CNN'];
+function drawTrain(){const ctx=fit('trainC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);ctx.textAlign='center';
+  const ya=H*.42;const act=trainStage;
+  const on=i=>act>=i?1:.28;
+  // photos
+  ctx.globalAlpha=on(0);[0,1,2].forEach(k=>{ctx.fillStyle=viridis(.2+k*.3);ctx.fillRect(W*.04+k*6,ya-16+k*4,30,30);});ctx.globalAlpha=1;
+  ctx.fillStyle=MUT;ctx.font='6.5px IBM Plex Mono,monospace';ctx.fillText('batch',W*.08,ya+30);
+  // CNN trapezoid
+  ctx.globalAlpha=on(1);ctx.beginPath();ctx.moveTo(W*.20,ya-18);ctx.lineTo(W*.28,ya-10);ctx.lineTo(W*.28,ya+10);ctx.lineTo(W*.20,ya+18);ctx.closePath();ctx.fillStyle='#fff';ctx.strokeStyle=INK;ctx.lineWidth=1.3;ctx.fill();ctx.stroke();
+  ctx.fillStyle=INK;ctx.font='6.5px IBM Plex Mono,monospace';ctx.fillText('CNN',W*.24,ya+2);ctx.globalAlpha=1;
+  // embeddings
+  ctx.globalAlpha=on(1);ctx.fillStyle=MUT;ctx.fillText('h',W*.34,ya+2);[0,1,2].forEach(k=>{ctx.beginPath();ctx.arc(W*.34,ya-10+k*10,2.4,0,7);ctx.fillStyle=viridis(.2+k*.3);ctx.fill();});ctx.globalAlpha=1;
+  // matrices
+  function mat(x,lbl,fn,al){ctx.globalAlpha=al;const cs=9,n=5;for(let r=0;r<n;r++)for(let c=0;c<n;c++){ctx.fillStyle=fn(r,c);ctx.fillRect(x+c*cs,ya-22+r*cs,cs-1,cs-1);}ctx.strokeStyle='rgba(60,50,30,.3)';ctx.lineWidth=1;ctx.strokeRect(x,ya-22,cs*n,cs*n);ctx.fillStyle=MUT;ctx.font='6.5px IBM Plex Mono,monospace';ctx.fillText(lbl,x+cs*n/2,ya+34);ctx.globalAlpha=1;}
+  mat(W*.42,'M = D(h)',(r,c)=>r===c?'#222':((r+c)%2?'rgba(58,90,140,.7)':'rgba(58,90,140,.25)'),on(2));
+  mat(W*.60,'R (years)',(r,c)=>{const v=Math.max(0,1-Math.abs(r-c)/4);return `rgba(201,82,46,${(.2+.7*v).toFixed(2)})`;},on(3));
+  // loss + grad
+  ctx.globalAlpha=on(4);ctx.beginPath();ctx.roundRect(W*.78,ya-14,W*.16,28,4);ctx.fillStyle='rgba(201,82,46,.14)';ctx.strokeStyle=ACC;ctx.lineWidth=1.6;ctx.fill();ctx.stroke();ctx.fillStyle=ACC;ctx.font='600 7px IBM Plex Mono,monospace';ctx.fillText('smooth-nDCG',W*.86,ya-2);ctx.fillText('L = 1 − nDCG',W*.86,ya+8);ctx.globalAlpha=1;
+  // arrows forward
+  ctx.strokeStyle='rgba(60,50,30,.4)';ctx.lineWidth=1.2;[[W*.115,W*.198],[W*.29,W*.325],[W*.355,W*.418],[W*.555,W*.598],[W*.72,W*.778]].forEach(([a,b])=>{if(true){ctx.beginPath();ctx.moveTo(a,ya);ctx.lineTo(b,ya);ctx.stroke();}});
+  // backward gradient arrow
+  if(act>=5){ctx.strokeStyle=ACC;ctx.lineWidth=1.6;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(W*.86,ya+16);ctx.bezierCurveTo(W*.6,H*.92,W*.35,H*.92,W*.24,ya+20);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=ACC;ctx.font='7px IBM Plex Mono,monospace';ctx.fillText('∇L  back-propagate',W*.55,H*.96);}
+  C('trainStepL').textContent=TSTAGES[trainStage];
+  ctx.textAlign='left';}
+window.trainStep=()=>{trainStage=(trainStage+1)%6;drawTrain();};
+new ResizeObserver(drawTrain).observe(C('trainC').parentElement);drawTrain();
+
+/* ── EMBEDDING SPACE scatter (Fig. 7–8 style) ── */
+const SAMP=[];(function(){const r=rng(7);for(let y=1930;y<=1999;y+=2){const t=yrT(y);
+  // trained manifold: a fanning curve, neighbours in time are neighbours in space
+  const ang=lerp(2.3,-0.55,t),rad=0.32+0.62*(1-t);const bx=rad*Math.cos(ang),by=rad*Math.sin(ang)*0.9-0.05;
+  for(let s=0;s<3;s++){const jx=(r()-.5)*.10,jy=(r()-.5)*.10;
+    // imagenet: visually clustered, year scrambled -> position from a hash, blob
+    const ix=(r()*2-1)*0.78,iy=(r()*2-1)*0.78;
+    SAMP.push({y,tx:bx+jx,ty:by+jy,ix,iy});}}})();
+let embMode=1,embP=1,embAnim=null,kVal=10,qx=0,qy=-0.05,embDrag=false;
+function setEmb(m){embMode=m;document.querySelectorAll('#embT button').forEach((b,i)=>b.classList.toggle('on',i===m));
+  if(embAnim)cancelAnimationFrame(embAnim);const t0=performance.now(),from=embP;(function a(now){const t=clamp((now-t0)/700,0,1);embP=lerp(from,m,t<1?(t*t*(3-2*t)):1);drawEmb();if(t<1)embAnim=requestAnimationFrame(a);})(t0);}
+window.setEmb=setEmb;
+function embPos(s){return{x:lerp(s.ix,s.tx,embP),y:lerp(s.iy,s.ty,embP)};}
+function drawEmb(){const ctx=fit('embC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);
+  const pad=26,X=x=>pad+(x+1)/2*(W-2*pad),Y=y=>pad+(y+1)/2*(H-2*pad);
+  // query + neighbours
+  const pts=SAMP.map(s=>{const p=embPos(s);return{x:p.x,y:p.y,sx:X(p.x),sy:Y(p.y),y0:s.y};});
+  const nn=[...pts].map(p=>({p,d:Math.hypot(p.x-qx,p.y-qy)})).sort((a,b)=>a.d-b.d).slice(0,kVal).map(o=>o.p);
+  const nnset=new Set(nn);
+  // links to neighbours
+  const qsx=X(qx),qsy=Y(qy);
+  nn.forEach(p=>{ctx.strokeStyle='rgba(60,50,30,.18)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(qsx,qsy);ctx.lineTo(p.sx,p.sy);ctx.stroke();});
+  pts.forEach(p=>{const hot=nnset.has(p);ctx.beginPath();ctx.arc(p.sx,p.sy,hot?4.5:3,0,7);ctx.fillStyle=viridis(yrT(p.y0));ctx.globalAlpha=hot?1:.62;ctx.fill();
+    if(hot){ctx.globalAlpha=1;ctx.strokeStyle=INK;ctx.lineWidth=1;ctx.stroke();}ctx.globalAlpha=1;});
+  // query marker
+  ctx.beginPath();ctx.arc(qsx,qsy,8,0,7);ctx.fillStyle='#fff';ctx.strokeStyle=INK;ctx.lineWidth=2;ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(qsx,qsy,3,0,7);ctx.fillStyle=INK;ctx.fill();
+  // stats
+  const yrs=nn.map(p=>p.y0),mean=yrs.reduce((a,b)=>a+b,0)/yrs.length,std=Math.sqrt(yrs.reduce((a,b)=>a+(b-mean)**2,0)/yrs.length);
+  const trained=embP>.5;
+  C('embP').innerHTML=`<div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:${trained?'var(--acc)':'var(--base)'};margin-bottom:.5rem;">${trained?'SMOOTH-nDCG SPACE':'IMAGENET FEATURES'}</div>
+    <div style="font-size:.85rem;line-height:1.55;">The ◎ query's <b>${kVal}</b> nearest neighbours:</div>
+    <div style="font-family:'Fraunces',serif;font-size:1.7rem;color:${trained?'var(--acc)':'var(--base)'};margin:.3rem 0;">≈ ${Math.round(mean)}</div>
+    <div style="font-size:.8rem;color:var(--mut);line-height:1.5;">estimated year (mean of neighbours)<br>year spread σ = <b style="color:${std<6?'#2f6b4f':'#b5402e'}">${std.toFixed(1)} yr</b></div>
+    <div style="margin-top:.7rem;font-size:.82rem;line-height:1.5;color:var(--ink2);">${trained?'Neighbours share a date — small σ, so the k-NN estimate is <b>trustworthy</b>.':'Neighbours are scattered across decades — large σ, so the estimate is <b>unreliable</b>. Train the space →'}</div>`;
+  ctx.textAlign='left';}
+(function(){const cv=C('embC');function xy(e){const r=cv.getBoundingClientRect(),pad=26,W=cv.clientWidth,H=cv.clientHeight;const px=(e.touches?e.touches[0].clientX:e.clientX)-r.left,py=(e.touches?e.touches[0].clientY:e.clientY)-r.top;return{x:clamp((px-pad)/(W-2*pad)*2-1,-1,1),y:clamp((py-pad)/(H-2*pad)*2-1,-1,1)};}
+  function down(e){embDrag=true;const p=xy(e);qx=p.x;qy=p.y;cv.style.cursor='grabbing';drawEmb();e.preventDefault&&e.preventDefault();}
+  function move(e){if(!embDrag)return;const p=xy(e);qx=p.x;qy=p.y;drawEmb();}
+  function up(){embDrag=false;cv.style.cursor='grab';}
+  cv.addEventListener('mousedown',down);window.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
+  cv.addEventListener('touchstart',down,{passive:false});cv.addEventListener('touchmove',e=>{if(embDrag)e.preventDefault();move(e);},{passive:false});cv.addEventListener('touchend',up);
+  new ResizeObserver(drawEmb).observe(cv.parentElement);drawEmb();})();
+// colorbar
+(function(){const cb=C('cbar');let g='linear-gradient(to right';for(let i=0;i<=10;i++)g+=','+viridis(i/10);cb.style.background=g+')';})();
+
+/* ── kNN MAE vs k (Fig. 5) ── */
+function maeAtK(k){return 9.62-0.62*Math.exp(-((k-10)**2)/40)+0.018*Math.max(0,k-11)+ (k<5?0.04*(5-k):0);}
+function setK(k){kVal=k;C('kV').textContent=k;drawKnn();drawEmb();}
+window.setK=setK;
+function drawKnn(){const ctx=fit('knnC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);
+  const pL=44,pR=16,pT=16,pB=28,kmin=1,kmax=25,ymin=8.9,ymax=9.75;
+  const X=k=>pL+(k-kmin)/(kmax-kmin)*(W-pL-pR),Y=v=>pT+(v-ymin)/(ymax-ymin)*(H-pT-pB);
+  ctx.strokeStyle='rgba(60,50,30,.12)';ctx.lineWidth=.8;[9.0,9.2,9.4,9.6].forEach(v=>{ctx.beginPath();ctx.moveTo(pL,Y(v));ctx.lineTo(W-pR,Y(v));ctx.stroke();ctx.fillStyle=MUT;ctx.font='7px IBM Plex Mono,monospace';ctx.textAlign='right';ctx.fillText(v.toFixed(1),pL-4,Y(v)+3);});
+  ctx.textAlign='center';[1,5,10,15,20,25].forEach(k=>ctx.fillText('k='+k,X(k),H-pB+12));
+  ctx.strokeStyle=ACC;ctx.lineWidth=2;ctx.beginPath();for(let k=kmin;k<=kmax;k+=.25){const x=X(k),y=Y(maeAtK(k));k===kmin?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.stroke();
+  const mx=X(kVal),my=Y(maeAtK(kVal));ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(60,50,30,.4)';ctx.beginPath();ctx.moveTo(mx,Y(ymin)-( -0));ctx.moveTo(mx,H-pB);ctx.lineTo(mx,my);ctx.stroke();ctx.setLineDash([]);
+  ctx.beginPath();ctx.arc(mx,my,5,0,7);ctx.fillStyle=ACC;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle=ACC;ctx.font='600 8px IBM Plex Mono,monospace';ctx.fillText('MAE '+maeAtK(kVal).toFixed(2),mx,my-10);
+  C('knnH').innerHTML=`k = <b>${kVal}</b> → MAE ≈ <b style="color:var(--acc)">${maeAtK(kVal).toFixed(2)} years</b>. ${kVal<5?'Too few neighbours — noisy.':kVal>16?'Too many — distant dates creep in.':'Near the sweet spot the paper settles on (k = 10).'}`;
+  ctx.textAlign='left';}
+new ResizeObserver(drawKnn).observe(C('knnC').parentElement);drawKnn();
+</script>
+</body></html>

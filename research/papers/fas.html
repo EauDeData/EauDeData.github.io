@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fetch-A-Set — An OCR-Free Benchmark for Historical Document Retrieval</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14100a; --parchment:#f4ecda; --aged:#e6d5b0; --deep:#0e0b06;
+  --sepia:#8b6618; --rust:#c04020; --steel:#1e3a58; --sage:#3a5c3a;
+  --pale:#faf5e8; --highlight:#e8c030; --muted:#706050; --ok:#3a8a3a;
+  --card:rgba(244,236,218,0.85);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--parchment);color:var(--ink);font-family:'Crimson Pro',Georgia,serif;font-size:18px;line-height:1.75;overflow-x:hidden;}
+#progress{position:fixed;top:0;left:0;height:2px;background:var(--sepia);z-index:200;transition:width 0.08s;}
+nav{position:fixed;top:2px;left:0;right:0;z-index:150;background:rgba(244,236,218,0.93);backdrop-filter:blur(16px);border-bottom:1px solid rgba(139,102,24,0.18);height:50px;display:flex;align-items:center;padding:0 2rem;}
+nav .logo{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);margin-right:auto;}
+nav a{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;color:var(--muted);padding:0 0.9rem;height:50px;display:flex;align-items:center;transition:all 0.18s;border-bottom:2px solid transparent;}
+nav a:hover,nav a.active{color:var(--rust);border-bottom-color:var(--rust);}
+@media(max-width:780px){nav a{padding:0 0.5rem;font-size:0.52rem;}nav .logo{font-size:0.5rem;}}
+
+section{padding:90px 0 70px;position:relative;}
+.container{max-width:940px;margin:0 auto;padding:0 2.5rem;}
+.eyebrow{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--rust);display:flex;align-items:center;gap:0.9rem;margin-bottom:0.9rem;}
+.eyebrow::before{content:'';width:28px;height:1px;background:var(--rust);}
+h2.stitle{font-family:'DM Serif Display',serif;font-size:clamp(1.9rem,3.8vw,2.8rem);line-height:1.15;color:var(--ink);margin-bottom:1.2rem;}
+.intro{font-size:1.1rem;color:var(--muted);font-style:italic;max-width:620px;margin-bottom:2.4rem;line-height:1.85;}
+.body-p{font-size:1rem;line-height:1.85;color:var(--ink);margin-bottom:1.4rem;max-width:700px;}
+.divider-q{font-family:'DM Mono',monospace;font-size:0.74rem;color:var(--sepia);background:var(--aged);border:1px solid rgba(139,102,24,0.2);padding:0.8rem 1.1rem;margin:1.4rem 0;line-height:1.7;}
+.pullquote{border-left:3px solid var(--sepia);padding:1.4rem 2rem;margin:2.4rem 0;background:rgba(139,102,24,0.05);font-style:italic;font-size:1.13rem;color:var(--ink);line-height:1.72;position:relative;}
+.pullquote::before{content:'\201C';font-family:'DM Serif Display',serif;font-size:3.5rem;color:var(--sepia);opacity:0.25;position:absolute;top:-0.3rem;left:0.7rem;line-height:1;}
+code{font-family:'DM Mono',monospace;font-size:0.82em;background:rgba(139,102,24,0.12);padding:0.1em 0.35em;color:var(--sepia);}
+.dark code{background:rgba(232,192,48,0.18);color:var(--highlight);}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity 0.65s,transform 0.65s;}
+.reveal.visible{opacity:1;transform:none;}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;background:var(--pale);overflow:hidden;}
+#hero canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0.5;pointer-events:none;}
+.hg{position:absolute;inset:0;background-image:linear-gradient(rgba(139,102,24,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(139,102,24,0.05) 1px,transparent 1px);background-size:44px 44px;}
+.hero-content{position:relative;z-index:2;max-width:860px;margin:0 auto;padding:0 2.5rem;}
+.hero-label{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--sepia);margin-bottom:2rem;opacity:0;animation:fadeUp 0.7s 0.2s forwards;}
+h1.hero-title{font-family:'DM Serif Display',serif;font-size:clamp(2.3rem,5vw,4rem);line-height:1.08;color:var(--ink);margin-bottom:1.4rem;opacity:0;animation:fadeUp 0.7s 0.4s forwards;}
+h1.hero-title em{font-style:italic;color:var(--sepia);}
+.hero-sub{font-size:1.15rem;color:var(--muted);max-width:560px;margin-bottom:2.6rem;font-style:italic;opacity:0;animation:fadeUp 0.7s 0.6s forwards;line-height:1.8;}
+.hero-meta{display:flex;gap:2.4rem;flex-wrap:wrap;opacity:0;animation:fadeUp 0.7s 0.8s forwards;}
+.hm-label{font-family:'DM Mono',monospace;font-size:0.56rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);}
+.hm-val{font-size:0.98rem;font-weight:600;color:var(--ink);margin-top:0.15rem;}
+.hero-badges{display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:2rem;opacity:0;animation:fadeUp 0.7s 1s forwards;}
+.hbadge{font-family:'DM Mono',monospace;font-size:0.56rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.4rem 0.7rem;border:1px solid rgba(139,102,24,0.3);color:var(--sepia);background:rgba(244,236,218,0.5);}
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.5rem;opacity:0;animation:fadeUp 0.7s 1.3s forwards;z-index:2;}
+.scroll-hint span{font-family:'DM Mono',monospace;font-size:0.56rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);}
+.scroll-line{width:1px;height:44px;background:linear-gradient(to bottom,var(--sepia),transparent);animation:pulse 2s ease-in-out infinite;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:0.35}50%{opacity:1}}
+
+/* STATS / CARDS / TABLE */
+.stats{display:flex;gap:1.6rem;flex-wrap:wrap;margin:2.2rem 0;}
+.stat{flex:1;min-width:130px;padding:1.4rem;background:var(--pale);border:1px solid rgba(139,102,24,0.13);text-align:center;}
+.snum{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--ink);line-height:1;}
+.slab{font-family:'DM Mono',monospace;font-size:0.53rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-top:0.4rem;}
+.ctable{width:100%;border-collapse:collapse;margin:1.6rem 0;font-size:0.86rem;}
+.ctable th{font-family:'DM Mono',monospace;font-size:0.53rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:0.55rem 0.7rem;text-align:left;border-bottom:2px solid rgba(139,102,24,0.2);background:var(--aged);}
+.ctable td{padding:0.5rem 0.7rem;border-bottom:1px solid rgba(139,102,24,0.1);color:var(--ink);font-variant-numeric:tabular-nums;}
+.ctable tr:hover td{background:rgba(139,102,24,0.03);}
+.ctable .grp td{background:var(--aged);font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--sepia);}
+.ctable td.best{background:rgba(58,138,58,0.12);font-weight:600;}
+.ctable.lowlit td.lc{background:rgba(192,64,32,0.1);}
+.colbtn{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.08em;padding:0.45rem 0.9rem;border:1px solid rgba(139,102,24,0.3);background:var(--pale);color:var(--ink);cursor:pointer;transition:all 0.2s;}
+.colbtn.on{background:var(--rust);color:var(--parchment);border-color:var(--rust);}
+
+/* TASK TOGGLE */
+.task-wrap{border:1px solid rgba(139,102,24,0.2);margin:2rem 0;background:var(--pale);}
+.task-tabs{display:flex;}
+.task-tab{flex:1;padding:1rem;text-align:center;cursor:pointer;border-right:1px solid rgba(139,102,24,0.15);background:var(--pale);transition:all 0.2s;}
+.task-tab:last-child{border-right:none;}
+.task-tab.on{background:var(--ink);color:var(--parchment);}
+.task-tab .tk{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--rust);}
+.task-tab.on .tk{color:var(--highlight);}
+.task-tab .tt{font-family:'DM Serif Display',serif;font-size:1.05rem;margin-top:0.2rem;}
+.task-body{display:grid;grid-template-columns:1fr 60px 1fr;align-items:center;gap:0;padding:1.8rem;}
+@media(max-width:640px){.task-body{grid-template-columns:1fr;gap:1rem;}.task-arrow{transform:rotate(90deg);}}
+.task-panel{border:1px dashed rgba(139,102,24,0.3);padding:1.2rem;text-align:center;background:rgba(244,236,218,0.5);}
+.task-panel .pk{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--sepia);margin-bottom:0.5rem;}
+.task-panel .pv{font-size:0.95rem;line-height:1.5;color:var(--ink);}
+.task-arrow{text-align:center;font-size:1.6rem;color:var(--sepia);}
+.task-note{padding:0 1.8rem 1.6rem;font-size:0.92rem;color:var(--muted);line-height:1.65;}
+
+/* DARK + conclusion */
+.dark{background:var(--deep);color:var(--parchment);}
+.dark .stitle{color:var(--parchment);}.dark .intro{color:rgba(244,236,218,0.6);}
+.dark .eyebrow{color:var(--highlight);}.dark .eyebrow::before{background:var(--highlight);}
+.dark .body-p{color:rgba(244,236,218,0.78);}
+.con-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem;margin:2rem 0;}
+@media(max-width:640px){.con-grid{grid-template-columns:1fr;}}
+.con-item{padding:1.7rem;border:1px solid rgba(244,236,218,0.1);background:rgba(244,236,218,0.03);transition:all 0.22s;}
+.con-item:hover{background:rgba(244,236,218,0.07);border-color:rgba(244,236,218,0.22);}
+.con-num{font-family:'DM Mono',monospace;font-size:0.56rem;letter-spacing:0.2em;color:var(--highlight);margin-bottom:0.7rem;}
+.con-t{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--parchment);margin-bottom:0.55rem;}
+.con-b{font-size:0.9rem;color:rgba(244,236,218,0.62);line-height:1.6;}
+
+footer{background:#070503;color:rgba(244,236,218,0.38);padding:3rem 2rem;text-align:center;}
+footer .ft{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--parchment);margin-bottom:0.5rem;}
+footer p{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.09em;line-height:2.2;}
+.grain{position:fixed;inset:0;z-index:300;pointer-events:none;opacity:0.045;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;box-shadow:inset 0 0 220px rgba(20,16,10,0.14);}
+#sidetoc{position:fixed;right:1.4rem;top:50%;transform:translateY(-50%);z-index:140;display:flex;flex-direction:column;gap:0.9rem;align-items:flex-end;}
+#sidetoc a{display:flex;align-items:center;gap:0.6rem;text-decoration:none;cursor:pointer;}
+#sidetoc .stoc-lbl{font-family:'DM Mono',monospace;font-size:0.53rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);opacity:0;transform:translateX(8px);transition:all 0.25s;white-space:nowrap;}
+#sidetoc .stoc-dot{width:8px;height:8px;border-radius:50%;border:1px solid var(--sepia);background:transparent;transition:all 0.25s;flex-shrink:0;}
+#sidetoc a:hover .stoc-lbl,#sidetoc a.active .stoc-lbl{opacity:1;transform:none;color:var(--rust);}
+#sidetoc a.active .stoc-dot{background:var(--rust);border-color:var(--rust);transform:scale(1.35);}
+@media(max-width:1180px){#sidetoc{display:none;}}
+
+/* ═══════ BIPARTITE MATCHER ═══════ */
+.bm{margin:1.6rem 0;}
+.bm-ctrl{display:flex;gap:0.7rem;align-items:center;flex-wrap:wrap;margin-bottom:1.2rem;}
+.bm-input{flex:1;min-width:220px;font-family:'Crimson Pro',serif;font-size:0.95rem;padding:0.6rem 0.8rem;border:1px solid rgba(139,102,24,0.3);background:var(--pale);color:var(--ink);}
+.bm-input:focus{outline:none;border-color:var(--sepia);}
+.bm-btn{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem 1rem;border:1px solid var(--rust);background:var(--rust);color:var(--parchment);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.bm-btn.ghost{background:transparent;color:var(--sepia);border-color:rgba(139,102,24,0.4);}
+.bm-btn:hover{filter:brightness(1.08);}
+.bm-toggle{display:flex;align-items:center;gap:0.45rem;font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);cursor:pointer;}
+.bm-toggle input{accent-color:var(--sepia);}
+.bm-stage{position:relative;border:1px solid rgba(139,102,24,0.2);background:var(--pale);overflow:hidden;}
+.bm-edges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+.bm-cols{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:0;z-index:2;}
+.bm-side{padding:1.1rem;}
+.bm-side.left{border-right:1px solid rgba(139,102,24,0.12);}
+.bm-sidehead{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--sepia);margin-bottom:0.8rem;display:flex;justify-content:space-between;}
+.bm-card{border:1px solid rgba(139,102,24,0.2);background:rgba(244,236,218,0.7);padding:0.7rem 0.8rem;margin-bottom:0.7rem;position:relative;transition:box-shadow 0.2s,border-color 0.2s;}
+.bm-card:last-child{margin-bottom:0;}
+.bm-card.hot{border-color:var(--sepia);box-shadow:0 4px 16px rgba(139,102,24,0.18);}
+.bm-card.matched{border-left:3px solid var(--ok);}
+.bm-card.unmatched{border-left:3px solid var(--rust);opacity:0.92;}
+.bm-q{font-size:0.92rem;line-height:1.4;color:var(--ink);}
+.bm-f{font-family:'DM Mono',monospace;font-size:0.72rem;line-height:1.45;color:#3a322a;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.bm-gloss{font-size:0.78rem;font-style:italic;color:var(--muted);margin-top:0.35rem;line-height:1.35;}
+.bm-meta{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.04em;margin-top:0.5rem;display:flex;justify-content:space-between;align-items:center;}
+.bm-meta .m-ok{color:var(--ok);}.bm-meta .m-no{color:var(--rust);}
+.bm-x{position:absolute;top:0.4rem;right:0.5rem;font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--muted);cursor:pointer;line-height:1;border:none;background:none;padding:0.1rem 0.3rem;}
+.bm-x:hover{color:var(--rust);}
+.bm-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:0.5rem;padding:0.1rem 0.35rem;border:1px solid rgba(139,102,24,0.3);color:var(--sepia);margin-left:0.4rem;vertical-align:middle;}
+.bm-score{display:flex;gap:1.6rem;align-items:center;border:1px solid rgba(139,102,24,0.2);border-top:none;padding:0.9rem 1.2rem;background:var(--aged);font-family:'DM Mono',monospace;font-size:0.66rem;color:var(--muted);flex-wrap:wrap;}
+.bm-score b{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--ink);}
+/* matrix */
+.bm-hint{font-size:0.85rem;color:var(--muted);font-style:italic;text-align:center;padding:0.6rem 1rem;}
+
+/* ═══════ TIMELINE ═══════ */
+.tl-ctrl{display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem;}
+.tl-wrap{border:1px solid rgba(139,102,24,0.2);background:var(--pale);overflow:hidden;}
+.tl-wrap svg{display:block;width:100%;height:auto;}
+.tl-row rect.bar{transition:opacity 0.2s;}
+.tl-row:hover rect.bar{opacity:1!important;}
+.tl-row:hover text.tlname{fill:var(--rust);}
+.tl-legend{display:flex;gap:1.2rem;flex-wrap:wrap;padding:0.8rem 1.2rem;border-top:1px solid rgba(139,102,24,0.15);background:var(--aged);font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);}
+.tl-legend span{display:flex;align-items:center;gap:0.4rem;}
+.tl-legend i{width:11px;height:11px;display:inline-block;}
+
+/* NE matcher specific */
+.ne-twin{display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1.1rem;}
+.ne-grp{display:flex;gap:0.4rem;align-items:center;flex:1;min-width:240px;}
+.ne-grp label{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--sepia);white-space:nowrap;}
+.ne-card{border:1px solid rgba(139,102,24,0.2);background:rgba(244,236,218,0.7);padding:0.6rem 0.75rem;margin-bottom:0.6rem;position:relative;transition:box-shadow 0.2s,border-color 0.2s;}
+.ne-card.hot{border-color:var(--sepia);box-shadow:0 4px 16px rgba(139,102,24,0.18);}
+.ne-card.matched{border-left:3px solid var(--ok);}
+.ne-card.unmatched{border-left:3px solid var(--rust);opacity:0.92;}
+.ne-clean{font-size:1rem;color:var(--ink);}
+.ne-ocr{font-family:'DM Mono',monospace;font-size:0.92rem;letter-spacing:0.04em;color:#3a322a;}
+.ne-norm{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);margin-top:0.3rem;}
+.ne-meta{font-family:'DM Mono',monospace;font-size:0.58rem;margin-top:0.4rem;}
+.ne-meta .m-ok{color:var(--ok);}.ne-meta .m-no{color:var(--rust);}
+.ne-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:0.45rem;vertical-align:middle;border:1.5px solid;}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="vignette"></div>
+<div id="progress"></div>
+
+<nav>
+  <span class="logo">Fetch-A-Set · CVC-UAB</span>
+  <a href="#hero">Top</a>
+  <a href="#problem">Problem</a>
+  <a href="#data">Dataset</a>
+  <a href="#timeline">Timeline</a>
+  <a href="#construct">Construction</a>
+  <a href="#match">Retrieval</a>
+  <a href="#results">Results</a>
+  <a href="#vision">Findings</a>
+</nav>
+
+<div id="sidetoc">
+  <a data-t="hero"><span class="stoc-lbl">Title</span><span class="stoc-dot"></span></a>
+  <a data-t="problem"><span class="stoc-lbl">OCR-free HDR</span><span class="stoc-dot"></span></a>
+  <a data-t="data"><span class="stoc-lbl">The dataset</span><span class="stoc-dot"></span></a>
+  <a data-t="timeline"><span class="stoc-lbl">Timeline</span><span class="stoc-dot"></span></a>
+  <a data-t="construct"><span class="stoc-lbl">GT · edit distance</span><span class="stoc-dot"></span></a>
+  <a data-t="match"><span class="stoc-lbl">Retrieval</span><span class="stoc-dot"></span></a>
+  <a data-t="tasks"><span class="stoc-lbl">Two tasks</span><span class="stoc-dot"></span></a>
+  <a data-t="results"><span class="stoc-lbl">Baselines</span><span class="stoc-dot"></span></a>
+  <a data-t="vision"><span class="stoc-lbl">Findings</span><span class="stoc-dot"></span></a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hg"></div>
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-label">arXiv 2406.07315 · cs.IR · Jun 2024</div>
+    <h1 class="hero-title">Fetch-A-Set</h1>
+    <p class="hero-sub">A large-scale, <em>OCR-free</em> benchmark for historical document retrieval — 400K fragments across three centuries of Spain's official gazette, where the text is too damaged to trust.</p>
+    <div class="hero-meta">
+      <div><div class="hm-label">Authors</div><div class="hm-val">Molina · Ramos Terrades · Lladós</div></div>
+      <div><div class="hm-label">Source</div><div class="hm-val">Boletín Oficial del Estado (BOE)</div></div>
+      <div><div class="hm-label">Span</div><div class="hm-val">XVII century → 1959</div></div>
+    </div>
+    <div class="hero-badges">
+      <span class="hbadge">400K fragments</span>
+      <span class="hbadge">text ↔ image</span>
+      <span class="hbadge">legibility-aware</span>
+      <span class="hbadge">vision vs OCR</span>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="container reveal">
+    <div class="eyebrow">The Problem</div>
+    <h2 class="stitle">When the text can't be read,<br>search has to see.</h2>
+    <p class="intro">Historical archives hold millions of pages whose OCR is noisy, partial, or simply wrong. Retrieval that leans only on transcribed text breaks down exactly where heritage collections are richest.</p>
+    <p class="body-p">Most historical-document benchmarks chase <em>word spotting</em> — finding exact matches of query words inside a page. FAS aims higher, at <b>topic spotting</b>: fetching the fragment that <em>means</em> what a natural-language query says, even when the characters underneath are degraded. That demands visual insight, not just transcription.</p>
+    <div class="divider-q">word spotting → does the string "Ferrol" appear?  &nbsp;·&nbsp;  topic spotting → which fragment is <em>about</em> a naval police appointment?</div>
+    <p class="body-p">The damaged condition of the documents, the absence of reliable ground truth, and a tangle of languages and scripts make text-only retrieval unfeasible. FAS reframes the task as multi-modal matching between a human-written query and the pixels of a document fragment.</p>
+    <div class="pullquote">As transcriptions degrade, they gradually lose meaning. FAS turns that degradation into a measured axis — <em>legibility</em> — and asks how systems hold up across it.</div>
+  </div>
+</section>
+
+<!-- DATASET -->
+<section id="data" style="background:var(--pale);">
+  <div class="container reveal">
+    <div class="eyebrow">The Dataset</div>
+    <h2 class="stitle">Three centuries of one gazette</h2>
+    <p class="intro">FAS draws on the BOE, Spain's Official State Gazette — roughly a million annotated summary–document pairs, distilled into a curated 400K-fragment benchmark with train, test, and a fixed distractor anchor.</p>
+    <div class="stats">
+      <div class="stat"><div class="snum">384,567</div><div class="slab">train fragments</div></div>
+      <div class="stat"><div class="snum">42,997</div><div class="slab">test fragments</div></div>
+      <div class="stat"><div class="snum">1,024</div><div class="slab">distractor anchor</div></div>
+      <div class="stat"><div class="snum">~100K</div><div class="slab">from 1939–1959 alone</div></div>
+    </div>
+    <p class="body-p">The temporal breadth is the point. Where most retrieval datasets cluster in a narrow window, FAS stretches from the XVII century to the mid-twentieth, capturing enormous variation in layout, script, and condition — and a real correlation: legibility trends upward with modernity, though plenty of modern pages remain poorly legible. That captured variance is what makes a retrieval system robust.</p>
+  </div>
+</section>
+
+<!-- ═══════════ TIMELINE ═══════════ -->
+<section id="timeline">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">Temporal Coverage · after Table 1 &amp; Fig. 3</div>
+      <h2 class="stitle">How much history<br>does one dataset hold?</h2>
+      <p class="intro">Each bar is a historical-document retrieval dataset, drawn across the years it covers. Most cluster in a narrow window; FAS (gold) stretches across roughly three centuries while remaining a <em>topic/retrieval</em> corpus — not just dates or writers.</p>
+    </div>
+    <div class="reveal">
+      <div class="tl-ctrl">
+        <button class="colbtn on" id="tl-start" onclick="setTLsort('start')">sort by start year</button>
+        <button class="colbtn" id="tl-span" onclick="setTLsort('span')">sort by span length</button>
+      </div>
+      <div class="tl-wrap">
+        <svg id="tl-svg" preserveAspectRatio="xMinYMin meet"></svg>
+        <div class="tl-legend" id="tl-legend"></div>
+      </div>
+    </div>
+    <p class="body-p reveal" style="margin-top:1.6rem;">Datasets built for <em>word spotting</em> tend to sit on a single decade or century; those probing <em>writer</em> or <em>date</em> can span a millennium but aren't about content retrieval. FAS occupies the rare middle ground the paper argues for: wide temporal variance <em>and</em> a topic-retrieval task — the variance that makes deployed systems robust to drifting layouts, scripts, and legibility.</p>
+  </div>
+</section>
+
+<!-- ═══════════ GT CONSTRUCTION · NAMED-ENTITY EDIT DISTANCE (centerpiece) ═══════════ -->
+<section id="construct" style="background:var(--pale);">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">Interactive · Building the Ground Truth (Fig. 2)</div>
+      <h2 class="stitle">Match named entities<br>by minimum edit distance</h2>
+      <p class="intro">To verify that a query truly belongs to a fragment, FAS aligns their <em>named entities</em> — and the OCR ones are garbled (<code>E s p a ñ a</code>, <code>Int.ervirelonai</code>). A Hungarian assignment over Levenshtein distance pairs each clean entity to its noisy counterpart. Add your own words to either side and watch the alignment.</p>
+    </div>
+    <div class="reveal bm">
+      <div class="ne-twin">
+        <div class="ne-grp">
+          <label>query NE</label>
+          <input class="bm-input" id="ne-inL" placeholder="add a clean entity, e.g. Justicia" spellcheck="false">
+          <button class="bm-btn" onclick="neAdd('L')">+</button>
+        </div>
+        <div class="ne-grp">
+          <label>OCR NE</label>
+          <input class="bm-input" id="ne-inR" placeholder="add a noisy entity, e.g. Just1c1a" spellcheck="false">
+          <button class="bm-btn" onclick="neAdd('R')">+</button>
+        </div>
+        <button class="bm-btn ghost" onclick="neReset()">↺ reset</button>
+      </div>
+      <div class="bm-stage">
+        <svg class="bm-edges" id="ne-edges" preserveAspectRatio="none"></svg>
+        <div class="bm-cols">
+          <div class="bm-side left">
+            <div class="bm-sidehead"><span>Query entities (clean)</span><span id="ne-ln"></span></div>
+            <div id="ne-left"></div>
+          </div>
+          <div class="bm-side right">
+            <div class="bm-sidehead"><span id="ne-rn"></span><span>OCR entities (noisy)</span></div>
+            <div id="ne-right"></div>
+          </div>
+        </div>
+      </div>
+      <div class="bm-score">
+        <span>matched pairs <b id="ne-pairs">—</b></span>
+        <span>total edit distance <b id="ne-total">—</b></span>
+        <span id="ne-note" style="margin-left:auto;color:var(--sepia);"></span>
+      </div>
+      <div class="bm-hint">Strings are normalised (spaces, accents, punctuation removed) before measuring edit distance — so <code>E s p a ñ a</code> → <code>espana</code> matches <code>España</code> at distance 0. The thick green edge is the minimum-total-distance assignment; leftover OCR entities stay unclaimed, flagging invalid fragments.</div>
+    </div>
+    <p class="body-p reveal" style="margin-top:1.6rem;">This is the noise filter behind FAS's labels. Because fragment presence is human-verified and invalid regions per page are few, aligning named entities by edit distance — rather than trusting raw OCR strings — keeps spurious query–document pairs out of the ground truth. Try adding a badly mangled entity on the right: if nothing clean is close enough, it simply goes unmatched.</p>
+  </div>
+</section>
+
+<!-- ═══════════ RETRIEVAL (reframed) ═══════════ -->
+<section id="match">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">Interactive · Standard Retrieval (topic spotting)</div>
+      <h2 class="stitle">Now the retrieval task:<br>queries to fragments</h2>
+      <p class="intro">With ground truth in hand, the actual benchmark is text-to-image retrieval: encode a query and rank document fragments by semantic similarity. Add your own queries and see which fragment each one is matched to under a one-to-one assignment.</p>
+    </div>
+    <div class="reveal bm">
+      <div class="bm-ctrl">
+        <input class="bm-input" id="bm-input" placeholder="Type a query, e.g.  muerte del Rey Fernando" spellcheck="false">
+        <button class="bm-btn" onclick="bmAdd()">+ Add query</button>
+        <label class="bm-toggle"><input type="checkbox" id="bm-ne" checked onchange="bmRender()"> named-entity boost</label>
+        <button class="bm-btn ghost" onclick="bmReset()">↺ reset</button>
+      </div>
+      <div class="bm-stage">
+        <svg class="bm-edges" id="bm-edges" preserveAspectRatio="none"></svg>
+        <div class="bm-cols">
+          <div class="bm-side left">
+            <div class="bm-sidehead"><span>Queries q (text)</span><span id="bm-qn"></span></div>
+            <div id="bm-queries"></div>
+          </div>
+          <div class="bm-side right">
+            <div class="bm-sidehead"><span id="bm-fn"></span><span>OCR fragments F (noisy)</span></div>
+            <div id="bm-frags"></div>
+          </div>
+        </div>
+      </div>
+      <div class="bm-score">
+        <span>matched pairs <b id="bm-pairs">—</b></span>
+        <span>total similarity <b id="bm-total">—</b></span>
+        <span id="bm-tension" style="margin-left:auto;color:var(--rust);"></span>
+      </div>
+      <div class="bm-hint">Edges show candidate similarities; the thick green edge is the chosen one-to-one match. Add a query that paraphrases an existing one — the weaker of the two is forced to remain unmatched.</div>
+    </div>
+    <p class="body-p reveal" style="margin-top:1.6rem;">This mirrors the evaluation in the paper: the correct query should be the nearest neighbour of its fragment among a set of distractors. A retrieval is a hit when the true pair shows the minimum distance.</p>
+  </div>
+</section>
+
+<!-- TASKS -->
+<section id="tasks" style="background:var(--pale);">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">Two Directions</div>
+      <h2 class="stitle">One benchmark, both ways</h2>
+      <p class="intro">The same matched pairs power two evaluations. Flip between them.</p>
+    </div>
+    <div class="reveal task-wrap">
+      <div class="task-tabs">
+        <div class="task-tab on" data-i="0" onclick="setTask(0)"><div class="tk">text → image</div><div class="tt">Topic Spotting</div></div>
+        <div class="task-tab" data-i="1" onclick="setTask(1)"><div class="tk">image → text</div><div class="tt">Information Extraction</div></div>
+      </div>
+      <div class="task-body">
+        <div class="task-panel"><div class="pk" id="tp-lk">natural language query</div><div class="pv" id="tp-lv"></div></div>
+        <div class="task-arrow">→</div>
+        <div class="task-panel"><div class="pk" id="tp-rk">retrieved fragment</div><div class="pv" id="tp-rv"></div></div>
+      </div>
+      <div class="task-note" id="task-note"></div>
+    </div>
+    <p class="body-p reveal">Both reduce to the same objective: encode query and fragment so the true pair is the nearest neighbour among a distractor set. Minimise the distance to the correct match while pushing every distractor away.</p>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results">
+  <div class="container">
+    <div class="reveal">
+      <div class="eyebrow">Baselines · Table 3</div>
+      <h2 class="stitle">Vision when the page is ruined,<br>text when it isn't</h2>
+      <p class="intro">A CLIP-pretrained ViT (fine-tuned with metric/contrastive losses) versus an OCR + Sentence-BERT pipeline. The headline numbers favour OCR — until you look only at the least legible quarter of documents.</p>
+    </div>
+    <div class="reveal" style="margin-bottom:0.8rem;">
+      <button class="colbtn" id="lowbtn" onclick="toggleLow()">▶ Highlight low-legibility columns</button>
+    </div>
+    <div class="reveal">
+      <table class="ctable" id="restable">
+        <thead><tr><th>Approach</th><th>Loss</th><th>Acc@1</th><th>Acc@5</th><th>Acc@10</th><th>AvgRank ↓</th><th class="lc">Acc@1<sub>low</sub></th><th class="lc">Acc@5<sub>low</sub></th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="8">Topic Spotting · text → image</td></tr>
+          <tr><td>ViT-B/32</td><td>Triplet</td><td>.473</td><td>.639</td><td>.695</td><td>52.74</td><td class="lc">.289</td><td class="lc">.419</td></tr>
+          <tr><td>ViT-B/32</td><td>SimCLR</td><td>.509</td><td>.672</td><td>.723</td><td>44.12</td><td class="lc">.296</td><td class="lc">.443</td></tr>
+          <tr><td>ViT-B/32</td><td>CLIP</td><td>.460</td><td>.657</td><td>.719</td><td class="best">32.33</td><td class="lc best">.264</td><td class="lc best">.447</td></tr>
+          <tr><td>OCR + sBERT</td><td>—</td><td class="best">.657</td><td class="best">.785</td><td class="best">.837</td><td>16.46</td><td class="lc">.124</td><td class="lc">.304</td></tr>
+          <tr class="grp"><td colspan="8">Information Extraction · image → text</td></tr>
+          <tr><td>ViT-B/32</td><td>Triplet</td><td>.523</td><td>.640</td><td>.692</td><td>64.00</td><td class="lc">.326</td><td class="lc">.421</td></tr>
+          <tr><td>ViT-B/32</td><td>SimCLR</td><td>.522</td><td>.675</td><td>.726</td><td>43.05</td><td class="lc best">.341</td><td class="lc best">.458</td></tr>
+          <tr><td>ViT-B/32</td><td>CLIP</td><td>.482</td><td>.662</td><td>.725</td><td class="best">32.99</td><td class="lc">.326</td><td class="lc">.464</td></tr>
+          <tr><td>OCR + sBERT</td><td>—</td><td class="best">.623</td><td>.723</td><td>.760</td><td>44.19</td><td class="lc">.073</td><td class="lc">.149</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="body-p reveal">Read the last two columns. On the worst-legibility quartile, the picture flips: OCR + Sentence-BERT collapses (Acc@1<sub>low</sub> as low as <b>.073</b>) while the vision baselines hold (<b>.26–.34</b>). When characters survive, transcription wins easily; when they don't, pixels carry the meaning. The implication is a hybrid — visual when text is unavailable, textual otherwise.</p>
+  </div>
+</section>
+
+<!-- VISION FINDINGS -->
+<section id="vision" class="dark">
+  <div class="container reveal">
+    <div class="eyebrow">What the vision model learned</div>
+    <h2 class="stitle">It reads a little —<br>and dates a lot</h2>
+    <p class="body-p">GradCam on the ViT's visual tokenizer shows it does attend to words, and even tokenizes them toward their stems (<code>Infantería → &lt;infanter&gt;</code>, <code>Cuerpo → &lt;cuerp&gt;</code>) — a sign of robustness to noise. Common keywords are a necessary, not sufficient, cue.</p>
+    <p class="body-p">But the more revealing finding is temporal. Probing the ViT's internal representations for <em>date estimation</em>, the deeper the layer, the lower the error — down to an 11–15 year mean absolute error — and it stays low even as the fragment is heavily blurred. The model isn't reading dates off the text; it's reading them off the <b>layout</b>. That temporal bias, learned from era-specific page design, actively helps retrieval in low-legibility regimes.</p>
+    <div class="con-grid">
+      <div class="con-item"><div class="con-num">FINDING 01</div><div class="con-t">Vision is OCR-free insurance</div><div class="con-b">Where transcription fails, the visual encoder still retrieves by meaning — the benchmark's whole motivation.</div></div>
+      <div class="con-item"><div class="con-num">FINDING 02</div><div class="con-t">Date lives in layout</div><div class="con-b">Era cues survive blur because they're structural, not textual — a beneficial temporal prior.</div></div>
+      <div class="con-item"><div class="con-num">FINDING 03</div><div class="con-t">Caution on bias</div><div class="con-b">Shared period artefacts ("II/III Victorious Year") warn against over-reading the encoder's "recognition".</div></div>
+      <div class="con-item"><div class="con-num">FINDING 04</div><div class="con-t">Hybrid is the horizon</div><div class="con-b">Text and vision are niche solutions; FAS is built to evaluate systems that fuse both.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft">Fetch-A-Set</div>
+  <p>Adrià Molina · Oriol Ramos Terrades · Josep Lladós · Computer Vision Center, UAB<br>
+  arXiv:2406.07315v2 [cs.IR] · An interactive companion · dataset at datasets.cvc.uab.es/BOEv2</p>
+</footer>
+
+<script>
+const C=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+window.addEventListener('scroll',()=>{
+  const d=document.documentElement;
+  C('progress').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';
+  document.querySelectorAll('nav a').forEach(a=>{const s=C(a.getAttribute('href').slice(1));if(s)a.classList.toggle('active',window.scrollY>=s.offsetTop-90&&window.scrollY<s.offsetTop+s.offsetHeight-90);});
+});
+document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('visible');},{threshold:0.07}).observe(el));
+(function(){const links=[...document.querySelectorAll('#sidetoc a')];const secs=links.map(a=>C(a.dataset.t));
+  function upd(){let cur=0;secs.forEach((s,i)=>{if(s&&window.scrollY>=s.offsetTop-180)cur=i;});links.forEach((a,i)=>a.classList.toggle('active',i===cur));}
+  links.forEach(a=>a.addEventListener('click',()=>C(a.dataset.t)?.scrollIntoView({behavior:'smooth'})));window.addEventListener('scroll',upd);upd();})();
+
+/* HERO CANVAS — drifting document fragments */
+(function(){
+  const c=C('hero-canvas');const ctx=c.getContext('2d');let pages=[],raf;
+  function resize(){c.width=c.offsetWidth;c.height=c.offsetHeight;build();}
+  function build(){pages=[];const n=Math.min(16,Math.floor(c.width/90));for(let i=0;i<n;i++)pages.push({x:Math.random()*c.width,y:Math.random()*c.height,w:34+Math.random()*26,vy:0.08+Math.random()*0.18,a:0.05+Math.random()*0.14,rows:5+(Math.random()*5|0),tone:Math.random()});}
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    pages.forEach(p=>{
+      p.y-=p.vy;if(p.y<-60)p.y=c.height+40;
+      const h=p.w*1.32;
+      ctx.fillStyle=`rgba(139,102,24,${p.a*0.5})`;ctx.fillRect(p.x,p.y,p.w,h);
+      ctx.strokeStyle=`rgba(139,102,24,${p.a})`;ctx.lineWidth=1;ctx.strokeRect(p.x,p.y,p.w,h);
+      ctx.strokeStyle=`rgba(20,16,10,${p.a*0.7})`;
+      for(let r=0;r<p.rows;r++){const ly=p.y+6+r*(h-10)/p.rows;ctx.beginPath();ctx.moveTo(p.x+4,ly);ctx.lineTo(p.x+p.w-4-(r%3)*5,ly);ctx.stroke();}
+    });
+    raf=requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);resize();draw();
+})();
+
+/* ═══════ BIPARTITE MATCHER ═══════ */
+const FRAGS=[
+  {ocr:"REALES DECRETOS. A las tres menos cuarto de la tarde de hoy ha sido Dios servido de llamar para si el alma de mi amado Esposo el Rey Don Fernando.",gloss:"Royal decree — the death of King Ferdinand."},
+  {ocr:"Direccion general de Bellas Artes. Nota bibliografica de las obras impresas en castellano. El Centro Internacional de Enseñanza desea introducir en España.",gloss:"Fine-Arts bibliographic note; works to be introduced in Spain."},
+  {ocr:"ORDEN de 21 de febrero de 1939 nombrando Agente de segunda de Policia Maritima a don Andres Gonzalez Perez. A propuesta del Comandante General de El Ferrol del Caudillo.",gloss:"1939 order appointing a Maritime Police agent in El Ferrol."},
+  {ocr:"Ley concediendo creditos extraordinarios al Ministerio de Justicia para la creacion de Juzgados Especiales de Vagos y Maleantes en Madrid y Barcelona.",gloss:"Law funding Special Courts for Vagrants and Crooks in Madrid and Barcelona."}
+];
+const DEFAULT_Q=[
+  {t:"Real decreto sobre el fallecimiento del Rey Don Fernando",base:true},
+  {t:"Nota bibliografica de obras impresas; el Centro Internacional de Enseñanza desea introducirlas en España",base:true},
+  {t:"Orden nombrando Agente de segunda de Policia Maritima a Andres Gonzalez Perez en El Ferrol",base:true},
+  {t:"Ley concediendo creditos extraordinarios al Ministerio de Justicia para Juzgados de Vagos y Maleantes en Madrid y Barcelona",base:true}
+];
+let QUERIES=DEFAULT_Q.map(q=>({...q}));
+
+const STOP=new Set("de la el los las y a en del al un una para por con su sus se que es lo le don dos mas tres hoy ha sido the of and to in on for is".split(/\s+/));
+const strip=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const normTok=s=>strip(s).replace(/[^a-z0-9ñ\s]/g,' ').split(/\s+/).filter(w=>w&&!STOP.has(w)&&w.length>1);
+function tf(t){const m={};t.forEach(x=>m[x]=(m[x]||0)+1);return m;}
+function cosine(a,b){const A=tf(normTok(a)),B=tf(normTok(b));let dot=0,na=0,nb=0;for(const k in A){na+=A[k]*A[k];if(B[k])dot+=A[k]*B[k];}for(const k in B)nb+=B[k]*B[k];return(na&&nb)?dot/Math.sqrt(na*nb):0;}
+function lev(a,b){const m=a.length,n=b.length;const d=Array.from({length:m+1},(_,i)=>{const r=Array(n+1).fill(0);r[0]=i;return r;});for(let j=0;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n];}
+function ents(s){const e=new Set();(s.match(/\b\d{3,4}\b/g)||[]).forEach(x=>e.add(x));s.split(/\s+/).forEach(w=>{const c=w.replace(/[^A-Za-zÀ-ÿñ]/g,'');if(c.length>2&&c[0]===c[0].toUpperCase()&&c[0]!==c[0].toLowerCase()){const n=strip(c);if(!STOP.has(n))e.add(n);}});return[...e];}
+function neScore(a,b){const A=ents(a),B=ents(b);if(!A.length||!B.length)return 0;let sh=0;A.forEach(x=>{if(B.some(y=>lev(x,y)/Math.max(x.length,y.length)<=0.34))sh++;});return sh/Math.min(A.length,B.length);}
+function sim(a,b,ne){const c=cosine(a,b);return ne?Math.min(1,0.65*c+0.35*neScore(a,b)):c;}
+function hungarian(cost){const INF=1e9,n=cost.length;const u=Array(n+1).fill(0),v=Array(n+1).fill(0),p=Array(n+1).fill(0),way=Array(n+1).fill(0);
+  for(let i=1;i<=n;i++){p[0]=i;let j0=0;const minv=Array(n+1).fill(INF),used=Array(n+1).fill(false);
+    do{used[j0]=true;const i0=p[j0];let delta=INF,j1=-1;
+      for(let j=1;j<=n;j++)if(!used[j]){const cur=cost[i0-1][j-1]-u[i0]-v[j];if(cur<minv[j]){minv[j]=cur;way[j]=j0;}if(minv[j]<delta){delta=minv[j];j1=j;}}
+      for(let j=0;j<=n;j++){if(used[j]){u[p[j]]+=delta;v[j]-=delta;}else minv[j]-=delta;}j0=j1;}while(p[j0]!==0);
+    do{const j1=way[j0];p[j0]=p[j1];j0=j1;}while(j0);}
+  const res=Array(n).fill(-1);for(let j=1;j<=n;j++)if(p[j]>0)res[p[j]-1]=j-1;return res;}
+
+let bmHot=-1;
+function bmCompute(){
+  const ne=C('bm-ne').checked,Q=QUERIES.length,F=FRAGS.length,N=Math.max(Q,F);
+  const S=QUERIES.map(q=>FRAGS.map(f=>sim(q.t,f.ocr,ne)));
+  const cost=Array.from({length:N},(_,i)=>Array.from({length:N},(_,j)=>(i<Q&&j<F)?(1-S[i][j]):1));
+  const res=hungarian(cost);
+  const match=res.slice(0,Q).map(c=>c<F?c:-1);
+  return {S,match};
+}
+function bmRender(){
+  const {S,match}=bmCompute();const Q=QUERIES.length,F=FRAGS.length;
+  C('bm-qn').textContent=Q;C('bm-fn').textContent=F;
+  // fragment -> query inverse
+  const fOwner=Array(F).fill(-1);match.forEach((c,i)=>{if(c>=0)fOwner[c]=i;});
+  // query cards
+  const ql=C('bm-queries');ql.innerHTML='';
+  QUERIES.forEach((q,i)=>{
+    const c=match[i];const matched=c>=0;
+    const div=document.createElement('div');div.className='bm-card '+(matched?'matched':'unmatched')+(bmHot===('q'+i)?' hot':'');
+    div.id='q-'+i;div.onmouseenter=()=>{bmHot='q'+i;drawEdges(S,match);};div.onmouseleave=()=>{bmHot=-1;drawEdges(S,match);};
+    div.innerHTML=`<div class="bm-q">${q.t}${q.base?'':'<span class="bm-tag">added</span>'}</div>`+
+      `<div class="bm-meta">${matched?`<span class="m-ok">→ F${c+1} · sim ${S[i][c].toFixed(2)}</span>`:'<span class="m-no">✗ unmatched</span>'}<span></span></div>`+
+      (q.base?'':`<button class="bm-x" title="remove" onclick="bmDel(${i})">✕</button>`);
+    ql.appendChild(div);
+  });
+  // fragment cards
+  const fl=C('bm-frags');fl.innerHTML='';
+  FRAGS.forEach((f,j)=>{
+    const owner=fOwner[j];
+    const div=document.createElement('div');div.className='bm-card '+(owner>=0?'matched':'')+(bmHot===('f'+j)?' hot':'');
+    div.id='f-'+j;div.onmouseenter=()=>{bmHot='f'+j;drawEdges(S,match);};div.onmouseleave=()=>{bmHot=-1;drawEdges(S,match);};
+    div.innerHTML=`<div class="bm-f">F${j+1} · ${f.ocr}</div><div class="bm-gloss">${f.gloss}</div>`+
+      `<div class="bm-meta">${owner>=0?`<span class="m-ok">← Q${owner+1}</span>`:'<span class="m-no">unclaimed</span>'}<span></span></div>`;
+    fl.appendChild(div);
+  });
+  // score bar
+  let pairs=0,total=0;match.forEach((c,i)=>{if(c>=0){pairs++;total+=S[i][c];}});
+  C('bm-pairs').textContent=pairs+' / '+Math.min(Q,F);
+  C('bm-total').textContent=total.toFixed(2);
+  // tension: any query whose row-max fragment is taken by someone else
+  let tension='';
+  match.forEach((c,i)=>{
+    if(c<0){const best=S[i].indexOf(Math.max(...S[i]));if(S[i][best]>0.05&&fOwner[best]!==i)tension=`Q${i+1} wanted F${best+1} (sim ${S[i][best].toFixed(2)}) but lost it — one-to-one.`;}
+  });
+  C('bm-tension').textContent=tension;
+  requestAnimationFrame(()=>drawEdges(S,match));
+}
+function drawEdges(S,match){
+  const svg=C('bm-edges'),stage=svg.closest('.bm-stage');if(!stage)return;
+  const sb=stage.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${sb.width} ${sb.height}`);
+  let html='';
+  const fOwner=Array(FRAGS.length).fill(-1);match.forEach((c,i)=>{if(c>=0)fOwner[c]=i;});
+  for(let i=0;i<QUERIES.length;i++){
+    const qe=C('q-'+i);if(!qe)continue;const qr=qe.getBoundingClientRect();
+    const x1=qr.right-sb.left,y1=qr.top-sb.top+qr.height/2;
+    for(let j=0;j<FRAGS.length;j++){
+      const s=S[i][j];const isMatch=match[i]===j;
+      if(s<0.12&&!isMatch)continue;
+      const fe=C('f-'+j);if(!fe)continue;const fr=fe.getBoundingClientRect();
+      const x2=fr.left-sb.left,y2=fr.top-sb.top+fr.height/2;
+      const mx=(x1+x2)/2;
+      const hot=bmHot==='q'+i||bmHot==='f'+j;
+      let col,w,op;
+      if(isMatch){col='#3a8a3a';w=2.4+s*2.2;op=hot?0.95:0.8;}
+      else {col='#8b6618';w=0.6+s*2.2;op=hot?0.5:0.16;}
+      html+=`<path d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${col}" stroke-width="${w.toFixed(2)}" opacity="${op}"/>`;
+      if(isMatch){const lx=mx,ly=(y1+y2)/2;html+=`<text x="${lx}" y="${ly-3}" font-family="DM Mono,monospace" font-size="9" fill="#2c6b2c" text-anchor="middle">${s.toFixed(2)}</text>`;}
+    }
+  }
+  svg.innerHTML=html;
+}
+function bmAdd(){const v=C('bm-input').value.trim();if(!v)return;QUERIES.push({t:v,base:false});C('bm-input').value='';bmRender();}
+function bmDel(i){QUERIES.splice(i,1);if(bmHot==='q'+i)bmHot=-1;bmRender();}
+function bmReset(){QUERIES=DEFAULT_Q.map(q=>({...q}));bmHot=-1;bmRender();}
+C('bm-input').addEventListener('keydown',e=>{if(e.key==='Enter')bmAdd();});
+new ResizeObserver(()=>{const{S,match}=bmCompute();drawEdges(S,match);}).observe(C('match'));
+window.addEventListener('load',bmRender);
+bmRender();
+
+/* ═══════ TIMELINE ═══════ */
+const TL=[
+  {n:'Saint-Gall',s:800,e:900,t:'WS'},{n:'Papy-Row',s:500,e:600,t:'Writer'},
+  {n:'Parzival',s:1200,e:1300,t:'WS'},{n:'AMADI',s:1400,e:1500,t:'WS'},
+  {n:'HADARA80P',s:1430,e:1430,t:'WS'},{n:'Esposalles',s:1451,e:1495,t:'WS'},
+  {n:'RODRIGO',s:1545,e:1545,t:'WS'},{n:'BH2M',s:1617,e:1619,t:'WS'},
+  {n:'VML-HD',s:1088,e:1451,t:'WS'},{n:'DocExplore',s:900,e:1600,t:'Ornament'},
+  {n:'ICDAR19-HDRC-IR',s:800,e:1700,t:'Writer'},{n:'ICDAR17 H-WI',s:1200,e:2000,t:'Writer'},
+  {n:'HistDIA',s:800,e:1800,t:'Date/Font'},{n:'Washington',s:1700,e:1800,t:'WS'},
+  {n:'ENP',s:1700,e:2000,t:'WS'},{n:'GRPOLY-DB',s:1838,e:1912,t:'WS'},
+  {n:'IMAGO',s:1845,e:2009,t:'Date'},{n:'GERMANA',s:1891,e:1891,t:'WS'},
+  {n:'CFRAMUZ',s:1910,e:1946,t:'WS'},{n:'DEW',s:1930,e:1999,t:'Date'},
+  {n:'DEW-B',s:1930,e:1999,t:'Date'},{n:'FAS (ours)',s:1661,e:1959,t:'Topic',ours:true}
+];
+const TLCOL={WS:'#1e3a58',Writer:'#3a5c3a',Date:'#c04020','Date/Font':'#a8551c',Ornament:'#8b6618',Topic:'#e8c030'};
+let tlSort='start';
+function setTLsort(m){tlSort=m;C('tl-start').classList.toggle('on',m==='start');C('tl-span').classList.toggle('on',m==='span');drawTimeline();}
+function drawTimeline(){
+  const svg=C('tl-svg');if(!svg)return;
+  const rows=[...TL].sort((a,b)=> tlSort==='span' ? (b.e-b.s)-(a.e-a.s) : a.s-b.s );
+  const padL=140,padR=24,padT=34,rh=20,W=820,H=padT+rows.length*rh+12;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const minY=480,maxY=2025,x0=padL,x1=W-padR;
+  const X=y=>x0+(y-minY)/(maxY-minY)*(x1-x0);
+  let s='';
+  // century gridlines
+  for(let y=500;y<=2000;y+=100){const x=X(y);s+=`<line x1="${x}" y1="${padT-8}" x2="${x}" y2="${H-6}" stroke="rgba(139,102,24,0.10)"/>`;if(y%500===0||y===2000)s+=`<text x="${x}" y="${padT-12}" text-anchor="middle" font-family="DM Mono,monospace" font-size="9" fill="#706050">${y}</text>`;}
+  rows.forEach((d,i)=>{
+    const y=padT+i*rh, bx=X(d.s), bw=Math.max(3,X(d.e)-X(d.s));
+    const col=TLCOL[d.t]||'#8b6618';
+    s+=`<g class="tl-row"><title>${d.n} · ${d.s===d.e?d.s:d.s+'–'+d.e} · ${d.t}${d.ours?' · 400K samples':''}</title>`;
+    if(d.ours)s+=`<rect x="0" y="${y-2}" width="${W}" height="${rh-2}" fill="rgba(232,192,48,0.12)"/>`;
+    s+=`<text class="tlname" x="${padL-10}" y="${y+rh/2+2}" text-anchor="end" font-family="DM Mono,monospace" font-size="9" fill="${d.ours?'#14100a':'#706050'}" font-weight="${d.ours?'600':'400'}">${d.n}</text>`;
+    s+=`<rect class="bar" x="${bx}" y="${y+2}" width="${bw}" height="${rh-7}" rx="2" fill="${col}" opacity="${d.ours?1:0.62}" stroke="${d.ours?'#8b6618':'none'}" stroke-width="${d.ours?1.2:0}"/>`;
+    if(d.s===d.e)s+=`<circle cx="${bx}" cy="${y+rh/2}" r="3.5" fill="${col}"/>`;
+    if(d.ours)s+=`<text x="${X(d.e)+6}" y="${y+rh/2+3}" font-family="DM Mono,monospace" font-size="8" fill="#8b6618">~3 centuries · 400K</text>`;
+    s+='</g>';
+  });
+  svg.innerHTML=s;
+  // legend
+  const types=['WS','Writer','Date','Ornament','Topic'];const lbl={WS:'Word spotting',Writer:'Writer ID',Date:'Date est.',Ornament:'Ornament',Topic:'Topic (FAS)'};
+  C('tl-legend').innerHTML=types.map(t=>`<span><i style="background:${TLCOL[t]}"></i>${lbl[t]}</span>`).join('');
+}
+new ResizeObserver(()=>drawTimeline()).observe(C('timeline'));
+drawTimeline();
+
+/* ═══════ NAMED-ENTITY EDIT-DISTANCE MATCHER (Fig.2) ═══════ */
+const NE_DEF_L=['Artes','Internacional','España'];
+const NE_DEF_R=['a n a · a r d a','Int.ervirelonai','ARTES','E s p a ñ a'];
+let NEL=[...NE_DEF_L], NER=[...NE_DEF_R], neHot=-1;
+const NEDOT=['#3a6ea5','#3a8a3a','#c04020','#8b6618','#1e3a58','#7a4a8a'];
+const neNorm=s=>strip(s).replace(/[^a-z0-9ñ]/g,'');
+function neDist(a,b){const A=neNorm(a),B=neNorm(b);const d=lev(A,B);const m=Math.max(A.length,B.length,1);return {d,sim:1-d/m};}
+function neCompute(){
+  const L=NEL.length,R=NER.length,N=Math.max(L,R);
+  const D=NEL.map(a=>NER.map(b=>neDist(a,b)));
+  const BIG=40;
+  const cost=Array.from({length:N},(_,i)=>Array.from({length:N},(_,j)=>(i<L&&j<R)?D[i][j].d:BIG));
+  const res=hungarian(cost);
+  // accept a match only if within-range (real cells); also reject very poor matches (sim<0.2) as unmatched
+  const match=res.slice(0,L).map((c,i)=>{if(c>=R)return -1;return D[i][c].sim>=0.2?c:-1;});
+  return {D,match};
+}
+function neRender(){
+  const {D,match}=neCompute();const L=NEL.length,R=NER.length;
+  C('ne-ln').textContent=L;C('ne-rn').textContent=R;
+  const owner=Array(R).fill(-1);match.forEach((c,i)=>{if(c>=0)owner[c]=i;});
+  const ll=C('ne-left');ll.innerHTML='';
+  NEL.forEach((w,i)=>{
+    const c=match[i];const m=c>=0;
+    const div=document.createElement('div');div.className='ne-card '+(m?'matched':'unmatched')+(neHot==='l'+i?' hot':'');
+    div.id='nl-'+i;div.onmouseenter=()=>{neHot='l'+i;drawNeEdges(D,match);};div.onmouseleave=()=>{neHot=-1;drawNeEdges(D,match);};
+    div.innerHTML=`<span class="ne-dot" style="border-color:${NEDOT[i%NEDOT.length]};background:${NEDOT[i%NEDOT.length]}22"></span><span class="ne-clean">${w}</span>`+
+      `<div class="ne-norm">→ ${neNorm(w)||'∅'}</div>`+
+      `<div class="ne-meta">${m?`<span class="m-ok">↔ R${c+1} · dist ${D[i][c].d} · sim ${D[i][c].sim.toFixed(2)}</span>`:'<span class="m-no">✗ no close entity</span>'}</div>`+
+      `<button class="bm-x" onclick="neDel('L',${i})">✕</button>`;
+    ll.appendChild(div);
+  });
+  const rl=C('ne-right');rl.innerHTML='';
+  NER.forEach((w,j)=>{
+    const o=owner[j];
+    const div=document.createElement('div');div.className='ne-card '+(o>=0?'matched':'unmatched')+(neHot==='r'+j?' hot':'');
+    div.id='nr-'+j;div.onmouseenter=()=>{neHot='r'+j;drawNeEdges(D,match);};div.onmouseleave=()=>{neHot=-1;drawNeEdges(D,match);};
+    div.innerHTML=`<span class="ne-ocr">${w}</span>`+
+      `<div class="ne-norm">→ ${neNorm(w)||'∅'}</div>`+
+      `<div class="ne-meta">${o>=0?`<span class="m-ok">↔ ${NEL[o]}</span>`:'<span class="m-no">unclaimed (invalid?)</span>'}</div>`+
+      `<button class="bm-x" onclick="neDel('R',${j})">✕</button>`;
+    rl.appendChild(div);
+  });
+  let pairs=0,tot=0;match.forEach((c,i)=>{if(c>=0){pairs++;tot+=D[i][c].d;}});
+  C('ne-pairs').textContent=pairs+' / '+Math.min(L,R);
+  C('ne-total').textContent=tot;
+  const un=NER.map((w,j)=>owner[j]<0?w:null).filter(Boolean);
+  C('ne-note').textContent=un.length?`unmatched OCR: ${un.join(', ')}`:'';
+  requestAnimationFrame(()=>drawNeEdges(D,match));
+}
+function drawNeEdges(D,match){
+  const svg=C('ne-edges'),stage=svg.closest('.bm-stage');if(!stage)return;
+  const sb=stage.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${sb.width} ${sb.height}`);
+  let html='';
+  for(let i=0;i<NEL.length;i++){
+    const le=C('nl-'+i);if(!le)continue;const lr=le.getBoundingClientRect();
+    const x1=lr.right-sb.left,y1=lr.top-sb.top+lr.height/2;
+    for(let j=0;j<NER.length;j++){
+      const sim=D[i][j].sim;const isMatch=match[i]===j;
+      if(sim<0.25&&!isMatch)continue;
+      const re=C('nr-'+j);if(!re)continue;const rr=re.getBoundingClientRect();
+      const x2=rr.left-sb.left,y2=rr.top-sb.top+rr.height/2,mx=(x1+x2)/2;
+      const hot=neHot==='l'+i||neHot==='r'+j;
+      let col,w,op;
+      if(isMatch){col='#3a8a3a';w=2+sim*2.6;op=hot?0.95:0.82;}
+      else{col='#8b6618';w=0.5+sim*2;op=hot?0.5:0.14;}
+      html+=`<path d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${col}" stroke-width="${w.toFixed(2)}" opacity="${op}"/>`;
+      if(isMatch){html+=`<text x="${mx}" y="${(y1+y2)/2-3}" font-family="DM Mono,monospace" font-size="9" fill="#2c6b2c" text-anchor="middle">${D[i][j].d}</text>`;}
+    }
+  }
+  svg.innerHTML=html;
+}
+function neAdd(side){const id=side==='L'?'ne-inL':'ne-inR';const v=C(id).value.trim();if(!v)return;(side==='L'?NEL:NER).push(v);C(id).value='';neRender();}
+function neDel(side,i){(side==='L'?NEL:NER).splice(i,1);neHot=-1;neRender();}
+function neReset(){NEL=[...NE_DEF_L];NER=[...NE_DEF_R];neHot=-1;neRender();}
+C('ne-inL').addEventListener('keydown',e=>{if(e.key==='Enter')neAdd('L');});
+C('ne-inR').addEventListener('keydown',e=>{if(e.key==='Enter')neAdd('R');});
+new ResizeObserver(()=>{const{D,match}=neCompute();drawNeEdges(D,match);}).observe(C('construct'));
+window.addEventListener('load',neRender);
+neRender();
+
+/* ═══════ TASK TOGGLE ═══════ */
+const TASKS=[
+  {lk:'natural language query',lv:'"Order appointing a second-class Maritime Police agent in El Ferrol, 1939."',rk:'retrieved document fragment',rv:'the matching scanned region of the gazette page',note:'Topic spotting: a human writes a query; the system fetches the document image whose content matches — by meaning, not exact words.'},
+  {lk:'document fragment (image)',lv:'a scanned region of a 1939 gazette page',rk:'generated summary / topic',rv:'"Law granting extraordinary credits to the Ministry of Justice; Special Courts in Madrid and Barcelona."',note:'Information extraction: given a fragment, surface a plausible set of topical texts — automatic prior knowledge for incoming, uncatalogued data.'}
+];
+function setTask(n){
+  document.querySelectorAll('.task-tab').forEach(t=>t.classList.toggle('on',+t.dataset.i===n));
+  const d=TASKS[n];C('tp-lk').textContent=d.lk;C('tp-lv').textContent=d.lv;C('tp-rk').textContent=d.rk;C('tp-rv').textContent=d.rv;C('task-note').textContent=d.note;
+}
+setTask(0);
+
+/* ═══════ RESULTS low-legibility toggle ═══════ */
+let lowOn=false;
+function toggleLow(){lowOn=!lowOn;C('restable').classList.toggle('lowlit',lowOn);C('lowbtn').classList.toggle('on',lowOn);C('lowbtn').textContent=(lowOn?'▼':'▶')+' Highlight low-legibility columns';}
+</script>
+</body>
+</html>

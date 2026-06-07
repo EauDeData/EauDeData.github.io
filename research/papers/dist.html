@@ -194,12 +194,33 @@ input[type=range]{accent-color:var(--dist);}
   <div class="mbl">θ̄<sub>D</sub> &nbsp;=&nbsp; (1/n) · Σ<sub>i=1…n</sub> θ<sup>d<sub>i</sub></sup> &nbsp;&nbsp;&nbsp;&nbsp;(Eq. 3 — the move behind FedAvg, task arithmetic & model soups)</div>
 </div>
 <div class="reveal">
-  <h4 class="h4">Drag the silo optima — watch the merged model form</h4>
-  <p class="nb">Each silo trains independently from the pretrained init θ⁰ to its own optimum θ<sup>d<sub>i</sub></sup> (dashed paths). The distributed model is literally their average (orange ★). Toggle to see what centralized does instead: pool the raw data into one pile and train a single model to the combined-loss basin.</p>
+  <div class="ne">What the average does to the weights</div>
+  <h3 class="nt">One operation wearing four names</h3>
+  <p class="nb">The paper's footnote makes a quiet but central claim: <em>FedAvg, model soups, task arithmetic and MAML are the same move</em> — train separately from a shared init θ⁰, then combine in weight space. Here is that move at the level of individual parameters. Each silo is a strip of weights; the merge is the column-wise mean. Switch how you frame the combination — the resulting vector is <strong>bit-for-bit identical</strong>.</p>
+  <div style="display:flex;gap:.6rem;align-items:center;margin:.4rem 0 .8rem;flex-wrap:wrap;">
+    <div class="toggle" id="algoT">
+      <button class="dist on" onclick="setAlgo('w')">Average the weights</button>
+      <button class="dist" onclick="setAlgo('tv')">Average the task vectors</button>
+    </div>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.04em;color:var(--mut);">FedAvg · Model Soup ╱ Task Arithmetic</span>
+  </div>
+  <div class="cb">
+    <div class="clbl" id="algoLbl">θ̄ = (1/n) Σ θ<sup>dᵢ</sup></div>
+    <canvas id="algoC" style="height:280px;"></canvas>
+    <div class="chnt" id="algoH"></div>
+  </div>
+  <p class="nb" style="margin-top:1rem;">A <span style="color:var(--dist);font-weight:500;">task vector</span> τ<sub>i</sub> = θ<sup>dᵢ</sup> − θ⁰ is what one silo <em>learned</em> on top of the shared start. Add the mean of the task vectors back onto θ⁰ and the θ⁰ terms cancel — you land on the plain average. That algebraic cancellation is why the whole family collapses to Eq. 3, and why a result proven for one (e.g. model soups) transfers to the others.</p>
+  <div class="mbl" style="font-size:.74rem;">θ⁰ + (1/n)Σ(θ<sup>dᵢ</sup> − θ⁰) &nbsp;=&nbsp; θ⁰ + (1/n)Σθ<sup>dᵢ</sup> − θ⁰ &nbsp;=&nbsp; (1/n)Σθ<sup>dᵢ</sup> &nbsp;<span style="color:var(--teal)">= θ̄</span></div>
+</div>
+<div class="divider reveal"></div>
+<div class="reveal">
+  <h4 class="h4">The same point, two constructions — drag the seed or any optimum</h4>
+  <p class="nb">This is weight space. The shared seed <span style="color:var(--mut);font-weight:500;">θ⁰</span> sits on the left; each silo trains to its own optimum <span style="color:var(--dist);font-weight:500;">θ<sup>dᵢ</sup></span>. Switch how you read the merge: as <b>models</b> (the centroid of the optima — model soup / FedAvg) or as <b>task vectors</b> (sum the arrows τᵢ = θ<sup>dᵢ</sup> − θ⁰ from the seed — task arithmetic). The orange ★ <b>does not move</b>: the seed cancels, so both are literally the same vector.</p>
   <div style="display:flex;gap:.7rem;align-items:center;margin-bottom:.7rem;flex-wrap:wrap;">
-    <div class="toggle" id="mModeT"><button class="dist on" onclick="setMMode('dist')">Distributed</button><button class="cen" onclick="setMMode('cent')">Centralized</button></div>
+    <div class="toggle" id="mViewT"><button class="dist on" onclick="setMView('soup')">As models · soup / FedAvg</button><button class="dist" onclick="setMView('tv')">As task vectors · arithmetic</button></div>
+    <button class="pill" id="mCentB" style="color:var(--cen);border-color:var(--cen);" onclick="toggleMCent()">+ overlay centralized</button>
     <label style="font-family:'IBM Plex Mono',monospace;font-size:.56rem;color:var(--mut);display:flex;align-items:center;gap:.5rem;">SILOS n
-      <input type="range" id="mN" min="2" max="5" value="4" oninput="setMN(+this.value)" style="width:120px;">
+      <input type="range" id="mN" min="2" max="5" value="4" oninput="setMN(+this.value)" style="width:110px;">
       <span id="mNv" style="color:var(--dist);">4</span></label>
   </div>
   <div class="grd2">
@@ -396,52 +417,135 @@ function drawSplit(v){const ctx=fit('splitC');if(!ctx)return;const W=ctx.canvas.
   if(v>.05)ctx.fillText(v>.5?'θ̄ (merged weights)':'θ (mixing)',cx,H*.16-16);
   C('splitH').innerHTML=v<.2?'<b style="color:var(--cen)">Centralized:</b> raw data pooled into one place — efficient, but often impossible under privacy and heritage constraints.':(v>.8?'<b style="color:var(--dist)">Distributed:</b> data stays in each silo; only weight vectors travel to be averaged into θ̄.':'Pulling the silos apart — data stops flowing, only weights will.');}
 
-/* ── MERGING: weight-space ── */
-let mClients=[{x:.45,y:.28,n:'IAM'},{x:.66,y:.42,n:'Esposalles'},{x:.58,y:.68,n:'CoCoText'},{x:.38,y:.6,n:'MLT19'},{x:.72,y:.6,n:'GW'}],mN=4,mMode='dist',mDrag=-1;
+/* ── MERGING: weight-space vector geometry ── */
+/* w = relative dataset size (centralized weights by it; distributed weights silos equally) */
+let mClients=[{x:.52,y:.22,n:'IAM',w:1.0},{x:.74,y:.40,n:'Esposalles',w:1.7},{x:.60,y:.72,n:'CoCoText',w:0.7},{x:.40,y:.60,n:'MLT19',w:1.3},{x:.78,y:.64,n:'GW',w:1.0}];
+let mTh0={x:.15,y:.50},mN=4,mView='soup',mCent=false,mDrag={t:null,i:-1},mPulse=0,mPulseAnim=null;
+function star(ctx,x,y,r,col){ctx.beginPath();for(let i=0;i<10;i++){const a=Math.PI/5*i-Math.PI/2,rr=i%2?r*.45:r;ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}ctx.closePath();ctx.fillStyle=col;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();}
+function arrow(ctx,x0,y0,x1,y1,col,wid){ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=wid;ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.stroke();
+  const a=Math.atan2(y1-y0,x1-x0),hl=6+wid;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x1-hl*Math.cos(a-.42),y1-hl*Math.sin(a-.42));ctx.lineTo(x1-hl*Math.cos(a+.42),y1-hl*Math.sin(a+.42));ctx.closePath();ctx.fill();}
 function drawMerge(){const ctx=fit('mergeC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
   ctx.fillStyle='rgba(249,246,238,.7)';ctx.fillRect(0,0,W,H);
-  // loss contours (two basins)
-  const b1={x:W*.55,y:H*.5},comb={x:W*.5,y:H*.46};
-  ctx.strokeStyle='rgba(60,50,30,.07)';ctx.lineWidth=1;
-  for(let r=24;r<W*.5;r+=26){ctx.beginPath();ctx.ellipse(comb.x,comb.y,r,r*.78,0,0,7);ctx.stroke();}
-  const th0={x:W*.16,y:H*.5};
-  // pretrained init
-  ctx.beginPath();ctx.arc(th0.x,th0.y,6,0,7);ctx.fillStyle='#666';ctx.fill();ctx.font='9px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='center';ctx.fillText('θ⁰ init',th0.x,th0.y-12);
-  const pts=mClients.slice(0,mN).map(c=>({x:c.x*W,y:c.y*H,n:c.n}));
-  if(mMode==='dist'){
-    // each silo trains independently
-    pts.forEach(p=>{ctx.setLineDash([4,3]);ctx.strokeStyle='rgba(204,91,30,.45)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(th0.x,th0.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([]);
-      ctx.beginPath();ctx.roundRect(p.x-13,p.y-10,26,20,3);ctx.fillStyle='#fff';ctx.strokeStyle=DIST;ctx.lineWidth=1.5;ctx.fill();ctx.stroke();
-      ctx.strokeStyle='rgba(60,50,30,.35)';ctx.lineWidth=.8;[-3.5,0,3.5].forEach(d=>{ctx.beginPath();ctx.moveTo(p.x-7,p.y+d);ctx.lineTo(p.x+7,p.y+d);ctx.stroke();});
-      ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=DIST;ctx.fillText(p.n,p.x,p.y-14);});
-    // average -> star
-    const mx=pts.reduce((s,p)=>s+p.x,0)/pts.length,my=pts.reduce((s,p)=>s+p.y,0)/pts.length;
-    pts.forEach(p=>{ctx.strokeStyle='rgba(204,91,30,.6)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(mx,my);ctx.stroke();});
-    star(ctx,mx,my,11,DIST);ctx.font='600 10px IBM Plex Mono,monospace';ctx.fillStyle=DIST;ctx.fillText('θ̄ (avg)',mx,my+24);
-    C('mergeP').innerHTML='<div style="font-family:\'IBM Plex Mono\',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--dist);margin-bottom:.5rem;">DISTRIBUTED θ̄</div><div style="font-size:.88rem;line-height:1.6;">Each silo reaches its own optimum <b>θ<sup>dᵢ</sup></b> from the same init. The merged model is their arithmetic mean — Eq. 3.</div><div style="margin-top:.7rem;font-family:\'IBM Plex Mono\',monospace;font-size:.62rem;color:var(--teal);">✓ data never leaves the silo<br>✓ only θ vectors shared</div><div style="margin-top:.6rem;font-size:.82rem;color:var(--mut);">Drag any document to move its optimum — the ★ follows the average.</div>';
-    C('mergeH').innerHTML='The distributed model sits at the <b>centroid of independent optima</b> — an implicit ensemble that tends to land in flatter, more generalizable regions.';
+  // faint weight-space grid
+  ctx.strokeStyle='rgba(60,50,30,.06)';ctx.lineWidth=1;for(let gx=0;gx<W;gx+=34){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();}for(let gy=0;gy<H;gy+=34){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();}
+  ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='left';ctx.fillText('weight space  (θ ∈ ℝᵐ)',10,16);
+  const t0={x:mTh0.x*W,y:mTh0.y*H};
+  const pts=mClients.slice(0,mN).map(c=>({x:c.x*W,y:c.y*H,n:c.n,w:c.w}));
+  // distributed centroid (equal weight)  &  centralized (size-weighted)
+  const cd={x:pts.reduce((s,p)=>s+p.x,0)/pts.length,y:pts.reduce((s,p)=>s+p.y,0)/pts.length};
+  const sw=pts.reduce((s,p)=>s+p.w,0);const cc={x:pts.reduce((s,p)=>s+p.x*p.w,0)/sw,y:pts.reduce((s,p)=>s+p.y*p.w,0)/sw};
+
+  if(mView==='tv'){
+    // task vectors: arrows seed -> each optimum
+    pts.forEach((p,i)=>arrow(ctx,t0.x,t0.y,p.x,p.y,'rgba(204,91,30,.5)',1.4));
+    // averaged task vector  seed -> centroid  (bold)
+    arrow(ctx,t0.x,t0.y,cd.x,cd.y,DIST,3.2);
+    ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=DIST;ctx.textAlign='center';
+    pts.forEach((p,i)=>{const mx=(t0.x+p.x)/2,my=(t0.y+p.y)/2;ctx.fillText('τ'+(i+1),mx+6,my-4);});
+    ctx.fillText('⟨τ⟩ = (1/n)Στᵢ',(t0.x+cd.x)/2,(t0.y+cd.y)/2-8);
   } else {
-    // centralized: documents pulled into a pile, single trajectory to combined basin
-    pts.forEach(p=>{const px=lerp(p.x,W*.34,.55),py=lerp(p.y,H*.5,.55);ctx.globalAlpha=.5;ctx.beginPath();ctx.roundRect(px-12,py-9,24,18,3);ctx.fillStyle='#fff';ctx.strokeStyle=CEN;ctx.lineWidth=1.3;ctx.fill();ctx.stroke();ctx.globalAlpha=1;
-      ctx.strokeStyle='rgba(47,93,138,.4)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(px,py);ctx.stroke();});
-    ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=CEN;ctx.textAlign='center';ctx.fillText('pooled data',W*.34,H*.5+30);
-    ctx.setLineDash([4,3]);ctx.strokeStyle=CEN;ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(th0.x,th0.y);ctx.lineTo(comb.x,comb.y);ctx.stroke();ctx.setLineDash([]);
-    ctx.beginPath();ctx.arc(comb.x,comb.y,11,0,7);ctx.fillStyle=CEN;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
-    ctx.font='600 10px IBM Plex Mono,monospace';ctx.fillStyle=CEN;ctx.fillText('θ^D',comb.x,comb.y-16);
-    C('mergeP').innerHTML='<div style="font-family:\'IBM Plex Mono\',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--cen);margin-bottom:.5rem;">CENTRALIZED θ^D</div><div style="font-size:.88rem;line-height:1.6;">All raw data is aggregated, then a single model is trained to the optimum of the <b>combined</b> loss.</div><div style="margin-top:.7rem;font-family:\'IBM Plex Mono\',monospace;font-size:.62rem;color:var(--dist);">✗ raw data leaves the silos</div><div style="margin-top:.6rem;font-size:.82rem;color:var(--mut);">The pooled optimum is generally a <em>different</em> point from the average of independent optima.</div>';
-    C('mergeH').innerHTML='Centralized fits the mixture tightly — strong in-domain, but it never sees the silos as separate viewpoints, which is what helps distributed generalize.';
+    // model soup: thin spokes from each optimum to centroid
+    pts.forEach(p=>{ctx.strokeStyle='rgba(204,91,30,.4)';ctx.lineWidth=1.2;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(cd.x,cd.y);ctx.stroke();ctx.setLineDash([]);});
   }
-  ctx.textAlign='left';}
-function star(ctx,x,y,r,col){ctx.beginPath();for(let i=0;i<10;i++){const a=Math.PI/5*i-Math.PI/2,rr=i%2?r*.45:r;ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}ctx.closePath();ctx.fillStyle=col;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();}
-window.setMMode=m=>{mMode=m;document.querySelectorAll('#mModeT button').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase().startsWith(m==='dist'?'distr':'centr')));drawMerge();};
+  // silo optima (radius ~ dataset size)
+  pts.forEach((p,i)=>{const r=5+p.w*2.2;ctx.beginPath();ctx.arc(p.x,p.y,r,0,7);ctx.fillStyle='#fff';ctx.strokeStyle=DIST;ctx.lineWidth=1.8;ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.arc(p.x,p.y,2.2,0,7);ctx.fillStyle=DIST;ctx.fill();
+    ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='center';ctx.fillText('θ^d'+(i+1),p.x,p.y-r-4);});
+  // seed
+  ctx.beginPath();ctx.arc(t0.x,t0.y,6,0,7);ctx.fillStyle='#6b6256';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.font='600 9px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='center';ctx.fillText('θ⁰ seed',t0.x,t0.y+20);
+  // centralized overlay
+  if(mCent){ctx.strokeStyle='rgba(47,93,138,.13)';ctx.lineWidth=1;for(let r=14;r<70;r+=16){ctx.beginPath();ctx.ellipse(cc.x,cc.y,r,r*.8,0,0,7);ctx.stroke();}
+    ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(47,93,138,.55)';ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(cd.x,cd.y);ctx.lineTo(cc.x,cc.y);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(cc.x,cc.y,8,0,7);ctx.fillStyle=CEN;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.font='600 9px IBM Plex Mono,monospace';ctx.fillStyle=CEN;ctx.fillText('θ^D centralized',cc.x,cc.y+20);
+    const gap=Math.hypot(cc.x-cd.x,cc.y-cd.y);if(gap>10){ctx.fillStyle=CEN;ctx.font='7px IBM Plex Mono,monospace';ctx.fillText('≠',(cd.x+cc.x)/2,(cd.y+cc.y)/2-4);}}
+  // the merged star (same point in both views)
+  star(ctx,cd.x,cd.y,11,DIST);ctx.font='600 10px IBM Plex Mono,monospace';ctx.fillStyle=DIST;ctx.textAlign='center';ctx.fillText('θ̄',cd.x,cd.y+26);
+  if(mPulse>0){ctx.strokeStyle=`rgba(204,91,30,${mPulse})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(cd.x,cd.y,11+(1-mPulse)*22,0,7);ctx.stroke();}
+  ctx.textAlign='left';
+  // panel + caption
+  const soup=mView==='soup';
+  C('mergeP').innerHTML=`<div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--dist);margin-bottom:.5rem;">${soup?'MODEL SOUP / FEDAVG':'TASK ARITHMETIC'}</div>
+    <div style="font-size:.86rem;line-height:1.55;">${soup
+      ?'Read the merge as <b>models</b>: average the optima directly. θ̄ is their <b>centroid</b>.'
+      :'Read the merge as <b>edits</b>: each silo contributes a task vector τᵢ = θ^dᵢ − θ⁰. Average the arrows, anchor at θ⁰.'}</div>
+    <div class="mbl" style="margin:.6rem 0;font-size:.66rem;">${soup?'θ̄ = (1/n) Σ θ^dᵢ':'θ̄ = θ⁰ + (1/n) Σ τᵢ'}</div>
+    <div style="font-size:.82rem;color:var(--teal);line-height:1.5;">The ★ is the <b>same point</b> either way — toggling never moves it. The θ⁰ terms cancel.</div>
+    <div style="margin-top:.6rem;font-size:.78rem;color:var(--mut);">Drag <b>θ⁰</b> or any optimum. ${mCent?'<br><span style="color:var(--cen)">θ^D</span> is the <b>size-weighted</b> centroid — it leans toward bigger silos, so it sits off the ★.':'Add the centralized overlay to see where pooling lands instead.'}</div>`;
+  C('mergeH').innerHTML=mCent
+    ?'Distributed weights every silo <b>equally</b> (★); centralized pools the data and is implicitly <b style="color:var(--cen)">weighted by dataset size</b> (θ^D). Equal sizes ⇒ the two coincide; unequal sizes pull them apart.'
+    :'FedAvg, model soups and task arithmetic are <b>one construction</b> in weight space: the average of points = the seed plus the average of the arrows to them.';}
+function mPulseGo(){mPulse=1;if(mPulseAnim)cancelAnimationFrame(mPulseAnim);(function a(){mPulse-=0.04;drawMerge();if(mPulse>0)mPulseAnim=requestAnimationFrame(a);else{mPulse=0;drawMerge();}})();}
+window.setMView=v=>{mView=v;document.querySelectorAll('#mViewT button').forEach(b=>b.classList.toggle('on',v==='soup'?b.textContent.includes('models'):b.textContent.includes('task')));mPulseGo();};
+window.toggleMCent=()=>{mCent=!mCent;const b=C('mCentB');b.style.background=mCent?'var(--cen)':'transparent';b.style.color=mCent?'#fff':'var(--cen)';b.textContent=mCent?'− hide centralized':'+ overlay centralized';drawMerge();};
 window.setMN=n=>{mN=n;C('mNv').textContent=n;drawMerge();};
 (function(){const cv=C('mergeC');function xy(e){const r=cv.getBoundingClientRect();return{x:(e.touches?e.touches[0].clientX:e.clientX)-r.left,y:(e.touches?e.touches[0].clientY:e.clientY)-r.top};}
-  function down(e){if(mMode!=='dist')return;const p=xy(e),W=cv.clientWidth,H=cv.clientHeight;mDrag=-1;mClients.slice(0,mN).forEach((c,i)=>{if(Math.hypot(c.x*W-p.x,c.y*H-p.y)<18)mDrag=i;});if(mDrag>=0){cv.style.cursor='grabbing';e.preventDefault&&e.preventDefault();}}
-  function move(e){if(mDrag<0)return;const p=xy(e),W=cv.clientWidth,H=cv.clientHeight;mClients[mDrag].x=clamp(p.x/W,.25,.85);mClients[mDrag].y=clamp(p.y/H,.1,.9);drawMerge();}
-  function up(){mDrag=-1;cv.style.cursor='grab';}
+  function down(e){const p=xy(e),W=cv.clientWidth,H=cv.clientHeight;mDrag={t:null,i:-1};
+    if(Math.hypot(mTh0.x*W-p.x,mTh0.y*H-p.y)<16){mDrag={t:'seed',i:-1};}
+    else mClients.slice(0,mN).forEach((c,i)=>{if(Math.hypot(c.x*W-p.x,c.y*H-p.y)<18)mDrag={t:'silo',i};});
+    if(mDrag.t){cv.style.cursor='grabbing';e.preventDefault&&e.preventDefault();}}
+  function move(e){if(!mDrag.t)return;const p=xy(e),W=cv.clientWidth,H=cv.clientHeight;const nx=clamp(p.x/W,.05,.92),ny=clamp(p.y/H,.08,.9);
+    if(mDrag.t==='seed'){mTh0.x=nx;mTh0.y=ny;}else{mClients[mDrag.i].x=nx;mClients[mDrag.i].y=ny;}drawMerge();}
+  function up(){mDrag={t:null,i:-1};cv.style.cursor='grab';}
   cv.addEventListener('mousedown',down);window.addEventListener('mousemove',move);window.addEventListener('mouseup',up);
-  cv.addEventListener('touchstart',down,{passive:false});cv.addEventListener('touchmove',e=>{if(mDrag>=0)e.preventDefault();move(e);},{passive:false});cv.addEventListener('touchend',up);
+  cv.addEventListener('touchstart',down,{passive:false});cv.addEventListener('touchmove',e=>{if(mDrag.t)e.preventDefault();move(e);},{passive:false});cv.addEventListener('touchend',up);
   new ResizeObserver(drawMerge).observe(cv.parentElement);drawMerge();})();
+
+/* ── ALGO UNIFICATION: parameter-level merge (FedAvg / soup / task arithmetic) ── */
+const AM=18;
+const TH0=Array.from({length:AM},(_,j)=>0.5+0.30*Math.sin(j*0.62+0.4));
+const TAU=[0,1,2].map(i=>Array.from({length:AM},(_,j)=>0.20*Math.sin(j*0.5+i*2.1)+0.07*(((i*5+j)%3)-1)));
+const THi=TAU.map(t=>t.map((v,j)=>TH0[j]+v));
+const TAUm=Array.from({length:AM},(_,j)=>(TAU[0][j]+TAU[1][j]+TAU[2][j])/3);
+const THm=Array.from({length:AM},(_,j)=>(THi[0][j]+THi[1][j]+THi[2][j])/3);
+let algoMode='w',algoHover=-1;
+function divColor(v,center,span){ // blue(neg) -> paper -> orange(pos)
+  const t=clamp((v-center)/span,-1,1);
+  if(t>=0)return `rgba(204,91,30,${(.12+.78*t).toFixed(3)})`;
+  return `rgba(47,93,138,${(.12+.78*(-t)).toFixed(3)})`;}
+window.setAlgo=m=>{algoMode=m;document.querySelectorAll('#algoT button').forEach(b=>b.classList.toggle('on',(m==='w')?b.textContent.includes('weights'):b.textContent.includes('task')));
+  C('algoLbl').innerHTML=m==='w'?'θ̄ = (1/n) Σ θ<sup>dᵢ</sup> &nbsp;·&nbsp; FedAvg / Model Soup':'θ̄ = θ⁰ + (1/n) Σ τ<sub>i</sub> &nbsp;·&nbsp; Task Arithmetic';drawAlgo();};
+function drawAlgo(){const ctx=fit('algoC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
+  const pL=58,pR=14,pT=14,pB=24;const gW=W-pL-pR;const cw=gW/AM;
+  let rows;
+  if(algoMode==='w'){
+    rows=[{lab:'θ^d₁',d:THi[0],c:0.5},{lab:'θ^d₂',d:THi[1],c:0.5},{lab:'θ^d₃',d:THi[2],c:0.5},{gap:1},{lab:'θ̄',d:THm,c:0.5,hot:1}];
+  } else {
+    rows=[{lab:'θ⁰',d:TH0,c:0.5,dim:1},{lab:'τ₁',d:TAU[0],c:0},{lab:'τ₂',d:TAU[1],c:0},{lab:'τ₃',d:TAU[2],c:0},{lab:'⟨τ⟩',d:TAUm,c:0},{gap:1},{lab:'θ̄',d:THm,c:0.5,hot:1}];
+  }
+  const nVis=rows.filter(r=>!r.gap).length+rows.filter(r=>r.gap).length*0.5;
+  const rh=(H-pT-pB)/(rows.length-rows.filter(r=>r.gap).length*0.5);
+  let y=pT;
+  rows.forEach(r=>{
+    if(r.gap){ // draw a + / Σ divider
+      ctx.fillStyle=MUT;ctx.font='600 11px IBM Plex Mono,monospace';ctx.textAlign='center';
+      ctx.fillText(algoMode==='w'?'mean ↓':'+ θ⁰ , mean ↓',pL+gW/2,y+rh*0.32);
+      y+=rh*0.5;return;}
+    const span=r.c===0?0.42:0.42;
+    for(let j=0;j<AM;j++){const x=pL+j*cw;
+      ctx.fillStyle=divColor(r.d[j],r.c,span);ctx.globalAlpha=r.dim?0.55:1;ctx.fillRect(x+1,y+2,cw-2,rh-6);ctx.globalAlpha=1;
+      if(j===algoHover){ctx.strokeStyle=INK;ctx.lineWidth=1.4;ctx.strokeRect(x+1,y+2,cw-2,rh-6);}
+    }
+    if(r.hot){ctx.strokeStyle=DIST;ctx.lineWidth=1.8;ctx.strokeRect(pL,y+1,gW,rh-4);}
+    ctx.fillStyle=r.hot?DIST:(r.c===0?DIST:INK);ctx.font=(r.hot?'600 ':'')+'9px IBM Plex Mono,monospace';ctx.textAlign='right';ctx.fillText(r.lab,pL-7,y+rh/2+3);
+    y+=rh;});
+  // colorbar hint
+  ctx.textAlign='left';
+  if(algoHover>=0){
+    const a=THi[0][algoHover],b=THi[1][algoHover],c=THi[2][algoHover],m=THm[algoHover];
+    const t1=TAU[0][algoHover],t2=TAU[1][algoHover],t3=TAU[2][algoHover];
+    C('algoH').innerHTML=algoMode==='w'
+      ?`param #${algoHover}: &nbsp;(${a.toFixed(2)} + ${b.toFixed(2)} + ${c.toFixed(2)}) / 3 &nbsp;=&nbsp; <b style="color:var(--dist)">${m.toFixed(2)}</b>`
+      :`param #${algoHover}: &nbsp;${TH0[algoHover].toFixed(2)} + (${t1.toFixed(2)} ${t2>=0?'+':''}${t2.toFixed(2)} ${t3>=0?'+':''}${t3.toFixed(2)})/3 &nbsp;=&nbsp; <b style="color:var(--dist)">${m.toFixed(2)}</b> &nbsp;<span style="color:var(--teal)">(same value)</span>`;
+  } else {
+    C('algoH').innerHTML=algoMode==='w'
+      ?'Each row is one silo\'s trained weight vector. The merged θ̄ (orange box) is the column-wise mean. <b>Hover a parameter</b> to see the average.'
+      :'Each τ row is what a silo <em>learned</em> beyond θ⁰. Average the τ\'s, add θ⁰ back — you reach the exact same θ̄. <b>Hover a parameter</b> to verify.';
+  }}
+(function(){const cv=C('algoC');cv.addEventListener('mousemove',e=>{const pL=58,pR=14,W=cv.clientWidth,gW=W-pL-pR,cw=gW/AM;const j=Math.floor((e.offsetX-pL)/cw);algoHover=(j>=0&&j<AM)?j:-1;drawAlgo();});
+  cv.addEventListener('mouseleave',()=>{algoHover=-1;drawAlgo();});
+  new ResizeObserver(drawAlgo).observe(cv.parentElement);drawAlgo();})();
 
 /* ── COST LEDGER ── */
 function drawCost(){const ctx=fit('costC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
@@ -487,96 +591,154 @@ function renderStrat(){
     mlScript='Korean';requestAnimationFrame(()=>{renderMlPills();new ResizeObserver(drawML).observe(C('mlC').parentElement);drawML();});
   } else {
     body.innerHTML=`<div style="padding:1.2rem 1.3rem;">
-      <p class="nb">Text regions are graph <b>nodes</b> (box geometry + character histogram); a visibility graph wires neighbours. Several GNNs are trained on different silos and their <b>message-passing (edge) weights θ are averaged</b>, while node features stay fixed. Each node is classified table / non-table from geometry and connectivity alone.</p>
-      <div class="mbl" style="font-size:.74rem;">single&nbsp;&nbsp; hᵢ⁽ᵏ⁺¹⁾ = σ( Σ<sub>j∈N(i)</sub> θ⁽ᵏ⁾ hⱼ⁽ᵏ⁾ )&nbsp;&nbsp;&nbsp;(Eq. 4)<br>merged&nbsp; hᵢ⁽ᵏ⁺¹⁾ = σ( Σ<sub>j∈N(i)</sub> <span style="color:var(--dist)">(1/N) Σ<sub>dn</sub> θ⁽ᵏ,ᵈⁿ⁾</span> hⱼ⁽ᵏ⁾ )&nbsp;&nbsp;(Eq. 5)</div>
-      <div style="display:flex;gap:.7rem;align-items:center;margin:.4rem 0 .8rem;flex-wrap:wrap;">
-        <div class="toggle" id="gnnT"><button class="dist on" onclick="setGNN('dist')">Merged θ (N silos)</button><button class="cen" onclick="setGNN('cent')">Single-silo θ</button></div>
-        <button class="snav" style="font-family:'IBM Plex Mono',monospace;font-size:.54rem;padding:.42rem .85rem;border:1px solid var(--dist);background:var(--dist);color:#fff;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;" onclick="gnnStep()">▶ Pass a message</button>
+      <p class="nb">A page becomes a graph: each region is a <b>node</b> with fixed, data-agnostic features hⱼ (box geometry + a character histogram); a visibility graph wires neighbours. A GNN classifies each node <em>table</em> / <em>text</em> through one learnable <b>message matrix θ</b> that transforms a neighbour before it is summed. Following Fig. 4, distributed learning keeps every hⱼ untouched and <b>averages only the θ matrices</b> across silos.</p>
+      <div class="mbl" style="font-size:.72rem;">silo dₙ&nbsp;&nbsp; hᵢ⁽ᵏ⁺¹⁾ = σ( Σ<sub>j∈N(i)</sub> <b>θ⁽ᵏ,ᵈⁿ⁾</b> hⱼ⁽ᵏ⁾ )&nbsp;&nbsp;&nbsp;(Eq. 4)<br>merged&nbsp;&nbsp; hᵢ⁽ᵏ⁺¹⁾ = σ( Σ<sub>j∈N(i)</sub> <span style="color:var(--dist)">(1/N) Σ<sub>dn</sub> θ⁽ᵏ,ᵈⁿ⁾</span> hⱼ⁽ᵏ⁾ )&nbsp;&nbsp;(Eq. 5)</div>
+      <div style="display:flex;gap:.6rem;align-items:center;margin:.4rem 0 .7rem;flex-wrap:wrap;">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--mut);letter-spacing:.06em;">AGGREGATE WHICH θ:</span>
+        <span id="gnnChips"></span>
+        <button style="font-family:'IBM Plex Mono',monospace;font-size:.54rem;padding:.42rem .85rem;border:1px solid var(--dist);background:var(--dist);color:#fff;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;margin-left:auto;" onclick="gnnStep()">▶ Pass a message</button>
       </div>
-      <div class="cb"><canvas id="gnnC" style="height:300px;"></canvas><div class="chnt" id="gnnH"></div></div></div>`;
-    gnnMode='dist';gnnK=0;requestAnimationFrame(()=>{new ResizeObserver(drawGNN).observe(C('gnnC').parentElement);drawGNN();});
+      <div class="cb"><canvas id="gnnC" style="height:400px;display:block;width:100%;"></canvas><div class="chnt" id="gnnH"></div></div></div>`;
+    gnnOn=[true,true,true];gnnK=0;requestAnimationFrame(()=>{renderGnnChips();new ResizeObserver(drawGNN).observe(C('gnnC').parentElement);drawGNN();});
   }
 }
-/* KD viz */
+/* shared: rounded card + arrowhead helpers */
+function card(ctx,x,y,w,h,fill,stroke,lw){ctx.beginPath();ctx.roundRect(x,y,w,h,5);ctx.fillStyle=fill;ctx.strokeStyle=stroke;ctx.lineWidth=lw||1.3;ctx.fill();ctx.stroke();}
+function ahead(ctx,x,y,ang,col){ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-7*Math.cos(ang-.45),y-7*Math.sin(ang-.45));ctx.lineTo(x-7*Math.cos(ang+.45),y-7*Math.sin(ang+.45));ctx.closePath();ctx.fill();}
+
+/* KD viz — Fig. 2: merge OCRs → frozen teacher; RNN text-embedding vs vision-embedding, minimize Δ */
 let kdTeach='dist';
 window.setKDteach=m=>{kdTeach=m;document.querySelectorAll('#kdT button').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase().includes(m==='dist'?'distr':'centr')));drawKD();};
 function drawKD(){const ctx=fit('kdC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
   ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);
-  const prog=+C('kdR').value/100;
-  // left third: merge stack
-  const lx=W*.16;[0,1,2].forEach(i=>{const y=H*(.26+i*.18);ctx.beginPath();ctx.roundRect(lx-30,y-11,60,22,3);ctx.fillStyle='#fff';ctx.strokeStyle=DIST;ctx.lineWidth=1.3;ctx.fill();ctx.stroke();ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=DIST;ctx.textAlign='center';ctx.fillText('OCR'+(i+1),lx,y+3);
-    ctx.strokeStyle='rgba(204,91,30,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(lx+32,y);ctx.lineTo(lx+58,H*.5);ctx.stroke();});
-  const tx=lx+70,ty=H*.5;ctx.beginPath();ctx.roundRect(tx-26,ty-16,52,32,4);ctx.fillStyle=kdTeach==='dist'?'rgba(204,91,30,.14)':'rgba(47,93,138,.14)';ctx.strokeStyle=kdTeach==='dist'?DIST:CEN;ctx.lineWidth=1.8;ctx.fill();ctx.stroke();
-  ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=kdTeach==='dist'?DIST:CEN;ctx.fillText('frozen',tx,ty-3);ctx.fillText('teacher',tx,ty+7);
-  // embedding space (right)
-  const ex=W*.66,ey=H*.5,ER=Math.min(W,H)*.3;
-  ctx.strokeStyle='rgba(60,50,30,.12)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(ex,ey,ER,0,7);ctx.stroke();
-  ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='center';ctx.fillText('embedding space',ex,ey-ER-6);
-  // image embeddings: 3 clusters; distributed -> more separated
-  const spread=kdTeach==='dist'?1:.5;
-  const imgs=[{a:-0.6,l:'FILLA',col:DIST},{a:1.6,l:'OKLA',col:CEN},{a:3.4,l:'SOUTH',col:'#2f6b63'}];
-  imgs.forEach(im=>{const r=ER*(.55+ .3*spread);const x=ex+Math.cos(im.a)*r,y=ey+Math.sin(im.a)*r;im._x=x;im._y=y;
-    for(let k=0;k<5;k++){const aa=k/5*6.28;ctx.beginPath();ctx.arc(x+Math.cos(aa)*9*spread,y+Math.sin(aa)*9*spread,3,0,7);ctx.fillStyle=im.col+'66';ctx.fill();}
-    ctx.beginPath();ctx.arc(x,y,5,0,7);ctx.fillStyle=im.col;ctx.fill();ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=im.col;ctx.fillText('🖼 '+im.l,x,y-12);});
-  // text query 'FILLA' starts at center, moves to its match with progress
-  const match=imgs[0];const txp={x:lerp(ex,match._x,prog),y:lerp(ey,match._y,prog)};
-  // pull arrow to positive, push from negative
-  ctx.setLineDash([4,3]);ctx.strokeStyle='rgba(204,91,30,.7)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(txp.x,txp.y);ctx.lineTo(match._x,match._y);ctx.stroke();
-  ctx.strokeStyle='rgba(47,93,138,.4)';ctx.beginPath();ctx.moveTo(txp.x,txp.y);ctx.lineTo(imgs[1]._x,imgs[1]._y);ctx.stroke();ctx.setLineDash([]);
-  ctx.beginPath();ctx.roundRect(txp.x-16,txp.y-9,32,18,3);ctx.fillStyle='#fff';ctx.strokeStyle=INK;ctx.lineWidth=1.5;ctx.fill();ctx.stroke();ctx.font='8px IBM Plex Mono,monospace';ctx.fillStyle=INK;ctx.fillText('"FILLA"',txp.x,txp.y+3);
-  const map=(kdTeach==='dist'?.40:.31)*(0.4+0.6*prog);
-  C('kdH').innerHTML=`Triplet loss pulls the text embedding onto its matching image, away from others. ${prog>.9?'<b>Converged.</b> ':''}${kdTeach==='dist'?'A <b style="color:var(--dist)">distributed teacher</b> gives a more separated space → easier retrieval':'<b style="color:var(--cen)">Centralized teacher</b>: tighter, less separable space'} · est. mAP ≈ ${map.toFixed(2)}`;
+  const prog=+C('kdR').value/100;ctx.textAlign='center';
+  // OCR stack -> + -> frozen teacher
+  const ox=W*.10;[0,1,2].forEach(i=>{const y=H*.16+i*H*.13;card(ctx,ox-26,y-9,52,18,'#fff',DIST,1.2);ctx.fillStyle=DIST;ctx.font='8px IBM Plex Mono,monospace';ctx.fillText(i===2?'OCR_N':'OCR'+(i+1),ox,y+3);
+    ctx.strokeStyle='rgba(204,91,30,.45)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ox+27,y);ctx.lineTo(W*.20-6,H*.30);ctx.stroke();});
+  ctx.fillStyle=DIST;ctx.font='600 13px IBM Plex Mono,monospace';ctx.fillText('+',W*.20,H*.30+5);
+  const tcol=kdTeach==='dist'?DIST:CEN;
+  card(ctx,W*.26,H*.20,W*.13,H*.22,kdTeach==='dist'?'rgba(204,91,30,.13)':'rgba(47,93,138,.13)',tcol,1.8);
+  ctx.fillStyle=tcol;ctx.font='600 7.5px IBM Plex Mono,monospace';ctx.fillText('FROZEN',W*.325,H*.28);ctx.fillText('TEACHER',W*.325,H*.31);ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.fillText('vision enc.',W*.325,H*.345);
+  // word image -> teacher
+  card(ctx,W*.10,H*.62,W*.13,H*.16,'#fff','rgba(60,50,30,.4)',1.2);ctx.fillStyle=INK;ctx.font='italic 13px Fraunces,serif';ctx.fillText('ﬁlla',W*.165,H*.71);ctx.font='6.5px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.fillText('word image',W*.165,H*.76);
+  ctx.strokeStyle='rgba(60,50,30,.4)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(W*.165,H*.62);ctx.lineTo(W*.30,H*.42);ctx.stroke();ahead(ctx,W*.30,H*.42,Math.atan2(H*.42-H*.62,W*.30-W*.165),'rgba(60,50,30,.5)');
+  // RNN chain over characters -> text embedding
+  const chs=['F','I','L','L','A'];const ry=H*.86,rx0=W*.30,rdx=(W*.34)/4;
+  chs.forEach((c,i)=>{const x=rx0+i*rdx;card(ctx,x-12,ry-9,24,18,'#fff',INK,1.1);ctx.fillStyle=INK;ctx.font='7px IBM Plex Mono,monospace';ctx.fillText('RNN'+i,x,ry+2);ctx.fillStyle=DIST;ctx.font='600 8px IBM Plex Mono,monospace';ctx.fillText(c,x,ry+18);
+    if(i){ctx.strokeStyle='rgba(60,50,30,.4)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x-rdx+12,ry);ctx.lineTo(x-12,ry);ctx.stroke();}});
+  ctx.fillStyle=MUT;ctx.font='6.5px IBM Plex Mono,monospace';ctx.fillText('text encoder (trained)',rx0+rdx*2,ry-15);
+  // embedding panel (right): vision dot fixed, text dot climbs with prog; Δ between
+  const ex=W*.80,ew=W*.16,ey0=H*.14,eh=H*.66;card(ctx,ex-ew/2,ey0,ew,eh,'rgba(249,246,238,.5)','rgba(60,50,30,.18)',1);
+  ctx.fillStyle=MUT;ctx.font='7px IBM Plex Mono,monospace';ctx.fillText('embedding space',ex,ey0-5);
+  const vy=ey0+eh*.30, resid=kdTeach==='dist'?.10:.34, ty=lerp(ey0+eh*.92, vy+eh*resid, prog);
+  // arrows into panel
+  ctx.strokeStyle=tcol;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(W*.39,H*.31);ctx.lineTo(ex-2,vy);ctx.stroke();ahead(ctx,ex-2,vy,Math.atan2(vy-H*.31,ex-W*.39),tcol);
+  ctx.strokeStyle=INK;ctx.beginPath();ctx.moveTo(rx0+rdx*4+12,ry);ctx.lineTo(ex-2,ty);ctx.stroke();ahead(ctx,ex-2,ty,Math.atan2(ty-ry,ex-rx0-rdx*4),INK);
+  // Δ
+  ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(60,50,30,.5)';ctx.beginPath();ctx.moveTo(ex,vy);ctx.lineTo(ex,ty);ctx.stroke();ctx.setLineDash([]);
+  ctx.beginPath();ctx.arc(ex,vy,5,0,7);ctx.fillStyle='#2f6b63';ctx.fill();ctx.beginPath();ctx.arc(ex,ty,5,0,7);ctx.fillStyle=INK;ctx.fill();
+  ctx.fillStyle='#2f6b63';ctx.font='6.5px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText('vision',ex+8,vy+2);ctx.fillStyle=INK;ctx.fillText('text',ex+8,ty+2);
+  ctx.fillStyle=MUT;ctx.textAlign='center';ctx.fillText('min Δ',ex-16,(vy+ty)/2);
+  const map=(kdTeach==='dist'?.40:.31)*(0.45+0.55*prog);
+  C('kdH').innerHTML=`The frozen teacher embeds the <b>image</b>; the RNN embeds the <b>characters</b>; a triplet loss minimises Δ between them. ${prog>.92?'<b>Converged.</b> ':''}A <b style="color:${tcol}">${kdTeach==='dist'?'distributed':'centralized'} teacher</b> leaves ${kdTeach==='dist'?'<b>less residual Δ</b>':'a larger residual'} → est. mAP ≈ ${map.toFixed(2)}`;
   ctx.textAlign='left';}
-/* ML viz */
+
+/* ML viz — Fig. 3: average Latin backbones (frozen) + swap a personalized head */
 let mlScript='Korean';
 const ML_DATA={Korean:{c:.214,d:.374,g:'하 숙'},Arabic:{c:.175,d:.422,g:'مرحبا'},Borg:{c:.000,d:.505,g:'⚷ ☩ ⚸'},Copiale:{c:.794,d:.838,g:'⊕ ∴ ⊗'},Bangla:{c:.115,d:.462,g:'বাংলা'},Hindi:{c:.384,d:.514,g:'नमस्ते'},Japanese:{c:.095,d:.197,g:'こんに'},Chinese:{c:.010,d:.073,g:'文字'},Vatican:{c:.465,d:.591,g:'✠ ❧'}};
 function renderMlPills(){C('mlPills').innerHTML=Object.keys(ML_DATA).map(k=>`<button class="pill" style="margin:2px;color:var(--dist);border-color:var(--dist);${k===mlScript?'background:var(--dist);color:#fff;':''}" onclick="setMl('${k}')">${k}</button>`).join('');}
 window.setMl=k=>{mlScript=k;renderMlPills();drawML();};
 function drawML(){const ctx=fit('mlC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);
-  // three latin stacks averaged into frozen backbone + swappable head
-  const colX=[W*.16,W*.34,W*.52],mx=W*.78;const layers=4;const top=H*.16,lh=(H*.62)/layers;
-  colX.forEach((cx,ci)=>{for(let l=0;l<layers;l++){const y=top+l*lh;ctx.beginPath();ctx.roundRect(cx-22,y,44,lh-5,3);ctx.fillStyle='rgba(47,93,138,.13)';ctx.strokeStyle=CEN;ctx.lineWidth=1;ctx.fill();ctx.stroke();}
-    if(ci<2){ctx.fillStyle=DIST;ctx.font='600 13px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText('+',cx+ (colX[1]-colX[0])/2,H*.48);}});
-  ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=CEN;ctx.textAlign='center';ctx.fillText('Latin silo backbones (averaged)',W*.34,top-4);
-  // merged frozen backbone
-  for(let l=0;l<layers;l++){const y=top+l*lh;const head=(l===0);ctx.beginPath();ctx.roundRect(mx-26,y,52,lh-5,3);
-    ctx.fillStyle=head?'rgba(204,91,30,.18)':'rgba(60,50,30,.08)';ctx.strokeStyle=head?DIST:'rgba(60,50,30,.4)';ctx.lineWidth=head?1.8:1;ctx.fill();ctx.stroke();
-    ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=head?DIST:MUT;ctx.textAlign='center';ctx.fillText(head?'new head':('layer '+(layers-l)),mx,y+lh/2);
-    if(!head){ctx.fillText('🔒',mx+18,y+lh/2-4);}}
-  ctx.fillStyle=DIST;ctx.font='600 9px IBM Plex Mono,monospace';ctx.fillText(ML_DATA[mlScript].g,mx,top-4);
-  // arrows from merge to backbone
-  ctx.strokeStyle='rgba(204,91,30,.5)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(colX[2]+24,H*.47);ctx.lineTo(mx-28,H*.47);ctx.stroke();
+  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);ctx.textAlign='center';
+  const colX=[W*.15,W*.34,W*.53],mx=W*.82,cw=38,layers=4,top=H*.20,lh=(H*.60)/layers;
+  // three Latin silo stacks: backbone layers (blue) + Latin head (teal) on top
+  colX.forEach((cx,ci)=>{for(let l=0;l<layers;l++){const y=top+l*lh;const headRow=(l===0);
+      card(ctx,cx-cw/2,y+2,cw,lh-5,headRow?'rgba(47,107,99,.16)':'rgba(47,93,138,.12)',headRow?'#2f6b63':CEN,1);}
+    ctx.fillStyle=ci===0?'#2f6b63':MUT;ctx.font='6px IBM Plex Mono,monospace';if(ci===0)ctx.fillText('Latin head',cx,top-3);
+    if(ci<2){ctx.fillStyle=DIST;ctx.font='600 14px IBM Plex Mono,monospace';ctx.fillText('+',(colX[ci]+colX[ci+1])/2,H*.5);}});
+  ctx.fillStyle=MUT;ctx.font='7px IBM Plex Mono,monospace';ctx.fillText('Latin silo backbones',colX[1],top-16);
+  ctx.fillStyle=DIST;ctx.font='600 14px IBM Plex Mono,monospace';ctx.fillText('=',(colX[2]+mx)/2,H*.5);
+  // merged: frozen backbone (locks) + personalized head (orange) carrying the new script
+  for(let l=0;l<layers;l++){const y=top+l*lh;const head=(l===0);
+    card(ctx,mx-cw/2,y+2,cw,lh-5,head?'rgba(204,91,30,.18)':'rgba(60,50,30,.07)',head?DIST:'rgba(60,50,30,.4)',head?1.8:1);
+    ctx.fillStyle=head?DIST:MUT;ctx.font='6px IBM Plex Mono,monospace';ctx.fillText(head?'new head':'🔒',mx,y+lh/2+2);}
+  ctx.fillStyle=DIST;ctx.font='600 12px IBM Plex Mono,monospace';ctx.fillText(ML_DATA[mlScript].g,mx,top-6);
+  ctx.fillStyle=MUT;ctx.font='6px IBM Plex Mono,monospace';ctx.fillText('frozen backbone',mx,top+layers*lh+10);
   const d=ML_DATA[mlScript];
   C('mlP').innerHTML=`<div style="font-family:'IBM Plex Mono',monospace;font-size:.5rem;letter-spacing:.13em;color:var(--dist);margin-bottom:.5rem;">${mlScript.toUpperCase()} · WORD ACCURACY</div>
     <div style="margin-bottom:.5rem;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--cen);">centralized ${d.c.toFixed(3)}</div><div style="height:9px;background:rgba(60,50,30,.1);margin:.2rem 0;"><div style="height:100%;width:${d.c*100}%;background:var(--cen);"></div></div></div>
     <div><div style="font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--dist);">distributed ${d.d.toFixed(3)}</div><div style="height:9px;background:rgba(60,50,30,.1);margin:.2rem 0;"><div style="height:100%;width:${d.d*100}%;background:var(--dist);"></div></div></div>
     <div style="margin-top:.7rem;font-size:.82rem;line-height:1.5;color:${d.c<.001?'#8b2c14':'var(--mut)'};">${d.c<.001?'<b>Centralized fails entirely (0.000).</b> The merged backbone is essential just to learn this cipher.':'Distributed backbone absorbs the new script '+(d.d/Math.max(d.c,.001)>1.3?'far ':'')+'better — same data, same epochs.'}</div>`;
-  C('mlH').innerHTML='Only the head (orange) trains; every backbone layer is frozen (🔒). Distributed pretraining beats centralized by <b>×1.62</b> on average across these scripts.';
+  C('mlH').innerHTML='Average the Latin backbones, <b>freeze</b> them (🔒), and train only the swapped head (orange) on the new script. Distributed pretraining beats centralized by <b>×1.62</b> on average.';
   ctx.textAlign='left';}
-/* GNN viz */
-let gnnMode='dist',gnnK=0,gnnAnim=null;
-const GN=[{x:.30,y:.30,t:1},{x:.46,y:.30,t:1},{x:.62,y:.30,t:1},{x:.30,y:.5,t:1},{x:.46,y:.5,t:1},{x:.62,y:.5,t:1},{x:.20,y:.74,t:0},{x:.5,y:.8,t:0},{x:.78,y:.62,t:0}];
+
+/* GNN viz — Fig. 4: per-silo extractors → aggregate the edge matrices θ → merged message passing → classify */
+let gnnOn=[true,true,true],gnnK=0,gnnAnim=null;
+const GN=[
+ {x:.30,y:.24,l:1,f:[ 0.95,0.15]},{x:.50,y:.24,l:1,f:[ 0.70,0.32]},{x:.70,y:.24,l:1,f:[ 0.55,0.44]},
+ {x:.30,y:.46,l:1,f:[ 0.50,0.40]},{x:.50,y:.46,l:1,f:[ 0.44,0.36]},{x:.70,y:.46,l:0,f:[ 0.36,0.44]},
+ {x:.26,y:.74,l:0,f:[ 0.30,0.50]},{x:.50,y:.78,l:0,f:[ 0.10,0.58]},{x:.74,y:.72,l:0,f:[-0.20,0.72]}];
 const GE=[[0,1],[1,2],[3,4],[4,5],[0,3],[1,4],[2,5],[3,6],[4,7],[5,8],[6,7],[7,8]];
-window.setGNN=m=>{gnnMode=m;document.querySelectorAll('#gnnT button').forEach(b=>b.classList.toggle('on',b.textContent.includes(m==='dist'?'Merged':'Single')));gnnK=0;drawGNN();};
-window.gnnStep=()=>{if(gnnAnim)return;let t0=performance.now();(function a(now){const t=clamp((now-t0)/900,0,1);drawGNN(t);if(t<1)gnnAnim=requestAnimationFrame(a);else{gnnAnim=null;gnnK++;drawGNN();}})(t0);};
+const GTH=[[[0.928,-0.46],[-0.429,0.555]],[[1.502,0.097],[0.404,0.685]],[[1.196,-0.458],[-0.179,1.235]]];
+const SILCOL=['#cc5b1e','#2f6b63','#b58a2e'];
+const gmul=(T,f)=>[T[0][0]*f[0]+T[0][1]*f[1],T[1][0]*f[0]+T[1][1]*f[1]];
+const gpred=(T,f)=>{const g=gmul(T,f);return (g[0]-g[1])>0?1:0;};
+function gAvg(){const S=GTH.filter((_,i)=>gnnOn[i]);if(!S.length)return[[1,0],[0,1]];const o=[[0,0],[0,0]];S.forEach(M=>{for(let i=0;i<2;i++)for(let j=0;j<2;j++)o[i][j]+=M[i][j]/S.length;});return o;}
+window.toggleSilo=i=>{gnnOn[i]=!gnnOn[i];gnnK=0;renderGnnChips();drawGNN();};
+function renderGnnChips(){const el=C('gnnChips');if(!el)return;
+  el.innerHTML=GTH.map((_,i)=>`<button class="pill" style="margin:0 3px;color:${SILCOL[i]};border-color:${SILCOL[i]};${gnnOn[i]?`background:${SILCOL[i]};color:#fff;`:''}" onclick="toggleSilo(${i})">θ<sub>${i+1}</sub> ${gnnOn[i]?'on':'off'}</button>`).join('');}
+const gnnNum=n=>n>0?(n===1?'one silo':n===2?'two silos':'three silos'):'no silos';
+/* draw a 2x2 matrix as colored cells on the canvas */
+function gMat(ctx,x,y,cs,T,outline,dim){
+  for(let r=0;r<2;r++)for(let c=0;c<2;c++){const v=T[r][c];const t=clamp(v/1.5,-1,1);
+    ctx.globalAlpha=dim?.4:1;ctx.fillStyle=t>=0?`rgba(204,91,30,${(.12+.7*t).toFixed(2)})`:`rgba(47,93,138,${(.12+.7*-t).toFixed(2)})`;ctx.fillRect(x+c*cs,y+r*cs,cs-1,cs-1);
+    ctx.fillStyle='rgba(22,25,31,.7)';ctx.font='6px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText(v.toFixed(1),x+c*cs+cs/2,y+r*cs+cs/2+2);ctx.globalAlpha=1;}
+  ctx.strokeStyle=outline;ctx.lineWidth=1.4;ctx.strokeRect(x,y,cs*2-1,cs*2-1);}
 function drawGNN(pulse){const ctx=fit('gnnC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='rgba(249,246,238,.6)';ctx.fillRect(0,0,W,H);
-  const P=GN.map(n=>({x:n.x*W,y:n.y*H,t:n.t}));
-  // edges
-  GE.forEach(([a,b])=>{ctx.strokeStyle='rgba(60,50,30,.25)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(P[a].x,P[a].y);ctx.lineTo(P[b].x,P[b].y);ctx.stroke();
-    if(pulse!=null){const t=pulse;const x=lerp(P[a].x,P[b].x,t),y=lerp(P[a].y,P[b].y,t);ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fillStyle=gnnMode==='dist'?DIST:CEN;ctx.fill();}});
-  // predicted classes: single-silo gets 2 wrong (zero-shot), merged correct
-  const wrongSingle=[2,8];
-  P.forEach((p,i)=>{let pred=p.t;if(gnnMode==='cent'&&wrongSingle.includes(i))pred=1-p.t;const ok=pred===p.t;
-    const col=pred===1?DIST:'#9b9382';
-    ctx.beginPath();ctx.roundRect(p.x-13,p.y-9,26,18,3);ctx.fillStyle=pred===1?'rgba(204,91,30,.2)':'rgba(155,147,130,.18)';ctx.strokeStyle=col;ctx.lineWidth=ok?1.4:2.2;ctx.fill();
-    if(!ok){ctx.setLineDash([3,2]);}ctx.stroke();ctx.setLineDash([]);
-    ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(pred===1?'table':'text',p.x,p.y+3);
-    if(!ok){ctx.fillStyle='#8b2c14';ctx.fillText('✗',p.x+16,p.y-6);}});
-  ctx.font='7px IBM Plex Mono,monospace';ctx.fillStyle=MUT;ctx.textAlign='left';ctx.fillText('message-passing step k = '+gnnK,12,H-10);
-  C('gnnH').innerHTML=gnnMode==='dist'?'<b style="color:var(--dist)">Merged θ</b> from many silos classifies every region correctly zero-shot — averaging edge weights generalizes the message function.':'<b style="color:var(--cen)">Single-silo θ</b> mislabels regions (✗) on this unseen layout — it never saw enough structural variety.';
+  ctx.fillStyle='rgba(249,246,238,.55)';ctx.fillRect(0,0,W,H);
+  const nOn=gnnOn.filter(Boolean).length,TH=gAvg();const cs=18;
+  // ── LEFT: three silo extractor cards (stacked) ──
+  const sx=W*.02,sw=W*.20,sh=H*.26,sg=(H-3*sh)/4;
+  ctx.textAlign='left';
+  GTH.forEach((T,i)=>{const y=sg+i*(sh+sg);const on=gnnOn[i];
+    card(ctx,sx,y,sw,sh,on?'rgba(249,246,238,.8)':'rgba(60,50,30,.04)',on?SILCOL[i]:'rgba(60,50,30,.25)',on?1.5:1);
+    ctx.globalAlpha=on?1:.45;ctx.fillStyle=SILCOL[i];ctx.font='600 7.5px IBM Plex Mono,monospace';ctx.fillText('GNN extractor · d'+(i+1),sx+8,y+15);
+    // tiny input-graph glyph
+    const gx=sx+14,gy=y+sh*.62;[[0,0],[14,-4],[8,12],[22,8]].forEach(([dx,dy],k)=>{ctx.beginPath();ctx.arc(gx+dx,gy+dy,2.5,0,7);ctx.fillStyle=SILCOL[i];ctx.fill();});
+    ctx.strokeStyle=SILCOL[i]+'88';ctx.lineWidth=.8;[[0,1],[0,2],[2,3]].forEach(([a,b])=>{const P=[[0,0],[14,-4],[8,12],[22,8]];ctx.beginPath();ctx.moveTo(gx+P[a][0],gy+P[a][1]);ctx.lineTo(gx+P[b][0],gy+P[b][1]);ctx.stroke();});
+    ctx.fillStyle=MUT;ctx.font='6px IBM Plex Mono,monospace';ctx.fillText('input graph',sx+8,y+sh-6);
+    // its message matrix θ_i
+    gMat(ctx,sx+sw-cs*2-10,y+sh*.34,cs,T,SILCOL[i],!on);
+    ctx.fillStyle=SILCOL[i];ctx.font='7px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText('θ'+(i+1),sx+sw-cs-10,y+sh*.34-4);ctx.textAlign='left';ctx.globalAlpha=1;
+    // plus / arrow to merge
+    if(i<2){ctx.fillStyle=DIST;ctx.font='600 13px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText('+',sx+sw/2,y+sh+sg/2+4);ctx.textAlign='left';}
+    ctx.strokeStyle=on?'rgba(204,91,30,.5)':'rgba(60,50,30,.15)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(sx+sw,y+sh/2);ctx.lineTo(W*.36,H*.5);ctx.stroke();});
+  // ── MIDDLE: merged message-passing card ──
+  const mxx=W*.37,mw=W*.20,my=H*.30,mh=H*.40;
+  card(ctx,mxx,my,mw,mh,'rgba(204,91,30,.10)',DIST,1.9);
+  ctx.fillStyle=DIST;ctx.font='600 7.5px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText('MERGED MESSAGE',mxx+mw/2,my+15);ctx.fillText('PASSING',mxx+mw/2,my+25);
+  gMat(ctx,mxx+mw/2-cs,my+mh*.36,cs,TH,DIST,nOn===0);
+  ctx.fillStyle=DIST;ctx.font='7px IBM Plex Mono,monospace';ctx.fillText('θ̄ = (1/N)Σθ',mxx+mw/2,my+mh*.36-4);
+  ctx.fillStyle=MUT;ctx.font='6px IBM Plex Mono,monospace';ctx.fillText('aggregate edge θ',mxx+mw/2,my+mh-16);ctx.fillStyle='#2f6b63';ctx.fillText('node features hⱼ fixed',mxx+mw/2,my+mh-6);
+  ctx.strokeStyle=DIST;ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(mxx+mw,H*.5);ctx.lineTo(W*.58-2,H*.5);ctx.stroke();ahead(ctx,W*.58-2,H*.5,0,DIST);
+  // ── RIGHT: target graph classified by θ̄ ──
+  const rx0=W*.60,rx1=W*.99,ry0=H*.06,ry1=H*.96;const MX=v=>rx0+(v-.22)/(.56)*(rx1-rx0),MY=v=>ry0+(v-.20)/(.62)*(ry1-ry0);
+  const P=GN.map(n=>({x:MX(n.x),y:MY(n.y)}));
+  ctx.fillStyle=MUT;ctx.font='7px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText('target page · classify each region',rx0,ry0+2);
+  GE.forEach(([a,b])=>{ctx.strokeStyle='rgba(60,50,30,.22)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(P[a].x,P[a].y);ctx.lineTo(P[b].x,P[b].y);ctx.stroke();
+    if(pulse!=null){const x=lerp(P[a].x,P[b].x,pulse),y=lerp(P[a].y,P[b].y,pulse);ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fillStyle=DIST;ctx.fill();}});
+  let wrong=0;
+  GN.forEach((nd,i)=>{const pred=nOn?gpred(TH,nd.f):nd.l;const ok=pred===nd.l;if(!ok)wrong++;const col=pred===1?DIST:'#9b9382';const p=P[i];
+    card(ctx,p.x-15,p.y-9,30,18,pred===1?'rgba(204,91,30,.2)':'rgba(155,147,130,.16)',col,ok?1.3:2.4);
+    if(!ok){ctx.strokeStyle='#8b2c14';ctx.setLineDash([3,2]);ctx.strokeRect(p.x-15,p.y-9,30,18);ctx.setLineDash([]);}
+    ctx.fillStyle=col;ctx.font='6.5px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText(pred===1?'table':'text',p.x,p.y+2.5);
+    if(!ok){ctx.fillStyle='#8b2c14';ctx.font='600 9px IBM Plex Mono,monospace';ctx.fillText('✗',p.x+19,p.y-6);}});
+  ctx.fillStyle=MUT;ctx.font='6.5px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText('k = '+gnnK+' · θ̄ of '+gnnNum(nOn),rx0,ry1-2);
+  C('gnnH').innerHTML = nOn===0 ? 'No θ selected — switch one on to apply a message function.'
+    : wrong===0 ? `<b style="color:var(--dist)">${nOn===1?'This single silo':'θ̄ aggregated from '+gnnNum(nOn)}</b> classifies <b>all 9 regions correctly</b>. ${nOn>1?'Averaging the edge matrices cancelled the per-silo biases — node features never moved.':''}`
+    : `<b>${wrong} region${wrong>1?'s':''} mislabelled (✗).</b> ${nOn===1?'A single silo overfits the layouts it saw.':'These silos share a blind spot — add a more diverse θ to fix it.'}`;
   ctx.textAlign='left';}
+window.gnnStep=()=>{if(gnnAnim)return;const t0=performance.now();(function a(now){const t=clamp((now-t0)/850,0,1);drawGNN(t);if(t<1)gnnAnim=requestAnimationFrame(a);else{gnnAnim=null;gnnK++;drawGNN();}})(t0);};
 
 /* ── SETUP dataset bands ── */
 function drawDset(sel){const ctx=fit('dsetC');if(!ctx)return;const W=ctx.canvas.width,H=ctx.canvas.height;ctx.clearRect(0,0,W,H);
