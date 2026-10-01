@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aixequem una església romànica</title>
+<meta name="description" content="Campanya per construir una capella romànica amb un pantocràtor pintat al fresc.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+<style>
+:root{
+  --lapis:#23407a; --lapis-fosc:#16264d;
+  --cinabri:#b5321f; --cinabri-fosc:#6e1c10;
+  --ocre:#d4a12a; --calc:#efe4c8; --negre:#120d0a;
+  --verd:#4f7a5a; --pedra:#c9b48e;
+  --display:"Uncial Antiqua", "Luminari", Georgia, serif;
+  --text:"Alegreya", Georgia, "Times New Roman", serif;
+  --soroll:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .24 0 0 0 0 .14 .55 0 0 0 -.12'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box}
+html{background:#c4ad83}
+body{
+  margin:0; color:var(--negre); font-family:var(--text);
+  font-size:clamp(1.06rem, 1rem + .3vw, 1.22rem); line-height:1.62;
+  background-color:#c4ad83;
+  background-image:
+    var(--soroll),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='96'%3E%3Cpath d='M0 47H192M0 95H192M1 0V47M97 0V47M49 48V95M145 48V95' fill='none' stroke='%23866d47' stroke-width='2' opacity='.6'/%3E%3C/svg%3E");
+}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+p{margin:0 0 1em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ocre);outline-offset:4px}
+
+main{display:flex;flex-direction:column;align-items:center;gap:clamp(3rem,9vw,6rem);padding:clamp(.8rem,3vw,2.5rem) 12px 3rem}
+
+/* ABSIS */
+.presbiteri{--w:min(calc(100vw - 24px), 760px); width:var(--w)}
+.absis{
+  position:relative; overflow:hidden;
+  border:10px solid var(--negre); border-bottom:0;
+  border-radius:calc(var(--w) / 2) calc(var(--w) / 2) 0 0;
+  padding:calc(var(--w) * .10) 4% 0;
+  background:linear-gradient(to bottom,
+    var(--lapis-fosc) 0 20%, var(--lapis) 20% 50%,
+    var(--negre) 50% 51.5%, var(--ocre) 51.5% 72%,
+    var(--negre) 72% 73.5%, var(--calc) 73.5% 88%,
+    var(--negre) 88% 89%, var(--cinabri) 89%);
+  box-shadow:inset 0 0 0 7px var(--cinabri), inset 0 0 0 12px var(--calc), inset 0 0 0 15px var(--negre);
+}
+.absis::after{content:"";position:absolute;inset:0;background:var(--soroll);mix-blend-mode:multiply;opacity:.55;pointer-events:none;z-index:3}
+#pantocrator{display:block;width:100%;height:auto;position:relative;z-index:1;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#pantocrator:focus-visible{outline:3px dashed var(--calc);outline-offset:-10px}
+#llum{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+#ulls{transform-box:fill-box;transform-origin:center;transition:transform .07s}
+#ulls.parpella{transform:scaleY(.08)}
+
+.cinta{background:var(--negre);color:var(--calc);text-align:center;padding:1.3rem 1.2rem 1.1rem}
+.cinta h1{font-size:clamp(2rem,6.4vw,3.5rem);line-height:1.04;letter-spacing:.01em}
+.cinta .lema{font-style:italic;color:var(--ocre);font-size:1.15em;margin:.6em 0 .3em}
+.cinta .pista{font-size:.88em;color:#bfb293;margin:0}
+.cortina{
+  height:clamp(56px,12vw,96px);
+  background:
+    linear-gradient(to bottom, transparent 82%, var(--cinabri) 82%),
+    repeating-linear-gradient(90deg, #f1e7cd 0 14px, #dcc79e 14px 22px, #efe2c3 22px 30px, #c8b083 30px 34px);
+  border-top:6px solid var(--ocre); border-bottom:6px solid var(--negre);
+  box-shadow:0 6px 0 var(--cinabri-fosc);
+}
+
+/* TAULES */
+.taula{
+  width:min(100% - 24px, 40rem); padding:clamp(1.4rem,5vw,2.6rem);
+  background:var(--soroll), var(--calc);
+  border:4px solid var(--negre);
+  box-shadow:0 0 0 8px var(--cinabri), 0 0 0 12px var(--negre);
+}
+.taula h2, .ofrenes h2{font-size:clamp(1.7rem,5vw,2.5rem);line-height:1.08;color:var(--cinabri);text-align:center;margin-bottom:.8em}
+.capitular::first-letter{
+  float:left; font-family:var(--display); font-size:3.6em; line-height:.86;
+  padding:.14em .16em .06em; margin:.08em .16em 0 0;
+  background:var(--lapis); color:var(--ocre); border:3px solid var(--negre);
+}
+.taula p:last-child{margin-bottom:0}
+
+/* OBRA */
+.esglesia{display:block;width:100%;height:auto;margin:0 auto 1rem}
+#fresc{opacity:0;transition:opacity .8s}
+#fresc.pintat{opacity:1;filter:drop-shadow(0 0 6px #f6c453)}
+.xifra{text-align:center;font-family:var(--display);font-size:clamp(1.5rem,4.6vw,2.1rem);line-height:1.15;margin:0 0 .6rem}
+.xifra small{display:block;font-family:var(--text);font-size:.5em;color:#5a4a33}
+.solc{position:relative;height:18px;border:3px solid var(--negre);background:#d8c6a0;margin:0 0 1.4rem}
+.solc-ple{position:absolute;inset:0 auto 0 0;width:0;background:repeating-linear-gradient(90deg,var(--cinabri) 0 10px,var(--ocre) 10px 20px);transition:width .3s}
+.solc span{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--negre)}
+.imagina label{display:block;font-style:italic;text-align:center;margin-bottom:.3rem}
+.imagina input{width:100%;accent-color:var(--cinabri);margin:0 0 .4rem}
+.nota{text-align:center;font-size:.92em;margin:0 0 1.2rem}
+.nota button{font:inherit;font-style:italic;background:none;border:0;border-bottom:2px solid var(--cinabri);color:var(--cinabri);cursor:pointer;padding:0}
+.fites{list-style:none;padding:0;margin:0;display:grid;gap:.8rem}
+.fites li{border:3px solid var(--negre);padding:.8rem 1rem;background:#e6d8b6;transition:background .3s}
+.fites li b{display:block;font-family:var(--display);font-weight:400;color:var(--cinabri);font-size:1.2em}
+.fites li.en-obra{background:#f2deb0}
+.fites li.assolida{background:var(--ocre)}
+.fites li.assolida b{color:var(--negre)}
+.fites .estat{font-style:italic;font-size:.9em}
+
+/* OFRENES */
+.ofrenes{width:min(100%, 62rem)}
+.ofrenes h2{color:var(--negre)}
+.ofrenes .intro{text-align:center;max-width:32rem;margin:0 auto 1.6rem}
+.arcada{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15.5rem),1fr));gap:clamp(1.2rem,3vw,1.8rem)}
+.nitxo{display:flex;flex-direction:column}
+.nitxo .arc{display:block;width:100%;height:auto}
+.cos-nitxo{
+  flex:1; text-align:center; padding:1.1rem 1.9rem 1.5rem;
+  background:var(--soroll), var(--calc); border:4px solid var(--negre); border-top:0;
+  box-shadow:inset 13px 0 0 var(--pedra), inset -13px 0 0 var(--pedra), inset 17px 0 0 var(--negre), inset -17px 0 0 var(--negre);
+}
+.preu{font-family:var(--display);font-size:2.8rem;line-height:1;color:var(--cinabri);margin:0}
+.mes{font-style:italic;font-size:.9em;margin:0 0 .7rem}
+.cos-nitxo h3{font-size:1.3rem;line-height:1.15;margin-bottom:.5rem}
+
+/* PILA */
+.pila{display:block;width:min(100%,24rem);height:auto;margin:0 auto 1rem}
+.pila text{font-family:var(--display)}
+.camp label{display:block;font-weight:700;margin-bottom:.3rem}
+.camp input{
+  width:100%; font:inherit; font-size:1.15em; padding:.55em .7em;
+  background:#fbf5e6; color:var(--negre); border:3px solid var(--negre); border-radius:0;
+}
+.peu-pila{font-size:.92em;font-style:italic;text-align:center;margin-top:1rem}
+
+/* CRIDA */
+.crida{width:min(100% - 24px, 40rem);text-align:center}
+.crida h2{font-size:clamp(2rem,6vw,3rem);color:var(--negre);margin-bottom:.4em}
+.botons{display:flex;flex-wrap:wrap;gap:1.4rem;justify-content:center;margin-top:1.4rem}
+.boto{
+  display:inline-block; font-family:var(--display); font-size:clamp(1.2rem,3.6vw,1.5rem); line-height:1.2;
+  text-decoration:none; cursor:pointer; padding:.85rem 1.6rem;
+  background:var(--cinabri); color:var(--calc); border:4px solid var(--negre);
+  box-shadow:0 0 0 4px var(--ocre), 0 0 0 8px var(--negre);
+  transition:background .15s, transform .15s;
+}
+.boto:hover{background:var(--cinabri-fosc)}
+.boto:active{transform:translateY(2px)}
+.boto.cant{background:var(--lapis)}
+.boto.cant:hover{background:var(--lapis-fosc)}
+.boto.cant[aria-pressed="true"]{background:var(--verd)}
+
+footer{text-align:center;padding:2rem 1rem 3rem;border-top:10px solid var(--negre);background:var(--negre);color:var(--calc)}
+footer .firma{font-family:var(--display);font-size:clamp(1.5rem,4.6vw,2.2rem);color:var(--ocre);margin:0 0 .3rem}
+footer p{margin:0}
+
+@media (prefers-reduced-motion: reduce){
+  #ulls{transition:none}
+  .solc-ple,.fites li,#fresc{transition:none}
+}
+</style>
+</head>
+<body>
+<main>
+
+<header class="presbiteri">
+  <div class="absis">
+    <svg id="pantocrator" viewBox="-40 0 480 600" role="button" tabindex="0"
+         aria-label="Pantocràtor: Crist en majestat dins una màndorla. Toca'l per rebre una benedicció.">
+      <defs>
+        <clipPath id="dins-mandorla"><path d="M200,40 C352,90 352,510 200,560 C48,510 48,90 200,40Z"/></clipPath>
+        <filter id="difumina" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+      </defs>
+
+      <!-- Alfa i omega penjant -->
+      <g id="alfa">
+        <path d="M30,0 V156" stroke="#d4a12a" stroke-width="2.5" stroke-dasharray="4 3"/>
+        <circle cx="30" cy="186" r="30" fill="#efe4c8" stroke="#120d0a" stroke-width="4"/>
+        <text x="30" y="200" text-anchor="middle" font-size="38" fill="#b5321f" style="font-family:'Uncial Antiqua',Georgia,serif">A</text>
+      </g>
+      <g id="omega">
+        <path d="M370,0 V156" stroke="#d4a12a" stroke-width="2.5" stroke-dasharray="4 3"/>
+        <circle cx="370" cy="186" r="30" fill="#efe4c8" stroke="#120d0a" stroke-width="4"/>
+        <text x="370" y="198" text-anchor="middle" font-size="40" fill="#b5321f" style="font-family:Georgia,serif">ω</text>
+      </g>
+
+      <!-- Màndorla -->
+      <path d="M200,20 C372,76 372,524 200,580 C28,524 28,76 200,20Z" fill="#b5321f" stroke="#120d0a" stroke-width="5"/>
+      <path id="mandorla-mig" d="M200,30 C362,83 362,517 200,570 C38,517 38,83 200,30Z" fill="none"/>
+      <g id="perles"></g>
+      <path d="M200,40 C352,90 352,510 200,560 C48,510 48,90 200,40Z" fill="#23407a" stroke="#120d0a" stroke-width="4"/>
+
+      <!-- Tron -->
+      <g clip-path="url(#dins-mandorla)">
+        <rect x="60" y="372" width="280" height="36" fill="#d4a12a" stroke="#120d0a" stroke-width="4"/>
+        <rect x="60" y="380" width="280" height="8" fill="#efe4c8"/>
+        <path d="M60,408 H340" stroke="#120d0a" stroke-width="3"/>
+      </g>
+
+      <!-- Nimbe -->
+      <circle id="nimbe-llum" cx="200" cy="140" r="74" fill="#f6c453" filter="url(#difumina)" opacity=".4"/>
+      <g id="nimbe">
+        <circle cx="200" cy="140" r="62" fill="#d4a12a" stroke="#120d0a" stroke-width="4"/>
+        <circle cx="200" cy="140" r="54" fill="none" stroke="#efe4c8" stroke-width="4" stroke-linecap="round" stroke-dasharray=".1 9"/>
+        <rect x="187" y="80" width="26" height="28" fill="#b5321f" stroke="#120d0a" stroke-width="3"/>
+        <rect x="140" y="127" width="28" height="26" fill="#b5321f" stroke="#120d0a" stroke-width="3"/>
+        <rect x="232" y="127" width="28" height="26" fill="#b5321f" stroke="#120d0a" stroke-width="3"/>
+      </g>
+
+      <g id="cos">
+        <!-- Escambell i peus -->
+        <path d="M154,532 A46,20 0 0 1 246,532Z" fill="#4f7a5a" stroke="#120d0a" stroke-width="4"/>
+        <path d="M164,526 Q200,516 236,526" fill="none" stroke="#d4a12a" stroke-width="3"/>
+        <ellipse cx="180" cy="500" rx="13" ry="7" fill="#e8c39b" stroke="#120d0a" stroke-width="3"/>
+        <ellipse cx="220" cy="500" rx="13" ry="7" fill="#e8c39b" stroke="#120d0a" stroke-width="3"/>
+
+        <!-- Coll -->
+        <path d="M188,168 V196 Q200,203 212,196 V168Z" fill="#e8c39b" stroke="#120d0a" stroke-width="3"/>
+
+        <!-- Túnica -->
+        <path d="M152,196 Q200,182 248,196 L272,300 L284,472 L116,472 L128,300Z" fill="#efe4c8" stroke="#120d0a" stroke-width="4" stroke-linejoin="round"/>
+        <g fill="none" stroke="#8a6a3a" stroke-width="2.5" stroke-linecap="round">
+          <path d="M184,212 Q192,250 182,300"/><path d="M216,212 Q208,250 218,300"/><path d="M200,214 V300"/>
+        </g>
+        <path d="M176,192 Q200,214 224,192" fill="none" stroke="#d4a12a" stroke-width="7"/>
+        <path d="M176,192 Q200,214 224,192" fill="none" stroke="#120d0a" stroke-width="2"/>
+        <path d="M120,468 H280 L268,494 H132Z" fill="#efe4c8" stroke="#120d0a" stroke-width="3.5" stroke-linejoin="round"/>
+        <g stroke="#8a6a3a" stroke-width="2"><path d="M150,472 V492"/><path d="M175,472 V492"/><path d="M200,472 V492"/><path d="M225,472 V492"/><path d="M250,472 V492"/></g>
+
+        <!-- Mantell -->
+        <path d="M248,196 L272,300 L292,340 Q250,330 222,346 Q240,276 234,204Z" fill="#b5321f" stroke="#120d0a" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M108,340 Q200,306 292,340 L282,470 L118,470Z" fill="#b5321f" stroke="#120d0a" stroke-width="4" stroke-linejoin="round"/>
+        <g fill="none" stroke="#6e1c10" stroke-width="3" stroke-linecap="round">
+          <path d="M126,372 Q200,348 274,372"/><path d="M124,436 Q200,414 278,436"/>
+          <circle cx="166" cy="398" r="20"/><circle cx="166" cy="398" r="9"/>
+          <circle cx="234" cy="398" r="20"/><circle cx="234" cy="398" r="9"/>
+          <path d="M248,214 L262,300"/>
+        </g>
+        <path d="M118,470 H282" stroke="#d4a12a" stroke-width="5"/>
+
+        <!-- Braç dret, beneint -->
+        <path d="M154,198 C138,220 124,262 116,302 L138,304 C142,270 150,240 160,214Z" fill="#efe4c8" stroke="#120d0a" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M104,302 H138 L132,250 H108Z" fill="#efe4c8" stroke="#120d0a" stroke-width="3.5" stroke-linejoin="round"/>
+        <g id="ma">
+          <path d="M107,250 H133 L132,262 H108Z" fill="#d4a12a" stroke="#120d0a" stroke-width="3"/>
+          <rect x="109" y="184" width="10" height="42" rx="5" fill="#e8c39b" stroke="#120d0a" stroke-width="2.5"/>
+          <rect x="120" y="179" width="10" height="47" rx="5" fill="#e8c39b" stroke="#120d0a" stroke-width="2.5"/>
+          <rect x="106" y="214" width="29" height="38" rx="9" fill="#e8c39b" stroke="#120d0a" stroke-width="3"/>
+          <path d="M129,222 q7,2 6,10 q-2,6 -9,4" fill="none" stroke="#120d0a" stroke-width="2"/>
+          <ellipse cx="108" cy="232" rx="5" ry="11" transform="rotate(24 108 232)" fill="#e8c39b" stroke="#120d0a" stroke-width="2.5"/>
+        </g>
+
+        <!-- Braç esquerre i llibre -->
+        <path d="M246,198 C268,230 282,270 292,316 L270,322 C262,284 250,252 238,226Z" fill="#efe4c8" stroke="#120d0a" stroke-width="3.5" stroke-linejoin="round"/>
+        <g transform="rotate(-8 264 298)">
+          <rect x="224" y="252" width="80" height="94" fill="#b5321f" stroke="#120d0a" stroke-width="4"/>
+          <g fill="#d4a12a"><circle cx="228" cy="256" r="2.5"/><circle cx="300" cy="256" r="2.5"/><circle cx="228" cy="342" r="2.5"/><circle cx="300" cy="342" r="2.5"/></g>
+          <rect x="230" y="258" width="68" height="82" fill="#efe4c8" stroke="#120d0a" stroke-width="2"/>
+          <path d="M264,258 V340" stroke="#120d0a" stroke-width="2"/>
+          <g font-size="12.5" text-anchor="middle" style="font-family:'Uncial Antiqua',Georgia,serif">
+            <text x="247" y="272" fill="#b5321f">+</text>
+            <text x="247" y="291" fill="#120d0a">EGO</text>
+            <text x="247" y="309" fill="#120d0a">SVM</text>
+            <text x="281" y="281" fill="#120d0a">LVX</text>
+            <text x="281" y="299" fill="#120d0a">MVN</text>
+            <text x="281" y="317" fill="#120d0a">DI</text>
+          </g>
+          <ellipse cx="302" cy="300" rx="7" ry="13" fill="#e8c39b" stroke="#120d0a" stroke-width="2.5"/>
+        </g>
+
+        <!-- Cap -->
+        <g id="cap">
+          <path d="M162,140 Q158,92 200,90 Q242,92 238,140 L246,198 Q200,186 154,198Z" fill="#3b2212" stroke="#120d0a" stroke-width="3" stroke-linejoin="round"/>
+          <ellipse cx="200" cy="142" rx="30" ry="40" fill="#e8c39b" stroke="#120d0a" stroke-width="3"/>
+          <g fill="none" stroke="#1e1008" stroke-width="2.2" stroke-linecap="round">
+            <path d="M200,92 V104"/><path d="M200,98 Q178,100 171,126"/><path d="M200,98 Q222,100 229,126"/>
+            <path d="M164,152 Q160,176 162,195"/><path d="M236,152 Q240,176 238,195"/>
+          </g>
+          <g id="ulls">
+            <path d="M175,135 Q186.5,126 197,135 Q186.5,141 175,135Z" fill="#efe4c8" stroke="#120d0a" stroke-width="2"/>
+            <path d="M203,135 Q213.5,126 225,135 Q213.5,141 203,135Z" fill="#efe4c8" stroke="#120d0a" stroke-width="2"/>
+            <g id="nines" fill="#120d0a"><circle cx="186.5" cy="134.5" r="3.8"/><circle cx="213.5" cy="134.5" r="3.8"/></g>
+          </g>
+          <g fill="none" stroke="#120d0a" stroke-linecap="round">
+            <path d="M172,126 Q186,115 198,127" stroke-width="3"/>
+            <path d="M202,127 Q214,115 228,126" stroke-width="3"/>
+            <path d="M200,128 L196,156 Q200,160 206,156" stroke-width="2.5"/>
+          </g>
+          <circle cx="180" cy="156" r="7" fill="#b5321f" opacity=".5"/>
+          <circle cx="220" cy="156" r="7" fill="#b5321f" opacity=".5"/>
+          <path d="M171,152 Q168,188 200,206 Q232,188 229,152 Q224,178 200,180 Q176,178 171,152Z" fill="#3b2212" stroke="#120d0a" stroke-width="2.5"/>
+          <path d="M184,166 Q200,159 216,166" fill="none" stroke="#3b2212" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M193,171 Q200,174 207,171" fill="none" stroke="#b5321f" stroke-width="2.5" stroke-linecap="round"/>
+          <g fill="none" stroke="#1e1008" stroke-width="1.8"><path d="M190,184 Q192,194 198,200"/><path d="M210,184 Q208,194 202,200"/></g>
+        </g>
+      </g>
+    </svg>
+    <canvas id="llum" aria-hidden="true"></canvas>
+  </div>
+  <div class="cinta">
+    <h1>Aixequem una església romànica</h1>
+    <p class="lema">Que torni el cant gregorià i l'art romànic.</p>
+    <p class="pista">Toca el pantocràtor per rebre la benedicció.</p>
+  </div>
+  <div class="cortina" aria-hidden="true"></div>
+</header>
+
+<section class="taula" aria-labelledby="t-projecte">
+  <h2 id="t-projecte">Què vull fer</h2>
+  <p class="capitular">Vull construir una capella romànica com les que fa nou-cents anys omplien les valls del Pirineu: una sola nau, volta de canó, absis semicircular i campanar. Pedra, morter de calç i, a l'absis, un pantocràtor pintat al fresc amb pigments minerals.</p>
+  <p>Ho tinc tot pensat. Només falten els diners, i per això hi ha aquesta campanya.</p>
+</section>
+
+<section class="taula" aria-labelledby="t-obra">
+  <h2 id="t-obra">Com avança l'obra</h2>
+  <svg class="esglesia" viewBox="0 0 400 214" role="img" aria-labelledby="t-dibuix">
+    <title id="t-dibuix">L'església es va omplint de pedra a mesura que arriben les ofrenes</title>
+    <defs>
+      <pattern id="carreus" width="24" height="12" patternUnits="userSpaceOnUse">
+        <rect width="24" height="12" fill="#cdb58a"/>
+        <path d="M0 .5H24M0 6.5H24M.5 0V6M12.5 6V12" stroke="#8f7550" stroke-width="1"/>
+      </pattern>
+      <g id="masses">
+        <path d="M58,201 V52 H112 V201Z"/>
+        <path d="M52,52 L85,24 L118,52Z"/>
+        <path d="M112,201 V114 H300 V201Z"/>
+        <path d="M106,114 L116,96 H296 L306,114Z"/>
+        <path d="M300,201 V132 H318 Q352,132 352,166 V201Z"/>
+        <path d="M298,134 L302,124 H318 Q360,124 360,168 L352,166 Q352,132 318,132 H300Z"/>
+      </g>
+      <g id="forats">
+        <path d="M79,72 V62 a6,6 0 0 1 12,0 V72Z"/>
+        <path d="M68,104 V90 a6,6 0 0 1 12,0 V104Z M90,104 V90 a6,6 0 0 1 12,0 V104Z"/>
+        <path d="M68,142 V128 a6,6 0 0 1 12,0 V142Z M90,142 V128 a6,6 0 0 1 12,0 V142Z"/>
+        <path d="M170,201 V170 a16,16 0 0 1 32,0 V201Z"/>
+        <path d="M140,164 V150 a5,5 0 0 1 10,0 V164Z M234,164 V150 a5,5 0 0 1 10,0 V164Z M264,164 V150 a5,5 0 0 1 10,0 V164Z"/>
+        <path d="M322,174 V160 a4,4 0 0 1 8,0 V174Z"/>
+      </g>
+      <path id="llombardes" d="M118,126a9,9 0 0 1 18,0a9,9 0 0 1 18,0a9,9 0 0 1 18,0a9,9 0 0 1 18,0a9,9 0 0 1 18,0a9,9 0 0 1 18,0a9,9 0 0 1 18,0a9,9 0 0 1 18,0a9,9 0 0 1 18,0a9,9 0 0 1 18,0"/>
+      <clipPath id="clip-obra"><rect id="obra-alcada" x="0" y="202" width="400" height="0"/></clipPath>
+    </defs>
+    <g fill="none" stroke="#b5321f" stroke-width="1.6" stroke-dasharray="5 4">
+      <use href="#masses"/><use href="#forats"/><use href="#llombardes"/>
+    </g>
+    <g clip-path="url(#clip-obra)">
+      <use href="#masses" fill="url(#carreus)" stroke="#120d0a" stroke-width="3" stroke-linejoin="round"/>
+      <use href="#forats" fill="#120d0a"/>
+      <use href="#llombardes" fill="none" stroke="#120d0a" stroke-width="2"/>
+      <path d="M85,24 V6 M78,12 H92" stroke="#120d0a" stroke-width="3"/>
+    </g>
+    <path id="fresc" d="M322,174 V160 a4,4 0 0 1 8,0 V174Z" fill="#f6c453"/>
+    <path d="M20,201 H380" stroke="#120d0a" stroke-width="3"/>
+  </svg>
+
+  <p class="xifra"><span id="recaptat">0 €</span><small>de 30.000 € per a l'església i el fresc</small></p>
+  <div class="solc" aria-hidden="true"><div class="solc-ple"></div><span style="left:33.33%"></span><span style="left:66.67%"></span></div>
+  <div class="imagina">
+    <label for="imagina">Arrossega per veure com quedaria amb més ofrenes</label>
+    <input type="range" id="imagina" min="0" max="30000" step="500">
+  </div>
+  <p class="nota" id="nota" hidden>Xifra imaginada. <button type="button" id="torna">Torna a la xifra real</button></p>
+
+  <ol class="fites">
+    <li data-inici="10000" data-fita="20000"><b>10.000 a 20.000 €</b>Aixequem l'església: murs, volta, teulada i campanar. <span class="estat"></span></li>
+    <li data-inici="30000" data-fita="30000"><b>30.000 €</b>Pintem el fresc del pantocràtor a l'absis. <span class="estat"></span></li>
+  </ol>
+</section>
+
+<section class="ofrenes" aria-labelledby="t-ofrenes">
+  <h2 id="t-ofrenes">Ofrenes per als mecenes</h2>
+  <p class="intro">Cada ofrena deixa rastre a la capella, i les més grans es veuran durant segles.</p>
+  <div class="arcada">
+    <article class="nitxo">
+      <svg class="arc" viewBox="0 0 200 102" data-simbol="pila" aria-hidden="true"></svg>
+      <div class="cos-nitxo">
+        <p class="preu">50 €</p><p class="mes">o més</p>
+        <h3>A la pila baptismal</h3>
+        <p>El teu nom gravat a la pila, en majúscules romanes.</p>
+      </div>
+    </article>
+    <article class="nitxo">
+      <svg class="arc" viewBox="0 0 200 102" data-simbol="ciri" aria-hidden="true"></svg>
+      <div class="cos-nitxo">
+        <p class="preu">100 €</p><p class="mes">o més</p>
+        <h3>A la benedicció</h3>
+        <p>El teu nom sortirà a la benedicció de la capella, el dia que s'obri.</p>
+      </div>
+    </article>
+    <article class="nitxo">
+      <svg class="arc" viewBox="0 0 200 102" data-simbol="nimbe" aria-hidden="true"></svg>
+      <div class="cos-nitxo">
+        <p class="preu">500 €</p><p class="mes">o més</p>
+        <h3>Al pantocràtor</h3>
+        <p>Sortiràs pintat al fresc de l'absis, al costat del Crist en majestat.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="taula" aria-labelledby="t-pila">
+  <h2 id="t-pila">Prova com quedaria el teu nom</h2>
+  <svg class="pila" viewBox="0 0 300 236" role="img" aria-labelledby="t-pila-dibuix">
+    <title id="t-pila-dibuix">Pila baptismal de pedra amb el nom gravat</title>
+    <defs><path id="corba-nom" d="M54,100 Q150,130 246,100"/></defs>
+    <rect x="92" y="212" width="116" height="16" fill="#b59d70" stroke="#120d0a" stroke-width="3"/>
+    <path d="M112,160 L122,212 H178 L188,160Z" fill="#c9b48e" stroke="#120d0a" stroke-width="3"/>
+    <path d="M38,64 L52,150 Q150,178 248,150 L262,64 Q150,104 38,64Z" fill="#cfba90" stroke="#120d0a" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M62,154 V140 a12,12 0 0 1 24,0 V160 M86,140 a12,12 0 0 1 24,0 V164 M110,140 a12,12 0 0 1 24,0 V166 M134,140 a12,12 0 0 1 24,0 V166 M158,140 a12,12 0 0 1 24,0 V166 M182,140 a12,12 0 0 1 24,0 V164 M206,140 a12,12 0 0 1 24,0 V160 M230,140 V156" fill="none" stroke="#7d6640" stroke-width="2.5"/>
+    <ellipse cx="150" cy="64" rx="112" ry="20" fill="#dccaa3" stroke="#120d0a" stroke-width="3"/>
+    <ellipse cx="150" cy="64" rx="96" ry="14" fill="#4f6fa8" stroke="#120d0a" stroke-width="2"/>
+    <ellipse cx="128" cy="61" rx="40" ry="4" fill="#9db4dd" opacity=".6"/>
+    <text fill="#f3e8cc" font-size="20" transform="translate(.8 1.2)"><textPath href="#corba-nom" startOffset="50%" text-anchor="middle">+ PETRVS · DONAVIT · L</textPath></text>
+    <text fill="#4a3820" font-size="20"><textPath href="#corba-nom" startOffset="50%" text-anchor="middle">+ PETRVS · DONAVIT · L</textPath></text>
+  </svg>
+  <div class="camp">
+    <label for="nom">El teu nom</label>
+    <input id="nom" type="text" maxlength="28" autocomplete="given-name" placeholder="Escriu el teu nom">
+  </div>
+  <p class="peu-pila">Amb 50 € o més, el picapedrer el gravarà així. Com a l'època, la U es fa V i la L final vol dir cinquanta.</p>
+</section>
+
+<section class="crida" aria-labelledby="t-crida">
+  <h2 id="t-crida">Fes la teva ofrena</h2>
+  <p>La campanya és a GoFundMe. Qualsevol quantitat posa una pedra.</p>
+  <div class="botons">
+    <a class="boto" data-gofundme href="#" target="_blank" rel="noopener">Fes una ofrena a GoFundMe</a>
+    <button class="boto cant" type="button" id="cant" aria-pressed="false">Escolta el cant</button>
+  </div>
+</section>
+
+</main>
+<footer>
+  <p class="firma">Ja ho tinc tot pensat.</p>
+  <p>Anno Domini MMXXVI</p>
+</footer>
+
+<script>
+/* ===== Configura aquí ===== */
+const GOFUNDME_URL = "https://www.gofundme.com/"; // enllaç de la teva campanya
+const RECAPTAT = 0;          // diners recaptats fins ara, en euros
+const OBJECTIU = 30000;      // església + fresc
+const ESGLESIA = 20000;      // a partir d'aquí l'església és acabada
+/* ========================== */
+
+const $ = s => document.querySelector(s);
+const NS = "http://www.w3.org/2000/svg";
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const M = reduce ? 0 : 1;
+const euros = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " €";
+
+document.querySelectorAll("[data-gofundme]").forEach(a => a.href = GOFUNDME_URL);
+
+function el(tag, attrs, pare){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (pare) pare.appendChild(e);
+  return e;
+}
+
+/* ---------- Arcs de dovelles ---------- */
+function dovelles(g, cx, cy, ro, ri, n){
+  const p = (r, a) => `${(cx + r*Math.cos(a)).toFixed(2)},${(cy + r*Math.sin(a)).toFixed(2)}`;
+  const mig = (n - 1) / 2;
+  for (let i = 0; i < n; i++){
+    const a0 = Math.PI + i*Math.PI/n, a1 = Math.PI + (i+1)*Math.PI/n;
+    const d = `M${p(ri,a0)} L${p(ro,a0)} A${ro},${ro} 0 0 1 ${p(ro,a1)} L${p(ri,a1)} A${ri},${ri} 0 0 0 ${p(ri,a0)}Z`;
+    el("path", {d, fill: i === mig ? "#d4a12a" : (i % 2 ? "#efe4c8" : "#b5321f"),
+      stroke:"#120d0a", "stroke-width":2.5, "stroke-linejoin":"round"}, g);
+  }
+}
+const SIMBOLS = {
+  pila: `<path d="M80,62 H120 Q118,82 100,84 Q82,82 80,62Z" fill="#c9b48e" stroke="#120d0a" stroke-width="2"/>
+         <ellipse cx="100" cy="62" rx="20" ry="4" fill="#8fb0e6" stroke="#120d0a" stroke-width="2"/>
+         <path d="M95,84 H105 L107,92 H93Z" fill="#c9b48e" stroke="#120d0a" stroke-width="2"/>
+         <rect x="86" y="92" width="28" height="6" fill="#c9b48e" stroke="#120d0a" stroke-width="2"/>`,
+  ciri: `<circle class="aura" cx="100" cy="50" r="17" fill="#f6c453" opacity=".35"/>
+         <rect x="94" y="60" width="12" height="34" fill="#efe4c8" stroke="#120d0a" stroke-width="2"/>
+         <path class="flama" d="M100,40 Q108,53 100,60 Q92,53 100,40Z" fill="#f6c453" stroke="#120d0a" stroke-width="1.5"/>
+         <rect x="86" y="94" width="28" height="5" fill="#d4a12a" stroke="#120d0a" stroke-width="2"/>`,
+  nimbe:`<circle cx="100" cy="70" r="24" fill="#d4a12a" stroke="#120d0a" stroke-width="2"/>
+         <rect x="94" y="46" width="12" height="10" fill="#b5321f" stroke="#120d0a" stroke-width="1.5"/>
+         <rect x="76" y="64" width="10" height="12" fill="#b5321f" stroke="#120d0a" stroke-width="1.5"/>
+         <rect x="114" y="64" width="10" height="12" fill="#b5321f" stroke="#120d0a" stroke-width="1.5"/>
+         <circle cx="100" cy="72" r="13" fill="#e8c39b" stroke="#120d0a" stroke-width="2"/>
+         <circle cx="95" cy="70" r="1.8" fill="#120d0a"/><circle cx="105" cy="70" r="1.8" fill="#120d0a"/>`
+};
+document.querySelectorAll("svg.arc").forEach(svg => {
+  el("path", {d:"M30,101 A70,70 0 0 1 170,101Z", fill:"#23407a"}, svg);
+  dovelles(el("g", {}, svg), 100, 101, 99, 70, 13);
+  svg.insertAdjacentHTML("beforeend", SIMBOLS[svg.dataset.simbol]);
+});
+
+/* ---------- Perles de la màndorla ---------- */
+const svgP = $("#pantocrator");
+const perles = [];
+{
+  const mig = $("#mandorla-mig"), L = mig.getTotalLength(), g = $("#perles"), n = 56;
+  for (let i = 0; i < n; i++){
+    const pt = mig.getPointAtLength(i * L / n);
+    perles.push(el("circle", {cx:pt.x.toFixed(1), cy:pt.y.toFixed(1), r:3.3, fill:"#efe4c8", stroke:"#120d0a", "stroke-width":1}, g));
+  }
+}
+
+/* ---------- Pantocràtor animat ---------- */
+const absis = $(".absis");
+const canvas = $("#llum"), c = canvas.getContext("2d");
+const cos = $("#cos"), cap = $("#cap"), ma = $("#ma"), nines = $("#nines"), ulls = $("#ulls");
+const alfa = $("#alfa"), omega = $("#omega"), nimbeLlum = $("#nimbe-llum");
+let W = 0, H = 0;
+
+function mida(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = absis.clientWidth; H = absis.clientHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+new ResizeObserver(mida).observe(absis); mida();
+
+// coordenades del viewBox del pantocràtor dins el llenç
+function aLlenc(x, y){
+  const a = absis.getBoundingClientRect(), s = svgP.getBoundingClientRect();
+  return { x: s.left - a.left - absis.clientLeft + (x + 40) / 480 * s.width,
+           y: s.top - a.top - absis.clientTop + y / 600 * s.height };
+}
+
+let punter = null;
+addEventListener("pointermove", e => punter = {x:e.clientX, y:e.clientY, t:performance.now()}, {passive:true});
+const mira = {x:0, y:0};
+
+let beneT = -1e9, flash = 0;
+const espurnes = [], textos = [];
+function benediccio(){
+  const ara = performance.now();
+  if (ara - beneT < 1400) return;
+  beneT = ara; flash = 1;
+  const p = aLlenc(120, 196);
+  for (let i = 0; i < 46; i++){
+    const a = -Math.PI/2 + (Math.random() - .5) * 2.4, v = .05 + Math.random() * .16;
+    espurnes.push({x:p.x, y:p.y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, vida:1, r:.8 + Math.random()*2});
+  }
+  textos.push({x:p.x + W*.04, y:p.y - 10, t0:ara});
+  if (audio && audio.actiu) campana();
+}
+svgP.addEventListener("click", benediccio);
+svgP.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); benediccio(); } });
+
+(function parpelleja(){
+  setTimeout(() => {
+    ulls.classList.add("parpella");
+    setTimeout(() => { ulls.classList.remove("parpella"); parpelleja(); }, 130);
+  }, 2500 + Math.random() * 4000);
+})();
+
+function anima(t){
+  const resp = Math.sin(t * .0011) * M;
+  cos.setAttribute("transform", `translate(200 540) scale(${1 + resp*.004} ${1 + resp*.008}) translate(-200 -540)`);
+  cap.setAttribute("transform", `rotate(${Math.sin(t * .00045) * 1.3 * M} 200 196)`);
+
+  // mà: balanç suau, i el senyal de la creu quan beneeix
+  let tx = 0, ty = 0;
+  const p = (t - beneT) / 1500;
+  if (p >= 0 && p < 1){
+    if (p < .5) ty = 20 * Math.sin(Math.PI * p * 2);
+    else tx = -14 * Math.sin(Math.PI * (p - .5) * 4);
+  }
+  ma.setAttribute("transform", `translate(${tx} ${ty}) rotate(${Math.sin(t * .0009) * 3 * M} 120 252)`);
+
+  // mirada
+  let ox, oy;
+  if (punter && t - punter.t < 5000){
+    const s = svgP.getBoundingClientRect();
+    const ex = s.left + 240 / 480 * s.width, ey = s.top + 134 / 600 * s.height;
+    const dx = punter.x - ex, dy = punter.y - ey, d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 260);
+    ox = dx / d * k; oy = dy / d * k;
+  } else {
+    ox = Math.sin(t * .00031) * .6 * M; oy = Math.sin(t * .00021) * .3 * M;
+  }
+  mira.x += (ox - mira.x) * .12; mira.y += (oy - mira.y) * .12;
+  nines.setAttribute("transform", `translate(${(mira.x * 2.8).toFixed(2)} ${(mira.y * 1.6).toFixed(2)})`);
+
+  alfa.setAttribute("transform", `rotate(${Math.sin(t * .0013) * 4 * M} 30 0)`);
+  omega.setAttribute("transform", `rotate(${Math.sin(t * .0013 + 1.7) * 4 * M} 370 0)`);
+  nimbeLlum.setAttribute("opacity", (.35 + .2 * Math.sin(t * .0012) * M + flash * .6).toFixed(3));
+  perles.forEach((q, i) => q.setAttribute("opacity", (.75 + .25 * Math.sin(t * .003 + i * 1.3) * M).toFixed(2)));
+}
+
+/* llenç: pols daurada, llum del nimbe, ciris, espurnes */
+const nova = ini => ({x:Math.random(), y: ini ? Math.random() : 1.02, v:.00004 + Math.random()*.00009,
+  r:.5 + Math.random()*1.6, f:Math.random()*6.28, dx:(Math.random() - .5)*.00004});
+const pols = Array.from({length:70}, () => nova(true));
+const ciris = [{x:.09, f:0}, {x:.91, f:2.3}];
+
+function dibuixa(t, dt){
+  c.clearRect(0, 0, W, H);
+  const h = aLlenc(200, 140);
+  c.globalCompositeOperation = "lighter";
+  const g = c.createRadialGradient(h.x, h.y, 0, h.x, h.y, W * .5);
+  g.addColorStop(0, `rgba(255,214,140,${(.16 + .06 * Math.sin(t * .0012) * M + flash * .35).toFixed(3)})`);
+  g.addColorStop(1, "rgba(255,214,140,0)");
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+
+  for (const p of pols){
+    p.y -= p.v * dt * M; p.x += (p.dx + Math.sin(t * .0006 + p.f) * .00002) * dt * M;
+    if (p.y < -.02) Object.assign(p, nova(false));
+    const a = .22 + .3 * Math.sin(t * .002 + p.f * 3);
+    if (a <= 0) continue;
+    c.fillStyle = `rgba(255,226,170,${a.toFixed(3)})`;
+    c.beginPath(); c.arc(p.x * W, p.y * H, p.r, 0, 6.283); c.fill();
+  }
+
+  for (let i = espurnes.length - 1; i >= 0; i--){
+    const s = espurnes[i];
+    s.x += s.vx * dt; s.y += s.vy * dt; s.vy += .00012 * dt; s.vida -= dt / 1300;
+    if (s.vida <= 0){ espurnes.splice(i, 1); continue; }
+    c.fillStyle = `rgba(255,205,110,${s.vida.toFixed(3)})`;
+    c.beginPath(); c.arc(s.x, s.y, s.r, 0, 6.283); c.fill();
+  }
+  c.globalCompositeOperation = "source-over";
+
+  for (const k of ciris) ciri(k.x * W, H * .955, t, k.f);
+
+  for (let i = textos.length - 1; i >= 0; i--){
+    const x = textos[i], p = (t - x.t0) / 2000;
+    if (p >= 1){ textos.splice(i, 1); continue; }
+    c.font = `${Math.max(18, W * .045)}px "Uncial Antiqua", Georgia, serif`;
+    c.textAlign = "center";
+    c.fillStyle = `rgba(239,228,200,${(1 - p).toFixed(3)})`;
+    c.strokeStyle = `rgba(18,13,10,${(1 - p).toFixed(3)})`; c.lineWidth = 3;
+    c.strokeText("Pax vobis", x.x, x.y - p * 50);
+    c.fillText("Pax vobis", x.x, x.y - p * 50);
+  }
+  flash = Math.max(0, flash - dt / 900);
+}
+
+function ciri(x, y, t, f){
+  const w = Math.max(9, W * .024), h = W * .12;
+  const fl = 1 + (.12 * Math.sin(t * .011 + f) + .07 * Math.sin(t * .037 + f * 2)) * M;
+  const top = y - h;
+  c.globalCompositeOperation = "lighter";
+  const g = c.createRadialGradient(x, top - w, 0, x, top - w, w * 6 * fl);
+  g.addColorStop(0, "rgba(255,190,90,.5)"); g.addColorStop(1, "rgba(255,190,90,0)");
+  c.fillStyle = g; c.fillRect(x - w * 7, top - w * 8, w * 14, w * 14);
+  c.globalCompositeOperation = "source-over";
+
+  c.lineWidth = 2; c.strokeStyle = "#120d0a";
+  c.fillStyle = "#d4a12a";
+  c.beginPath(); c.ellipse(x, y, w * 1.4, w * .45, 0, 0, 6.283); c.fill(); c.stroke();
+  c.fillStyle = "#efe4c8"; c.fillRect(x - w/2, top, w, h); c.strokeRect(x - w/2, top, w, h);
+  c.fillStyle = "#b5321f"; c.fillRect(x - w/2 + 1, top + h * .62, w - 2, h * .07);
+
+  const fh = w * 2.3 * fl, sway = Math.sin(t * .006 + f) * w * .25 * M;
+  c.beginPath(); c.moveTo(x, top - 1);
+  c.quadraticCurveTo(x + w * .65, top - fh * .45, x + sway, top - fh);
+  c.quadraticCurveTo(x - w * .65, top - fh * .45, x, top - 1);
+  c.fillStyle = "#f6c453"; c.fill(); c.lineWidth = 1.5; c.stroke();
+  c.beginPath(); c.moveTo(x, top - 2);
+  c.quadraticCurveTo(x + w * .28, top - fh * .3, x + sway * .5, top - fh * .55);
+  c.quadraticCurveTo(x - w * .28, top - fh * .3, x, top - 2);
+  c.fillStyle = "#fff6dc"; c.fill();
+}
+
+let visible = true, ultim = performance.now();
+new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(absis);
+function bucle(ara){
+  const dt = Math.min(50, ara - ultim); ultim = ara;
+  if (visible){ anima(ara); dibuixa(ara, dt); }
+  requestAnimationFrame(bucle);
+}
+requestAnimationFrame(bucle);
+
+/* ---------- L'obra ---------- */
+const rang = $("#imagina"), clip = $("#obra-alcada"), xifra = $("#recaptat"),
+      nota = $("#nota"), ple = $(".solc-ple"), fresc = $("#fresc"),
+      fites = [...document.querySelectorAll(".fites li")];
+rang.max = OBJECTIU; rang.value = RECAPTAT;
+function obra(v){
+  const f = Math.min(v / ESGLESIA, 1), base = 202, cim = 4, y = base - (base - cim) * f;
+  clip.setAttribute("y", y.toFixed(1)); clip.setAttribute("height", (base - y).toFixed(1));
+  xifra.textContent = euros(v);
+  ple.style.width = Math.min(100, v / OBJECTIU * 100) + "%";
+  nota.hidden = v === RECAPTAT;
+  fresc.classList.toggle("pintat", v >= OBJECTIU);
+  fites.forEach(li => {
+    const fet = v >= +li.dataset.fita, enObra = !fet && v >= +li.dataset.inici;
+    li.classList.toggle("assolida", fet); li.classList.toggle("en-obra", enObra);
+    li.querySelector(".estat").textContent = fet ? "Fet." : enObra ? "En obres." : "";
+  });
+}
+rang.addEventListener("input", () => obra(+rang.value));
+$("#torna").addEventListener("click", () => { rang.value = RECAPTAT; obra(RECAPTAT); rang.focus(); });
+obra(RECAPTAT);
+
+/* ---------- La pila baptismal ---------- */
+const entrada = $("#nom"), corba = $("#corba-nom");
+const textsPila = [...document.querySelectorAll(".pila text")];
+function epigrafia(s){
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()
+    .replace(/J/g, "I").replace(/W/g, "VV").replace(/U/g, "V")
+    .replace(/[^A-Z0-9 ]/g, "").trim().replace(/\s+/g, " · ");
+}
+function pila(){
+  const n = epigrafia(entrada.value);
+  const txt = `+ ${n || "PETRVS"} · DONAVIT · L`;
+  textsPila.forEach(t => t.firstElementChild.textContent = txt);
+  const L = corba.getTotalLength() * .97;
+  let m = 20;
+  const posa = () => textsPila.forEach(t => t.setAttribute("font-size", m));
+  posa();
+  while (m > 8 && textsPila[1].getComputedTextLength() > L){ m -= .5; posa(); }
+}
+entrada.addEventListener("input", pila);
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(pila);
+
+/* ---------- Cant: organum paral·lel en mode dòric ---------- */
+let audio = null;
+const D3=146.83,E3=164.81,F3=174.61,G3=196,A3=220,B3=246.94,C4=261.63,D4=293.66;
+const FRASE = [
+  [D3,1],[F3,1],[G3,1],[A3,2],[A3,1],[G3,1],[A3,1],[C4,1.5],[B3,.5],[A3,2],
+  [G3,1],[F3,1],[G3,1],[A3,1],[G3,1],[F3,1],[E3,1],[D3,3],[0,1.5],
+  [A3,1],[C4,1],[D4,2],[C4,1],[A3,1],[G3,1],[A3,2],[F3,1],[G3,1],[E3,1.5],[D3,3.5],[0,2]
+];
+const PAS = .58;
+
+function creaAudio(){
+  const ac = new (window.AudioContext || window.webkitAudioContext)();
+  const sortida = ac.createGain(); sortida.gain.value = 0;
+  const conv = ac.createConvolver(), len = ac.sampleRate * 3.8, ir = ac.createBuffer(2, len, ac.sampleRate);
+  for (let ch = 0; ch < 2; ch++){ const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random()*2 - 1) * Math.pow(1 - i/len, 2.8); }
+  conv.buffer = ir;
+  const sec = ac.createGain(); sec.gain.value = .5;
+  const humit = ac.createGain(); humit.gain.value = .9;
+  sortida.connect(sec).connect(ac.destination);
+  sortida.connect(conv).connect(humit).connect(ac.destination);
+
+  const veu = ac.createGain();
+  [[650, 5, .9], [1080, 7, .5], [2600, 9, .15]].forEach(([f, q, g]) => {
+    const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = f; bp.Q.value = q;
+    const gg = ac.createGain(); gg.gain.value = g; veu.connect(bp).connect(gg).connect(sortida);
+  });
+  const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 420;
+  const lpg = ac.createGain(); lpg.gain.value = .5; veu.connect(lp).connect(lpg).connect(sortida);
+
+  [[73.42, .05], [110, .03]].forEach(([f, g]) => {
+    const o = ac.createOscillator(); o.type = "triangle"; o.frequency.value = f;
+    const gg = ac.createGain(); gg.gain.value = g; o.connect(gg).connect(sortida); o.start();
+  });
+  return {ac, sortida, veu, prox:0, pas:0, rellotge:null, actiu:false};
+}
+function canta(f, t, d){
+  const {ac, veu} = audio;
+  [[f, .07, [0, -7, 6]], [f * 2/3, .045, [0, 5]]].forEach(([fr, vol, dets]) => {
+    dets.forEach(det => {
+      const o = ac.createOscillator(); o.type = "sawtooth"; o.frequency.value = fr; o.detune.value = det;
+      const vib = ac.createOscillator(); vib.frequency.value = 5.2;
+      const vg = ac.createGain(); vg.gain.value = 3; vib.connect(vg).connect(o.detune);
+      const g = ac.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(vol, t + .09);
+      g.gain.setValueAtTime(vol, t + Math.max(.1, d - .08));
+      g.gain.linearRampToValueAtTime(0, t + d + .06);
+      o.connect(g).connect(veu);
+      o.start(t); vib.start(t); o.stop(t + d + .12); vib.stop(t + d + .12);
+    });
+  });
+}
+function campana(){
+  const {ac, sortida} = audio, t = ac.currentTime;
+  [[587.3, .12], [1468, .05], [881, .06]].forEach(([f, v]) => {
+    const o = ac.createOscillator(); o.type = "sine"; o.frequency.value = f;
+    const g = ac.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + 3);
+    o.connect(g).connect(sortida); o.start(t); o.stop(t + 3.1);
+  });
+}
+function programa(){
+  while (audio.prox < audio.ac.currentTime + .5){
+    const [f, b] = FRASE[audio.pas % FRASE.length];
+    if (f) canta(f, audio.prox, b * PAS);
+    audio.prox += b * PAS; audio.pas++;
+  }
+}
+const botoCant = $("#cant");
+botoCant.addEventListener("click", async () => {
+  if (!audio) audio = creaAudio();
+  const {ac, sortida} = audio;
+  if (!audio.actiu){
+    await ac.resume();
+    sortida.gain.cancelScheduledValues(ac.currentTime);
+    sortida.gain.setValueAtTime(sortida.gain.value, ac.currentTime);
+    sortida.gain.linearRampToValueAtTime(1, ac.currentTime + 1.2);
+    audio.prox = ac.currentTime + .15; audio.pas = 0; audio.actiu = true;
+    audio.rellotge = setInterval(programa, 90);
+    botoCant.textContent = "Atura el cant"; botoCant.setAttribute("aria-pressed", "true");
+  } else {
+    audio.actiu = false; clearInterval(audio.rellotge);
+    sortida.gain.cancelScheduledValues(ac.currentTime);
+    sortida.gain.setValueAtTime(sortida.gain.value, ac.currentTime);
+    sortida.gain.linearRampToValueAtTime(0, ac.currentTime + .8);
+    setTimeout(() => { if (!audio.actiu) ac.suspend(); }, 4500);
+    botoCant.textContent = "Escolta el cant"; botoCant.setAttribute("aria-pressed", "false");
+  }
+});
+</script>
+</body>
+</html>
