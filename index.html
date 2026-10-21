@@ -1,1426 +1,1019 @@
 <!DOCTYPE html>
-<html lang="cat">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pàgina - Adri Molina Rodríguez</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&family=Crimson+Text:wght@400;600;700&family=Old+Standard+TT:wght@400;700&display=swap');
-        
-        :root {
-            --ink-black: #1a1a1a;
-            --sepia: #f4f1e8;
-            --aged-paper: #faf7f0;
-            --dark-sepia: #8b7355;
-            --red-ink: #8b2635;
-            --old-gold: #b8860b;
-            --faded-blue: #4682b4;
-            --border-brown: #6b4423;
-            --text-fade: #3a3a3a;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Crimson Text', serif;
-            background: var(--aged-paper);
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(139, 69, 35, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(139, 69, 35, 0.02) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(139, 38, 53, 0.01) 0%, transparent 50%);
-            color: var(--ink-black);
-            overflow-x: hidden;
-            cursor: none;
-            min-height: 100vh;
-        }
-
-        /* Vintage Cursor */
-        .cursor {
-            position: fixed;
-            width: 24px;
-            height: 24px;
-            background: var(--red-ink);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.15s ease;
-            opacity: 0.8;
-            border: 2px solid var(--ink-black);
-        }
-
-        .cursor.hover {
-            transform: scale(1.8);
-            background: var(--old-gold);
-            border-color: var(--red-ink);
-        }
-
-        /* Newspaper Header */
-        .newspaper-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: var(--aged-paper);
-            border-bottom: 4px double var(--border-brown);
-            z-index: 1000;
-            padding: 15px 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .masthead {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .newspaper-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--ink-black);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            text-shadow: 1px 1px 0px rgba(139, 69, 35, 0.2);
-        }
-
-        .newspaper-date {
-            font-family: 'Old Standard TT', serif;
-            font-size: 0.9rem;
-            color: var(--dark-sepia);
-            font-style: italic;
-            letter-spacing: 1px;
-        }
-
-        .section-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            border-top: 2px solid var(--border-brown);
-            padding-top: 10px;
-        }
-
-        .section-tab {
-            font-family: 'Old Standard TT', serif;
-            font-size: 0.85rem;
-            color: var(--dark-sepia);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            padding: 5px 15px;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .section-tab.active {
-            color: var(--red-ink);
-            border-bottom-color: var(--red-ink);
-            font-weight: 700;
-        }
-
-        .section-tab:hover {
-            color: var(--red-ink);
-        }
-
-        /* Main Content Area */
-        .newspaper-content {
-            margin-top: 140px;
-            position: relative;
-            width: 100%;
-            height: calc(100vh - 140px);
-            overflow: hidden;
-        }
-
-        .newspaper-page {
-            position: absolute;
-            width: 90vw;
-            max-width: 1400px;
-            height: calc(100vh - 180px);
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--sepia);
-            background-image: 
-                linear-gradient(90deg, transparent 79px, rgba(139, 69, 35, 0.1) 81px, rgba(139, 69, 35, 0.1) 82px, transparent 84px),
-                linear-gradient(rgba(139, 69, 35, 0.05) 0.5px, transparent 0.5px);
-            background-size: 100px 20px;
-            border: 3px solid var(--border-brown);
-            box-shadow: 
-                0 0 0 1px var(--dark-sepia),
-                8px 8px 16px rgba(0,0,0,0.15),
-                inset 0 0 60px rgba(139, 69, 35, 0.05);
-            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            overflow-y: auto;
-            scrollbar-width: none;
-        }
-
-        .newspaper-page::-webkit-scrollbar {
-            display: none;
-        }
-
-        .newspaper-page.inactive {
-            transform: translate(-50%, -50%) scale(0.85) rotateY(-15deg);
-            opacity: 0.3;
-            z-index: 1;
-        }
-
-        .newspaper-page.active {
-            z-index: 5;
-            transform: translate(-50%, -50%) scale(1) rotateY(0deg);
-            opacity: 1;
-        }
-
-        .newspaper-page.next {
-            transform: translate(-50%, -50%) scale(0.9) rotateY(10deg);
-            opacity: 0.7;
-            z-index: 3;
-        }
-
-        .newspaper-page.prev {
-            transform: translate(-50%, -50%) scale(0.8) rotateY(-10deg);
-            opacity: 0.5;
-            z-index: 2;
-        }
-
-        /* Front Page Layout */
-        .front-page {
-            padding: 40px;
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 40px;
-        }
-
-        .headline-section {
-            border-right: 3px double var(--border-brown);
-            padding-right: 40px;
-        }
-
-        .main-headline {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
-            font-weight: 900;
-            line-height: 0.9;
-            color: var(--ink-black);
-            margin-bottom: 15px;
-            text-align: center;
-            letter-spacing: -1px;
-        }
-
-        .subheadline {
-            font-family: 'Old Standard TT', serif;
-            font-size: 1.3rem;
-            color: var(--red-ink);
-            text-align: center;
-            font-style: italic;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-brown);
-            padding-bottom: 15px;
-        }
-
-        .byline {
-            font-family: 'Old Standard TT', serif;
-            font-size: 0.9rem;
-            color: var(--dark-sepia);
-            text-align: center;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .lead-story {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            text-align: justify;
-            text-indent: 2em;
-            margin-bottom: 20px;
-        }
-
-        .lead-story::first-letter {
-            font-family: 'Playfair Display', serif;
-            font-size: 4rem;
-            font-weight: 700;
-            float: left;
-            line-height: 3rem;
-            margin: 5px 8px 0 0;
-            color: var(--red-ink);
-        }
-
-        .sidebar {
-            padding-left: 30px;
-        }
-
-        .portrait-frame {
-            width: 100%;
-            height: 300px;
-            border: 8px double var(--border-brown);
-            margin-bottom: 20px;
-            background: white;
-            padding: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .portrait-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: sepia(20%) contrast(1.1);
-        }
-
-        .portrait-caption {
-            font-family: 'Old Standard TT', serif;
-            font-size: 0.85rem;
-            color: var(--dark-sepia);
-            font-style: italic;
-            text-align: center;
-            margin-top: 10px;
-            border-top: 1px solid var(--border-brown);
-            padding-top: 8px;
-        }
-
-        .news-brief {
-            background: rgba(139, 69, 35, 0.05);
-            border: 2px solid var(--border-brown);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .news-brief h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            color: var(--red-ink);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .news-brief p {
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        /* Experience Page Layout */
-        .experience-page {
-            padding: 40px;
-            column-count: 3;
-            column-gap: 40px;
-            column-rule: 2px solid var(--border-brown);
-        }
-
-        .experience-page h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: var(--ink-black);
-            text-align: center;
-            margin-bottom: 30px;
-            column-span: all;
-            border-bottom: 3px double var(--border-brown);
-            padding-bottom: 15px;
-        }
-
-        .job-article {
-            break-inside: avoid;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-brown);
-        }
-
-        .job-headline {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--red-ink);
-            margin-bottom: 8px;
-        }
-
-        .job-dateline {
-            font-family: 'Old Standard TT', serif;
-            font-size: 0.85rem;
-            color: var(--dark-sepia);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-
-        .job-content {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            text-align: justify;
-            text-indent: 1em;
-        }
-
-        /* Projects Page Layout */
-        .projects-page {
-            padding: 40px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-            grid-template-rows: auto 1fr 1fr;
-        }
-
-        .projects-page h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: var(--ink-black);
-            text-align: center;
-            margin-bottom: 20px;
-            grid-column: 1 / -1;
-            border-bottom: 3px double var(--border-brown);
-            padding-bottom: 15px;
-        }
-
-        .project-article {
-            border: 3px double var(--border-brown);
-            padding: 25px;
-            background: rgba(248, 245, 238, 0.8);
-            position: relative;
-            transition: transform 0.3s ease;
-        }
-
-        .project-article:hover {
-            transform: translateY(-3px);
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .project-status {
-            position: absolute;
-            top: -8px;
-            right: 20px;
-            background: var(--red-ink);
-            color: white;
-            padding: 4px 12px;
-            font-family: 'Old Standard TT', serif;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-        }
-
-        .project-headline {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--ink-black);
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .project-dateline {
-            font-family: 'Old Standard TT', serif;
-            font-size: 0.8rem;
-            color: var(--dark-sepia);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-        }
-
-        .project-excerpt {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            text-align: justify;
-            margin-bottom: 15px;
-        }
-
-        .project-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .project-tag {
-            background: var(--old-gold);
-            color: white;
-            padding: 3px 8px;
-            font-size: 0.7rem;
-            font-family: 'Old Standard TT', serif;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Skills & Education Page */
-        .skills-education-page {
-            padding: 40px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-        }
-
-        .skills-section, .education-section {
-            border: 3px double var(--border-brown);
-            padding: 30px;
-            background: rgba(248, 245, 238, 0.6);
-        }
-
-        .section-header {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            color: var(--red-ink);
-            text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--border-brown);
-            padding-bottom: 10px;
-        }
-
-        .skills-category {
-            margin-bottom: 25px;
-        }
-
-        .skills-category h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            color: var(--ink-black);
-            margin-bottom: 12px;
-            text-decoration: underline;
-        }
-
-        .skills-list {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .skills-list li {
-            font-size: 0.9rem;
-            line-height: 1.8;
-            position: relative;
-            padding-left: 15px;
-        }
-
-        .skills-list li:before {
-            content: "▪";
-            position: absolute;
-            left: 0;
-            color: var(--red-ink);
-            font-weight: bold;
-        }
-
-        .education-item {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-brown);
-        }
-
-        .degree-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--ink-black);
-            margin-bottom: 8px;
-        }
-
-        .institution-name {
-            font-style: italic;
-            color: var(--dark-sepia);
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-
-        .graduation-year {
-            font-family: 'Old Standard TT', serif;
-            font-size: 0.85rem;
-            color: var(--red-ink);
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .degree-description {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            text-align: justify;
-        }
-
-        /* Contact Page */
-        .contact-page {
-            padding: 60px 40px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .contact-headline {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: var(--ink-black);
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .contact-subhead {
-            font-size: 1.2rem;
-            color: var(--dark-sepia);
-            margin-bottom: 40px;
-            font-style: italic;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .contact-directory {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .contact-listing {
-            border: 3px double var(--border-brown);
-            padding: 30px;
-            background: rgba(248, 245, 238, 0.8);
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .contact-listing:hover {
-            transform: scale(1.02);
-            background: rgba(139, 38, 53, 0.1);
-        }
-
-        .contact-type {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--red-ink);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .contact-details {
-            font-family: 'Old Standard TT', serif;
-            font-size: 0.95rem;
-            color: var(--dark-sepia);
-        }
-
-        /* Page Navigation */
-        .page-nav {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            z-index: 999;
-            background: var(--aged-paper);
-            padding: 10px 20px;
-            border: 2px solid var(--border-brown);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .nav-button {
-            width: 45px;
-            height: 45px;
-            background: var(--sepia);
-            border: 2px solid var(--border-brown);
-            color: var(--ink-black);
-            cursor: pointer;
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            transition: all 0.3s ease;
-        }
-
-        .nav-button:hover {
-            background: var(--red-ink);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .nav-button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            transform: scale(1);
-        }
-
-        .nav-button:disabled:hover {
-            background: var(--sepia);
-            color: var(--ink-black);
-        }
-
-        /* Decorative Elements */
-        .ornament {
-            font-size: 1.5rem;
-            color: var(--old-gold);
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .front-page {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            .headline-section {
-                border-right: none;
-                border-bottom: 3px double var(--border-brown);
-                padding-right: 0;
-                padding-bottom: 30px;
-            }
-            
-            .sidebar {
-                padding-left: 0;
-            }
-
-            .experience-page {
-                column-count: 2;
-            }
-
-            .projects-page {
-                grid-template-columns: 1fr;
-            }
-
-            .skills-education-page {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
-            .contact-directory {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .newspaper-page {
-                width: 95vw;
-                height: calc(100vh - 160px);
-            }
-
-            .newspaper-title {
-                font-size: 2rem;
-            }
-
-            .section-tabs {
-                gap: 15px;
-                flex-wrap: wrap;
-            }
-
-            .main-headline {
-                font-size: 2.5rem;
-            }
-
-            .experience-page {
-                column-count: 1;
-                padding: 30px;
-            }
-
-            .front-page, .projects-page, .skills-education-page, .contact-page {
-                padding: 30px;
-            }
-
-            .contact-directory {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-        }
-
-        /* Page Turn Animation */
-        .page-turning {
-            animation: pageTurn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        @keyframes pageTurn {
-            0% {
-                transform: translate(-50%, -50%) scale(1) rotateY(0deg);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(0.9) rotateY(-90deg);
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1) rotateY(0deg);
-            }
-        }
-        .project-article .project-headline a {
-  color: inherit;
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Adrià Molina Rodríguez</title>
+<meta name="description" content="Adrià Molina Rodríguez — PhD researcher at the Computer Vision Center (UAB). Search engines for historical archives that are comprehensive, measurable and relational.">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:title" content="Adrià Molina Rodríguez">
+<meta property="og:description" content="A historical truth is only as precise as the sources retrieved.">
+<meta property="og:image" content="https://amolina.cat/research/pfp.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://static.arxiusenlinia.cultura.gencat.cat">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Martian+Mono:wdth,wght@75..112.5,300..600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --bg:#0a0a0a;
+  --bg2:#131313;
+  --fg:#ececea;
+  --dim:#8f8f8c;
+  --faint:#4d4d4b;
+  --line:#242423;
+  --red:#ff3b2f;
+  --red-soft:rgba(255,59,47,.16);
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-io:cubic-bezier(.77,0,.175,1);
+  --g:28px;
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+  --sal:env(safe-area-inset-left,0px);
+  --sar:env(safe-area-inset-right,0px);
+  --sans:'Archivo',ui-sans-serif,system-ui,sans-serif;
+  --mono:'Martian Mono',ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+@media (max-width:700px){:root{--g:16px}}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:var(--sans);font-size:17px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  /* landscape phones: keep content clear of the notch */
+  padding-left:var(--sal);padding-right:var(--sar);
+}
+/* controls: no double-tap delay, no accidental text selection on long-press */
+a,button,.chip,.pub.link{touch-action:manipulation}
+button,.chip,.nav,.reel-ctl,.reel .shot,.mark{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+::selection{background:var(--red);color:#000}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+ul,ol{list-style:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.mono{font-family:var(--mono);font-size:11px;font-stretch:87%;letter-spacing:.02em;text-transform:uppercase;line-height:1.5}
+.red{color:var(--red)}
+
+/* ============ NAV ============ */
+.nav{
+  position:fixed;inset:0 0 auto 0;z-index:50;
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  padding:calc(6px + var(--sat)) calc(var(--g) + var(--sar)) 6px calc(var(--g) + var(--sal));
+  mix-blend-mode:difference;color:#fff;pointer-events:none;
+}
+/* 11px labels, but ~40px tall hit areas */
+.nav a{pointer-events:auto;display:inline-block;padding:10px 0}
+.nav ul{display:flex;gap:22px}
+.nav .me b{font-weight:500}
+.nav .s{display:none}
+@media (max-width:700px){
+  .nav ul{gap:14px}
+  .nav .l{display:none}
+  .nav .s{display:inline}
 }
 
-.project-article .project-headline a:hover,
-.project-article .project-headline a:focus {
-  border-bottom-color: currentColor;
+/* ============ HERO ============ */
+.hero{
+  position:relative;min-height:max(100svh,600px);
+  display:flex;flex-direction:column;
+  padding-top:calc(76px + var(--sat));
+}
+.hero h1{
+  font-weight:800;font-stretch:125%;text-transform:uppercase;
+  font-size:clamp(34px,9.1vw,168px);line-height:.84;letter-spacing:-.035em;
+  padding:0 var(--g);position:relative;z-index:2;pointer-events:none;
+}
+.hero h1 .ln{display:block;overflow:hidden;padding:.16em 0 .04em;margin-top:-.16em}
+.hero h1 .ln > span{display:block}
+.hero h1 .ln:nth-child(2) > span{color:transparent;-webkit-text-stroke:1.5px var(--fg)}
+.js .hero h1 .ln > span{animation:lineup .9s var(--ease-out) both}
+.js .hero h1 .ln:nth-child(2) > span{animation-delay:.08s}
+@keyframes lineup{from{transform:translateY(102%)}}
+
+.hero-row{
+  display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px 48px;align-items:end;
+  padding:26px var(--g) 0;position:relative;z-index:2;
+}
+.hero-row p{font-size:clamp(17px,1.55vw,21px);line-height:1.4;max-width:34ch;color:var(--dim);font-stretch:96%}
+.hero-row p b{color:var(--fg);font-weight:500}
+.hero-links{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:flex-end}
+.hero-links a{display:inline-flex;gap:6px;align-items:center;padding:8px 0;color:var(--fg);transition:color .15s ease}
+.hero-links a span{color:var(--red)}
+.js .hero-row{animation:fadein .8s .35s var(--ease-out) both}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}}
+@media (max-width:820px){
+  .hero-row{grid-template-columns:1fr}
+  .hero-links{justify-content:flex-start}
 }
 
-    </style>
+.plot{position:relative;flex:1 1 auto;min-height:260px;margin-top:18px}
+.plot canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:pan-y}
+.hero-cap{
+  display:flex;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;
+  padding:12px var(--g) 18px;color:var(--dim);border-top:1px solid var(--line);
+}
+.hero-cap b{color:var(--fg);font-weight:400}
+.key{display:inline-flex;flex-wrap:wrap;gap:6px 14px}
+.key i{display:inline-block;width:9px;height:9px;margin-right:6px;vertical-align:-1px;background:var(--fg)}
+.key i.r{opacity:.3}
+
+/* retrieved record card */
+.card{position:absolute;left:0;top:0;z-index:5;width:272px;pointer-events:none}
+.card-in{
+  background:var(--bg2);border:1px solid var(--line);
+  opacity:0;transform:scale(.97);transform-origin:var(--ox,0%) 50%;
+  transition:opacity .14s ease,transform .18s var(--ease-out);
+  box-shadow:0 18px 50px rgba(0,0,0,.55);
+}
+.card.on .card-in{opacity:1;transform:none}
+.card .ph{position:relative;aspect-ratio:4/3;background:#1a1a19;overflow:hidden}
+.card .ph img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .2s ease}
+.card .ph img.ok{opacity:1}
+.card .ph .ld{position:absolute;inset:auto 10px 8px 10px;color:var(--dim)}
+.card .meta{padding:11px 12px 12px}
+.card .yr{color:var(--red)}
+.card .pl{font-size:14px;font-weight:500;line-height:1.3;margin:4px 0;font-stretch:92%}
+.card .cp{font-size:13px;line-height:1.38;color:var(--dim)}
+.card .cl{color:var(--faint);margin-top:8px;font-size:9.5px}
+.card .tap{display:none;color:var(--red);margin-top:6px}
+/* touch: the card is a bottom sheet you can tap to open the photo */
+@media (pointer:coarse){
+  .card.on{pointer-events:auto}
+  .card .tap{display:block}
+  .card-in{transform:translateY(10px);transform-origin:50% 100%;transition:opacity .16s ease,transform .22s var(--ease-out)}
+  .card:active .card-in{transform:scale(.98)}
+}
+@media (max-width:700px){
+  .card{width:auto;left:var(--g);right:var(--g);top:auto;bottom:8px;transform:none!important}
+  .card-in{display:grid;grid-template-columns:38% minmax(0,1fr)}
+  .card .ph{aspect-ratio:auto;min-height:118px}
+  .card .ph img{position:absolute;inset:0}
+  .card .cp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .card .cl{display:none}
+}
+
+/* ============ SECTIONS ============ */
+section{position:relative;padding:clamp(80px,11vw,150px) 0 0}
+.sh{
+  display:flex;align-items:baseline;gap:18px;padding:0 var(--g) 18px;margin-bottom:clamp(36px,5vw,64px);
+  border-bottom:1px solid var(--line);
+}
+.sh .n{color:var(--red)}
+.sh h2{font-size:13px;font-weight:500;font-stretch:112%;text-transform:uppercase;letter-spacing:.08em}
+.sh .aside{margin-left:auto;color:var(--dim);text-align:right}
+
+/* ---- manifesto ---- */
+.lede{padding:0 var(--g);max-width:560px;color:var(--dim);font-size:15px;line-height:1.55;margin-bottom:clamp(40px,6vw,80px)}
+.lede em{font-style:italic;color:var(--fg)}
+.stmts{padding:0 var(--g);display:flex;flex-direction:column;gap:clamp(40px,7vw,96px)}
+.stmt{
+  font-size:clamp(28px,4.7vw,74px);font-weight:500;font-stretch:84%;
+  line-height:1.02;letter-spacing:-.028em;max-width:17em;text-wrap:balance;
+}
+.stmt:nth-child(even){align-self:flex-end;text-align:right}
+.stmt.final{color:var(--red);font-weight:700;font-stretch:100%;max-width:14em}
+.js .redact .w{position:relative}
+.js .redact .w::after{
+  content:'';position:absolute;left:-.05em;right:-.05em;top:.1em;bottom:.02em;
+  background:var(--fg);transform-origin:100% 50%;
+  transition:transform .6s var(--ease-io) var(--d,0ms);
+}
+.js .redact.final .w::after{background:var(--red)}
+.js .redact.on .w::after{transform:scaleX(0)}
+
+/* ---- principles ---- */
+.reqs{border-top:1px solid var(--line)}
+.req{
+  display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px 24px;
+  padding:24px var(--g) 22px;border-bottom:1px solid var(--line);
+}
+.req .n{padding-top:.5em;color:var(--dim);transition:color .2s ease}
+.req h3{
+  font-size:min(7.2vw,150px);font-weight:800;font-stretch:125%;text-transform:uppercase;
+  line-height:.86;letter-spacing:-.03em;transition:color .2s ease;white-space:nowrap;
+}
+.req p{grid-column:2;justify-self:end;max-width:380px;color:var(--dim);font-size:15px;line-height:1.5}
+@media (max-width:820px){
+  .req{grid-template-columns:1fr}
+  .req h3{font-size:8.1vw}
+  .req p{grid-column:1;justify-self:start}
+  .req .n{padding-top:0}
+}
+
+.why{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:40px 64px;padding:clamp(56px,8vw,110px) var(--g) 0}
+.why h3{font-size:clamp(28px,3.4vw,50px);font-weight:600;font-stretch:80%;line-height:1;letter-spacing:-.025em;margin-bottom:20px;text-wrap:balance}
+.why > div > p{color:var(--dim);max-width:44ch}
+.why > div > p b{color:var(--fg);font-weight:500}
+.cons li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px;padding:18px 0;border-top:1px solid var(--line)}
+.cons li:last-child{border-bottom:1px solid var(--line)}
+.cons h4{font-size:19px;font-weight:600;font-stretch:90%;margin-bottom:4px}
+.cons p{color:var(--dim);font-size:15px;line-height:1.5}
+@media (max-width:820px){.why{grid-template-columns:1fr}}
+
+/* ---- research questions ---- */
+.rq{
+  display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:16px 40px;
+  padding:34px var(--g) 38px;border-bottom:1px solid var(--line);
+}
+.rq:first-child{border-top:1px solid var(--line)}
+.rq .id{
+  font-size:clamp(56px,8vw,128px);font-weight:200;font-stretch:62%;line-height:.8;letter-spacing:-.02em;
+  color:var(--faint);transition:color .25s ease;
+}
+.rq h3{font-size:clamp(22px,2.6vw,38px);font-weight:500;font-stretch:88%;line-height:1.08;letter-spacing:-.022em;max-width:24em;text-wrap:balance;margin-bottom:14px}
+.rq p{color:var(--dim);max-width:62ch;font-size:16px}
+.ev{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:18px}
+.ev a{display:inline-flex;gap:8px;align-items:center;border-bottom:1px solid var(--faint);padding-bottom:3px;transition:border-color .15s ease,color .15s ease}
+.ev a::before{content:'';width:6px;height:6px;background:var(--red)}
+@media (max-width:820px){.rq{grid-template-columns:1fr}.rq .id{font-size:64px}}
+
+/* ---- interactive papers ---- */
+.reel{
+  display:grid;grid-auto-flow:column;grid-auto-columns:min(440px,82vw);gap:18px;
+  overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 var(--g);
+  padding:0 var(--g) 8px;scrollbar-width:none;overscroll-behavior-x:contain;
+}
+.reel::-webkit-scrollbar{display:none}
+.reel a{scroll-snap-align:start;display:block}
+.shot{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--bg2);border:1px solid var(--line);transition:border-color .2s ease}
+.shot iframe{position:absolute;left:0;top:0;border:0;pointer-events:none;transform-origin:0 0;background:#fff}
+.shot .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--faint)}
+.shot .open{
+  position:absolute;right:10px;bottom:10px;z-index:2;background:var(--red);color:#000;padding:6px 9px;
+  opacity:0;transform:translateY(4px);transition:opacity .16s ease,transform .2s var(--ease-out);
+}
+.reel .m{display:flex;justify-content:space-between;gap:12px;margin-top:14px;color:var(--dim)}
+.reel h3{font-size:20px;font-weight:500;font-stretch:90%;line-height:1.15;letter-spacing:-.012em;margin-top:6px;text-wrap:balance}
+.reel a:first-child h3{color:var(--red)}
+.reel-ctl{display:flex;gap:6px}
+.reel-ctl button{
+  width:34px;height:34px;border:1px solid var(--line);display:grid;place-items:center;
+  transition:border-color .15s ease,color .15s ease,transform .12s var(--ease-out);
+}
+.reel-ctl button:active{transform:scale(.94)}
+.reel-ctl button:disabled{opacity:.3;cursor:default;transform:none}
+.reel-ctl button{transition:border-color .15s ease,color .15s ease,opacity .15s ease,transform .12s var(--ease-out)}
+.reel .shot{transition:border-color .2s ease,transform .16s var(--ease-out)}
+.reel a:active .shot{transform:scale(.98)}
+
+/* ---- publications ---- */
+.query{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;
+  margin:0 var(--g);padding:0 0 14px;border-bottom:2px solid var(--fg);
+}
+.query label{color:var(--red)}
+.query input{
+  width:100%;background:none;border:0;color:var(--fg);outline:none;
+  font:inherit;font-size:clamp(24px,3.4vw,46px);font-weight:500;font-stretch:84%;letter-spacing:-.02em;
+  caret-color:var(--red);padding:4px 0;
+}
+.query input::placeholder{color:var(--faint)}
+.query input::-webkit-search-cancel-button{display:none}
+.query .k{color:var(--faint)}
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px var(--g) 30px}
+.chip{
+  padding:7px 11px;border:1px solid var(--line);color:var(--dim);
+  transition:color .15s ease,border-color .15s ease,background-color .15s ease,transform .12s var(--ease-out);
+}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:#000}
+.filters .count{margin-left:auto;color:var(--dim)}
+.filters .count b{color:var(--fg);font-weight:500}
+@media (max-width:700px){.filters .count{margin-left:0;width:100%;margin-top:6px}.query .k{display:none}}
+
+.pubs{border-top:1px solid var(--line)}
+.pub{
+  display:grid;grid-template-columns:70px minmax(0,1fr) minmax(0,210px) 28px;gap:6px 24px;align-items:baseline;
+  padding:18px var(--g);border-bottom:1px solid var(--line);
+  transition:background-color .15s ease;
+}
+.pub .y{color:var(--dim)}
+.pub .t{font-size:18px;font-weight:500;font-stretch:92%;line-height:1.28;letter-spacing:-.01em;text-wrap:pretty}
+.pub .a{font-size:14px;color:var(--dim);margin-top:5px;line-height:1.45}
+.pub .a b{color:var(--fg);font-weight:500}
+.pub .v{color:var(--dim)}
+.pub .tg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pub .tg span{font-family:var(--mono);font-size:9.5px;font-stretch:87%;text-transform:uppercase;padding:4px 6px;border:1px solid var(--line);color:var(--dim)}
+.pub .tg .live{border-color:transparent;background:var(--red-soft);color:var(--red)}
+.pub .go{color:var(--faint);text-align:right;transition:color .15s ease,transform .2s var(--ease-out)}
+.pub mark{background:var(--red);color:#000;padding:0 .06em}
+.pub.link{cursor:pointer}
+.none{padding:40px var(--g);color:var(--dim);font-size:18px;border-bottom:1px solid var(--line)}
+@media (max-width:820px){
+  .pub{grid-template-columns:52px minmax(0,1fr)}
+  .pub .v{grid-column:2}
+  .pub .go{display:none}
+}
+
+/* ---- cv ---- */
+.cv{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:48px 64px;padding:0 var(--g)}
+.pf{position:sticky;top:72px;align-self:start}
+.pf .fr{aspect-ratio:3/4;overflow:hidden;background:var(--bg2)}
+.pf img{width:100%;height:100%;object-fit:cover}
+.pf figcaption{margin-top:12px;color:var(--dim)}
+.pf figcaption span{color:var(--red)}
+.blk + .blk{margin-top:64px}
+.blk > h3{color:var(--dim);margin-bottom:14px}
+.row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:4px 24px;padding:16px 0;border-top:1px solid var(--line)}
+.row .d{color:var(--dim);padding-top:4px}
+.row h4{font-size:20px;font-weight:600;font-stretch:90%;line-height:1.2;letter-spacing:-.01em}
+.row .o{color:var(--dim);font-size:15px}
+.row p{font-size:15px;color:var(--dim);margin-top:6px;max-width:60ch;line-height:1.5}
+.row h4 a{border-bottom:1px solid var(--faint)}
+@media (max-width:820px){
+  .cv{grid-template-columns:1fr}
+  .pf{position:static;max-width:260px}
+  .row{grid-template-columns:1fr}
+}
+
+/* ---- elsewhere ---- */
+.side a{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 28px;gap:6px 24px;align-items:baseline;
+  padding:20px var(--g);border-bottom:1px solid var(--line);
+  transition:background-color .15s ease;
+}
+.side a:first-child{border-top:1px solid var(--line)}
+.side b{font-size:clamp(22px,2.6vw,34px);font-weight:600;font-stretch:84%;letter-spacing:-.02em;line-height:1.05}
+.side span{color:var(--dim)}
+.side i{font-style:normal;color:var(--faint);text-align:right;transition:color .15s ease,transform .2s var(--ease-out)}
+@media (max-width:700px){.side a{grid-template-columns:minmax(0,1fr) 20px}.side span{grid-column:1}.side i{grid-row:1/3;grid-column:2}}
+
+/* ---- contact / footer ---- */
+.contact{padding:0 var(--g)}
+.mail{
+  display:inline-block;font-size:clamp(30px,5.6vw,92px);font-weight:600;font-stretch:84%;letter-spacing:-.035em;line-height:1;
+  word-break:break-word;position:relative;
+}
+.mail::after{content:'';position:absolute;left:0;right:0;bottom:-.06em;height:3px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease-out)}
+.profiles{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:26px}
+.profiles a{transition:color .15s ease}
+.profiles a span{color:var(--red)}
+.mark{margin-top:clamp(70px,10vw,140px);padding:0 var(--g);overflow:hidden;user-select:none}
+.mark .mk{
+  display:inline-block;white-space:nowrap;
+  font-weight:900;font-stretch:125%;text-transform:uppercase;letter-spacing:-.04em;line-height:.78;
+  font-size:12vw;
+}
+.mark .dot{color:var(--red)}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px;padding:22px var(--g) calc(28px + var(--sab));color:var(--dim);border-top:1px solid var(--line);margin-top:18px}
+
+/* ============ TOUCH: press feedback replaces hover ============ */
+.pub.link:active,.side a:active{background:var(--bg2)}
+.ev a:active,.hero-links a:active,.profiles a:active{color:var(--red)}
+.mail:active{opacity:.7}
+.profiles a{display:inline-block;padding:8px 0}
+@media (pointer:coarse){
+  .chip{padding:10px 13px}
+  .reel-ctl{display:none}                 /* swipe is the native control here */
+  .reel .shot .open{opacity:1;transform:none}
+  .ev a{padding:8px 0 6px}
+}
+
+/* ============ HOVER (pointer devices only) ============ */
+@media (hover:hover) and (pointer:fine){
+  .hero-links a:hover,.profiles a:hover{color:var(--red)}
+  .req:hover h3,.req:hover .n{color:var(--red)}
+  .rq:hover .id{color:var(--red)}
+  .ev a:hover{border-color:var(--red);color:var(--red)}
+  .reel a:hover .shot{border-color:var(--fg)}
+  .reel a:hover .open{opacity:1;transform:none}
+  .reel-ctl button:hover{border-color:var(--fg)}
+  .chip:hover{color:var(--fg);border-color:var(--dim)}
+  .chip[aria-pressed="true"]:hover{color:#000}
+  .pub:hover{background:var(--bg2)}
+  .pub:hover .go{color:var(--red);transform:translate(2px,-2px)}
+  .side a:hover{background:var(--bg2)}
+  .side a:hover i{color:var(--red);transform:translate(2px,-2px)}
+  .mail:hover::after{transform:scaleX(1)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  /* gentler, not zero: keep fades, drop movement */
+  .js .hero h1 .ln > span,.js .hero-row{animation:fade .5s ease both}
+  @keyframes fade{from{opacity:0}}
+  .js .redact .w::after{display:none}
+  .card-in,.card.on .card-in,.reel a:active .shot,.card:active .card-in{transform:none}
+  .card-in,.shot .open{transition:opacity .15s ease}
+}
+</style>
 </head>
 <body>
-    <div class="cursor"></div>
-    
-    <div class="newspaper-header">
-        <div class="masthead">
-            <div class="newspaper-title">Pàgina Personal Adri Molina Rodríguez</div>
-            <div class="newspaper-date">Novembre, 9, 2000 • Tarragona</div>
+
+<nav class="nav mono" aria-label="Sections">
+  <a class="me" href="#top"><b>A. Molina</b><span class="l"> — Barcelona</span></a>
+  <ul>
+    <li><a href="#thesis">Thesis</a></li>
+    <li><a href="#papers">Papers</a></li>
+    <li><a href="#publications"><span class="l">Publications</span><span class="s">Pubs</span></a></li>
+    <li><a href="#cv">CV</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<header class="hero" id="top">
+  <h1 aria-label="Adrià Molina Rodríguez"><span class="ln"><span>Adrià Molina</span></span><span class="ln"><span>Rodríguez</span></span></h1>
+  <div class="hero-row">
+    <p>PhD researcher at the Computer Vision Center, UAB. I build search engines for historical archives that are <b>comprehensive, measurable and relational</b>.</p>
+    <nav class="hero-links mono" aria-label="Profiles">
+      <a href="https://scholar.google.com/citations?user=23JU52kAAAAJ&amp;hl=en" target="_blank" rel="noopener">Scholar <span>↗</span></a>
+      <a href="https://github.com/EauDeData" target="_blank" rel="noopener">GitHub <span>↗</span></a>
+      <a href="https://www.linkedin.com/in/amolina505" target="_blank" rel="noopener">LinkedIn <span>↗</span></a>
+      <a href="https://orcid.org/0000-0003-0167-8756" target="_blank" rel="noopener">ORCID <span>↗</span></a>
+      <a href="mailto:amolina@cvc.uab.cat">Email <span>→</span></a>
+    </nav>
+  </div>
+  <div class="plot" id="plot">
+    <canvas id="arch" role="img" aria-label="Histogram of 2,113 archival photographs from Catalan public archives by year, 1880 to 2023. Hover a brick to see the photograph."></canvas>
+    <div class="card" id="card" aria-hidden="true">
+      <div class="card-in">
+        <div class="ph"><img alt="" decoding="async"><span class="ld mono">Retrieving…</span></div>
+        <div class="meta">
+          <div class="yr mono"></div>
+          <div class="pl"></div>
+          <div class="cp"></div>
+          <div class="cl mono"></div>
+          <div class="tap mono">Tap to open ↗</div>
         </div>
-        <div class="section-tabs">
-            <div class="section-tab active">Portada</div>
-            <div class="section-tab">Carrera</div>
-            <div class="section-tab">Recerca</div>
-            <div class="section-tab">Formació</div>
-            <div class="section-tab">Contacte</div>
-        </div>
+      </div>
     </div>
+  </div>
+  <div class="hero-cap mono">
+    <span><b>Fig. 1</b> — 2,113 photographs from Catalan public archives, one brick each, stacked by catalogued year.</span>
+    <span class="key"><span><i></i>exact date</span><span><i class="r"></i>date range</span><span class="red" id="hint">Hover to retrieve · click to open</span></span>
+  </div>
+</header>
 
-    <div class="newspaper-content">
-        <!-- Front Page -->
-        <div class="newspaper-page front-page active">
-            <div class="headline-section">
-                <div class="main-headline">Cerca d'Informació i Patrimoni Històric</div>
-                <div class="subheadline">Faig recerca al Centre de Visió per Computador en col·laboació amb la Xarxa d'Arxius Comarcals i el Centre d'Estudis Demogràfics.</div>
-                <div class="byline">Resum • Versió Divulgativa</div>
-                
-                <div class="lead-story">
-En una època marcada per la saturació informativa i la desinformació automatitzada, el dubte —com a eina crítica per interpretar el món— és progressivament erosionat pels mateixos sistemes que haurien de facilitar-nos l'accés al coneixement. La supressió del dubte en entorns digitals, accelerada per interfícies algorísmiques que presenten la informació amb una aparença d'autoritat indiscutible, posa en risc tant la memòria col·lectiva com la capacitat de dissidència epistemològica.                 </div>
-                
-                <div class="lead-story">
-Les dades patrimonials presenten una característica que sovint passa
-desapercebuda en altres àmbits de la intel·ligència artificial: els fets històrics no
-responen a patrons estadístics simples. Si bé és possible inferir patrons entre conceptes
-físics —per exemple, associar la pluja amb l'aigua o el sol amb la calor—, la història es
-construeix a partir de casos particulars, basats en noms propis, dates, llocs i
-esdeveniments concrets. No hi ha cap patró visual universal que permeti identificar el
-nom d'una persona, ni cap correlació estadística que ens pugui revelar la seva biografia,
-si no disposem prèviament del coneixement factual que l'acompanya.                </div>
+<main>
 
-                <div class="ornament">❦ ❦ ❦</div>
-                
-                <div class="lead-story">
-Més enllà de la recerca, he col·laborat en diversos projectes de <b>divulgació</b> i <b>transferència</b> del coneixement. En aquests projectes he apropat les tecnologies de visió per computador a la ciutadania i entitats de l'ecosistema català de l'arxivística. 
-<br><button id='full_page_bttn' onclick=" window.open('https://amolina.cat/full_page.html')">Llegiu-ne més</button>
-                </div>
-            </div>
-            
-            <div class="sidebar">
-                <div class="portrait-frame">
-                    <img src="https://media.licdn.com/dms/image/v2/C4E03AQG2rJ-7OE9-mA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1652780056956?e=1761177600&v=beta&t=TARFLDIdTdHFMLwVMlxlasJVTgKVYJyW-UPJTBBErjI" alt="Al TFM!">
-                </div>
-                <div class="portrait-caption">
-                    Adrià Molina Rodríguez, quan encara tenia llum a la mirada.
-                </div>
-
-                <div class="news-brief">
-                    <h3>Assoliments</h3>
-                    <p>Investigador FPI al projecte <i>Graph Reasoning for Automatic Interpretation and Learning</i>. <br> Guanyador del segon premi a millor artícle científic DAS2024 i millor proposta de tesi doctoral a la <i>International Conference on Document Analysis and Recognition</i>. Autor a reconegudes revistes i congressos en visió per computador, demografia històrica i arxivística.</p>
-                </div>
-
-                <div class="news-brief">
-                    <h3>Feina Actual</h3>
-                    <p>Fent recerca en la intersecció entre l'arxivística i la visió per computador: Dono eines a les màquines perque tinguin la oportunitat de dir la veritat.</p>
-                </div>
-
-                <div class="news-brief">
-                    <h3>Altres Notes</h3>
-                    <p>Co-fundador de <i href="urbview.com">UrbView</i>; start-up d'anàlisi del disseny urbà amb el que intentem donar eines per construir espais urbans en clau de gènere.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Experience Page -->
-        <div class="newspaper-page experience-page inactive">
-            <h2>Crónica Professional</h2>
-            
-            <div class="job-article">
-                <div class="job-headline">Investigador Predoctoral - Programa de Doctorat en Visió Artificial</div>
-                <div class="job-dateline">Universitat Autònoma de Barcelona / Centre de Visió per Computador • 2023 - Present</div>
-                <div class="job-content">
-Ara faig recerca en fotografia històrica i, ocasionalment, lectura de documents i llengues minoritzades. Tot i que he tractat temes com la datació, descripció i lectura de documents; l'eix transversal de la meva recerca és l'indexació de documents i fotografies històriques o sensibles a dades factuals. Considero la cerca de formació la tasca primària per garantir el dubte en entorns digitals. 
-                </div>
-            </div>
-
-            <div class="job-article">
-                <div class="job-headline">Enginyer de Recerca (CVC)</div>
-                <div class="job-dateline">Document Analysis Group (DAG) • 2021 - 2023</div>
-                <div class="job-content">
-                    Enginyer de Recerca al Centre de Visió per Computador on, en el marc del conveni de col·laboració amb la Xarxa d'Arxius Comarcals, faig recerca aplicada i proves de concepte en models d'anàlisi d'imatge per l'arxivística.
-                </div>
-            </div>
-
-
-            <div class="job-article">
-                <div class="job-headline">Research & Development (BMAT)</div>
-                <div class="job-dateline">Charts • 2021</div>
-                <div class="job-content">
-            Implemento mètodes de de-duplicació en metadades per la industria musical. Així es pretén accelerar el ritme al que productores i consumidors poden donar resposta als seus interessos.
-                </div>
-            </div>
-
-            <div class="job-article">
-                <div class="job-headline">Enginyer de Recerca (CVC / FECYT)</div>
-                <div class="job-dateline">Document Analysis Group (DAG) • 2021</div>
-                <div class="job-content">
-
-                    Amb finançament per part de la FECYT, vaig estar involucrat en un projecte de divulgació científica on vam implementar un (ara difunt) bot de Twitter per la datació de les fotografies dels usuaris de la platforma.
-                    
-
-                </div>
-            </div>
-
-            <div class="job-article">
-                <div class="job-headline">Assistent a la Recerca</div>
-                <div class="job-dateline">Research Internship • (2019 - 2020)</div>
-                <div class="job-content">
-
-                    Al maig de 2019 començo la meva trajectoria com a enginyer en visió al Centre de Visió per Computador (CVC).
-                    Assistent de la recerca a través de la beca CVC per a estudiants (ara, beca Rosa Sensat) amb la que vaig ajudar a desenvolupar mètodes de cerca a partir d'aproximacions continues a funcions discretes.
-
-                </div>
-            </div>
-
-            <!-- <div class="job-article">
-                <div class="job-headline">Cambrer i operari a PANABAD</div>
-                <div class="job-dateline">Per Orgull de Classe • (2017 - 2019)</div>
-                <div class="job-content">
-
-
-
-                    <i style="text-align: center;">Madre, yo al oro me humillo,<br>
-                    él es mi amante y mi amado,<br>
-                    pues de puro enamorado<br>
-                    de continuo anda amarillo.<br>
-                    Que pues doblón o sencillo<br>
-                    hace todo cuanto quiero,<br>
-                    poderoso caballero<br>
-                    es don Dinero.
-                    </i>
-
-                </div>
-            </div> -->
-
-            <div class="ornament">❦ ❦ ❦</div>
-
-            <div class="job-article">
-                <div class="job-headline">Nota Editorial</div>
-                <div class="job-dateline">Trajectoria Laboral</div>
-                <div class="job-content">
-
-En el context de la meva vida laboral, excloent el periode d'explotació al jovent (2017-2019), he adquirit experiència en l'aplicació de mètodes computacionals en el context dels anomenats <i>Domain Specific Languages</i>. Són, en general, contextos d'aplicació on la logica tradicional i estadística de les xarxes neuronals perd el sentit i, per tant, la intel·ligència artificial simbólica hauria de guanyar pes.
-Així, considero que la meva espertesa està precisament en treballar en la intersecció entre lo especific i lo global.
-
-                </div>
-            </div>
-        </div>
-<div class="newspaper-page projects-page inactive">
-    <h2>Research Outputs</h2>
-
-    <!-- Under Review -->
-    <div class="project-article">
-        <div class="project-status">Under Review</div>
-        <div class="project-headline">
-            <a href="#">The Role of Model Editing in Low-Resource Reading Systems</a>
-        </div>
-        <div class="project-dateline">2025</div>
-        <div class="project-excerpt">
-            A novel approach to enable recognition models to generalize to under‐represented alphabets and low‐resource domains. Highlights improved transfer learning and out‐of‐domain evaluation on historical ciphers and non‐Latin scripts.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Low-Resource</span>
-            <span class="project-tag">Transfer Learning</span>
-            <span class="project-tag">Document Recognition</span>
-        </div>
+  <!-- ===== 01 thesis introduction ===== -->
+  <section id="thesis">
+    <div class="sh"><span class="n mono">§01</span><h2>Brachylogia</h2><span class="aside mono">From the thesis introduction</span></div>
+    <p class="lede">Socrates asked Protagoras to <em>cut up his answers into shorter pieces</em>, to strip the rhetoric off his speech. Two and a half millennia later, we have not moved beyond that tension between discourse, truth and measure.</p>
+    <div class="stmts">
+      <p class="stmt redact">Search engines are increasingly being set aside, replaced by the rhetoric of large language models.</p>
+      <p class="stmt redact">They privilege what sounds persuasive over what is true. Retrieval offers evidence, without the relationships between pieces of evidence.</p>
+      <p class="stmt redact">Conversational interfaces suppress the sources a user will never consult, and with them, the user's own doubt.</p>
+      <p class="stmt redact final">A historical truth is only as precise as the sources retrieved.</p>
     </div>
+  </section>
 
-    <div class="project-article">
-        <div class="project-status">Under Review</div>
-        <div class="project-headline">
-            <a href="#">Visual Model Checking: Graph-Based Inference of Visual Routines for Image Retrieval</a>
-        </div>
-        <div class="project-dateline">2025</div>
-        <div class="project-excerpt">
-            Integrates graph-based verification and neural code generation for image retrieval, allowing queries with compositional constraints to be verified atomically for transparency and reliability.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Image Retrieval</span>
-            <span class="project-tag">Formal Verification</span>
-            <span class="project-tag">Graph Inference</span>
-        </div>
+  <!-- ===== 02 principles ===== -->
+  <section id="principles">
+    <div class="sh"><span class="n mono">§02</span><h2>Three requirements</h2><span class="aside mono">For archives, libraries &amp; museums</span></div>
+    <div class="reqs">
+      <div class="req"><span class="n mono">i.</span><h3>Comprehensive</h3><p>Incorporate as many relevant sources as possible, to construct the most complete description of a historical phenomenon.</p></div>
+      <div class="req"><span class="n mono">ii.</span><h3>Measurable</h3><p>Anchor every source to identifiable, verifiable fragments of information, so the contribution of each one can be tracked.</p></div>
+      <div class="req"><span class="n mono">iii.</span><h3>Relational</h3><p>Natively support inter-relationality: let people explore grounded connections between sources, not just primary sources alone.</p></div>
     </div>
-
-    <!-- Published -->
-    <div class="project-article">
-        <div class="project-status">Published</div>
-        <div class="project-headline">
-            <a href="https://amolina.cat/research.html#date-estimation">Date Estimation in the Wild of Scanned Historical Photos: An Image Retrieval Approach</a>
-        </div>
-        <div class="project-dateline">2023</div>
-        <div class="project-excerpt">
-            Presents a retrieval-based date estimation framework that generalizes across diverse historical datasets using smooth-nDCG loss.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Historical Photos</span>
-            <span class="project-tag">Retrieval</span>
-        </div>
+    <div class="why">
+      <div>
+        <h3>There is no foundation model for the past.</h3>
+        <p>It is tempting to think nobody has trained one yet, that it is a matter of time and money. It is not: historical documentation, as a whole, <b>inherently resists large-scale pattern recognition pre-training</b>. What it needs is a proxy, a system that behaves foundationally across domains, languages and typologies while remaining narrow in scope.</p>
+      </div>
+      <ol class="cons">
+        <li><span class="mono red">01</span><div><h4>Visual diversity</h4><p>Born in a less communicated, less globalized world, historical documents exacerbate the differences between collections of similar domains.</p></div></li>
+        <li><span class="mono red">02</span><div><h4>Annotation cost</h4><p>Collections are sparse and incomplete; expert knowledge is required even for foundational tasks such as reading text.</p></div></li>
+        <li><span class="mono red">03</span><div><h4>Governance</h4><p>Heritage carries cultural significance. Centralizing it outside each archive's data governance is legally and ethically out of reach.</p></div></li>
+      </ol>
     </div>
+  </section>
 
-    <div class="project-article">
-        <div class="project-status">Published</div>
-        <div class="project-headline">
-            <a href="https://amolina.cat/research.html#generative-systems">The Role of Generative Systems in Historical Photography Management: A Case Study on Catalan Archives</a>
+  <!-- ===== 03 questions ===== -->
+  <section id="questions">
+    <div class="sh"><span class="n mono">§03</span><h2>Research questions</h2><span class="aside mono">RQ1 — RQ4</span></div>
+    <div class="rqs">
+      <article class="rq">
+        <div class="id">RQ1</div>
+        <div>
+          <h3>Can a system provide answers that are grounded and measurable, yet comprehensive with respect to a document collection?</h3>
+          <p>Even when augmented with retrieved content, chatbots cannot count relationships, constrain literals such as dates or names, or account for the relevant content they never retrieved. I index photographs and documents through visual routines, graphs and ontologies instead.</p>
+          <div class="ev mono">
+            <a href="./research/papers/checking.html">Visual Model Checking</a>
+            <a href="./research/papers/graphrag.html">Knowledge graph interpretation</a>
+            <a href="https://arxiv.org/abs/2607.08459" target="_blank" rel="noopener">Conversational retrieval ↗</a>
+          </div>
         </div>
-        <div class="project-dateline">2023</div>
-        <div class="project-excerpt">
-            Explores generative models for captioning historical photographs in Catalan archives, emphasizing transfer learning for minoritized languages.
+      </article>
+      <article class="rq">
+        <div class="id">RQ2</div>
+        <div>
+          <h3>Is there such a thing as a foundational model for historical document analysis?</h3>
+          <p>Building one looks like a chimera, yet practitioners still need an initial seed for zero-shot prediction or light fine-tuning. I study decentralized learning and model editing to bypass centralization while improving low-resource, out-of-domain reading.</p>
+          <div class="ev mono">
+            <a href="./research/papers/dist.html">Unapologetically Distributed</a>
+            <a href="https://arxiv.org/abs/2506.06761" target="_blank" rel="noopener">The OCR Quest ↗</a>
+          </div>
         </div>
-        <div class="project-tags">
-            <span class="project-tag">Generative Systems</span>
-            <span class="project-tag">Cultural Heritage</span>
+      </article>
+      <article class="rq">
+        <div class="id">RQ3</div>
+        <div>
+          <h3>Is temporal information a proxy for the primary value of a document?</h3>
+          <p>A date alone cannot index a specific fact, but temporality is entangled with the topics and styles of a period. It can serve as a proxy to relevant information from the preservation perspective.</p>
+          <div class="ev mono">
+            <a href="./research/papers/date.html">Date estimation in the wild</a>
+          </div>
         </div>
+      </article>
+      <article class="rq">
+        <div class="id">RQ4</div>
+        <div>
+          <h3>Are neural representations temporally coherent?</h3>
+          <p>Should a late nineteenth-century car and a modern one share a representation? Time evolves in a continuum, so models should read historical data as a progressive evolution of features, not as isolated, well-defined clusters.</p>
+          <div class="ev mono">
+            <a href="./research/papers/tdir.html">Composed historical image retrieval</a>
+          </div>
+        </div>
+      </article>
     </div>
+  </section>
 
-    <div class="project-article">
-        <div class="project-status">Published</div>
-        <div class="project-headline">
-            <a href="https://amolina.cat/research.html#transformer-object-centric">A Transformer-Based Object-Centric Approach for Date Estimation of Historical Photographs</a>
-        </div>
-        <div class="project-dateline">2023</div>
-        <div class="project-excerpt">
-            Introduces a new dataset and an object detection + transformer encoder approach using “dating indicators” to improve date estimation in historical photograph collections.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Date Estimation</span>
-            <span class="project-tag">Transformer</span>
-            <span class="project-tag">Object Detection</span>
-        </div>
+  <!-- ===== 04 interactive papers ===== -->
+  <section id="papers">
+    <div class="sh"><span class="n mono">§04</span><h2>Interactive papers</h2>
+      <span class="aside reel-ctl"><button type="button" id="rl" class="mono" aria-label="Scroll left">←</button><button type="button" id="rr" class="mono" aria-label="Scroll right">→</button></span>
     </div>
-
-    <div class="project-article">
-        <div class="project-status">Published</div>
-        <div class="project-headline">
-            <a href="https://amolina.cat/research.html#fetch-a-set">Fetch-A-Set: A Large-Scale OCR-Free Benchmark for Historical Document Retrieval</a>
-        </div>
-        <div class="project-dateline">2022</div>
-        <div class="project-excerpt">
-            Introduces a benchmark for large-scale historical document retrieval tasks, focusing especially on legislative documents. OCR-free approaches and varied legibility.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Document Retrieval</span>
-            <span class="project-tag">Benchmark</span>
-        </div>
+    <div class="reel" id="reel">
+      <a href="./research/thesis.html"><div class="shot"><span class="ph mono">thesis.html</span><iframe data-src="./research/thesis.html" title="Thesis preview" tabindex="-1"></iframe><span class="open mono">Open →</span></div><div class="m mono"><span>00 · Doctoral thesis</span><span>UAB / CVC</span></div><h3>Retrieving Document Images Under Domain-Specific Constraints</h3></a>
+      <a href="./research/papers/tdir.html"><div class="shot"><span class="ph mono">tdir.html</span><iframe data-src="./research/papers/tdir.html" title="TDIR preview" tabindex="-1"></iframe><span class="open mono">Open →</span></div><div class="m mono"><span>01 · Temporal</span><span>2026</span></div><h3>Composed Historical Image Retrieval by Modeling Temporal Representations</h3></a>
+      <a href="./research/papers/dist.html"><div class="shot"><span class="ph mono">dist.html</span><iframe data-src="./research/papers/dist.html" title="Distributed preview" tabindex="-1"></iframe><span class="open mono">Open →</span></div><div class="m mono"><span>02 · Decentralized</span><span>2026</span></div><h3>Unapologetically Distributed: A Call for Decentralized Document Analysis</h3></a>
+      <a href="./research/papers/checking.html"><div class="shot"><span class="ph mono">checking.html</span><iframe data-src="./research/papers/checking.html" title="Visual Model Checking preview" tabindex="-1"></iframe><span class="open mono">Open →</span></div><div class="m mono"><span>03 · Verifiable</span><span>ICPR 2026</span></div><h3>Visual Model Checking: Graph-Based Inference of Visual Routines</h3></a>
+      <a href="./research/papers/graphrag.html"><div class="shot"><span class="ph mono">graphrag.html</span><iframe data-src="./research/papers/graphrag.html" title="Knowledge graph preview" tabindex="-1"></iframe><span class="open mono">Open →</span></div><div class="m mono"><span>04 · Knowledge graphs</span><span>ICDAR 2026</span></div><h3>Robust Interpretation of Historical Documents in Knowledge Graphs</h3></a>
+      <a href="./research/papers/fas.html"><div class="shot"><span class="ph mono">fas.html</span><iframe data-src="./research/papers/fas.html" title="Fetch-A-Set preview" tabindex="-1"></iframe><span class="open mono">Open →</span></div><div class="m mono"><span>05 · Benchmark</span><span>DAS 2024</span></div><h3>Fetch-A-Set: A Large-Scale OCR-Free Benchmark for Historical Document Retrieval</h3></a>
+      <a href="./research/papers/date.html"><div class="shot"><span class="ph mono">date.html</span><iframe data-src="./research/papers/date.html" title="Date estimation preview" tabindex="-1"></iframe><span class="open mono">Open →</span></div><div class="m mono"><span>06 · Dating</span><span>ICDAR 2021</span></div><h3>Date Estimation in the Wild of Scanned Historical Photos</h3></a>
     </div>
+  </section>
 
-    <div class="project-article">
-        <div class="project-status">Published</div>
-        <div class="project-headline">
-            <a href="https://amolina.cat/research.html#word-spotting">Learning to Rank Words: Optimizing Ranking Metrics for Word Spotting</a>
-        </div>
-        <div class="project-dateline">2022</div>
-        <div class="project-excerpt">
-            Compares ranking‐based objective functions for word spotting with both query‐by‐string and query‐by‐example settings, across handwritten and scene text.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Word Spotting</span>
-            <span class="project-tag">Ranking Metrics</span>
-        </div>
+  <!-- ===== 05 publications ===== -->
+  <section id="publications">
+    <div class="sh"><span class="n mono">§05</span><h2>Publications</h2><span class="aside mono">via Google Scholar</span></div>
+    <div class="query">
+      <label class="mono" for="q">Query&gt;</label>
+      <input id="q" type="search" placeholder="date estimation, ICDAR, Lladós…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="search" enterkeyhint="search">
+      <span class="mono k">Press /</span>
     </div>
-
-    <div class="project-article">
-        <div class="project-status">Published</div>
-        <div class="project-headline">
-            <a href="https://amolina.cat/research.html#structured-analysis-ciphers">Structured Analysis of Alphabets in Historical Handwritten Ciphers</a>
-        </div>
-        <div class="project-dateline">2021</div>
-        <div class="project-excerpt">
-            Proposes the CSI metric for comparing ciphered documents; uses unsupervised clustering with visual features to help transcription and cryptanalysis.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Ciphers</span>
-            <span class="project-tag">Alphabets</span>
-            <span class="project-tag">Clustering</span>
-        </div>
+    <div class="filters mono" id="filters">
+      <button class="chip" type="button" data-f="all" aria-pressed="true">All</button>
+      <button class="chip" type="button" data-f="live" aria-pressed="false">Interactive</button>
+      <button class="chip" type="button" data-f="first" aria-pressed="false">First author</button>
+      <button class="chip" type="button" data-f="journal" aria-pressed="false">Journals</button>
+      <span class="count" id="count" aria-live="polite"></span>
     </div>
+    <div class="pubs" id="pubs"></div>
+    <p class="none" id="none" hidden>No record matches. A chatbot would have answered anyway.</p>
+  </section>
 
-    <div class="project-article">
-        <div class="project-status">Published</div>
-        <div class="project-headline">
-            <a href="https://amolina.cat/research.html#matrimonial-ads-pipeline">Faster extraction of matrimonial advertisements from digital archives using a signal processing pipeline: a case study on a 20th-Century Spanish newspaper</a>
+  <!-- ===== 06 cv ===== -->
+  <section id="cv">
+    <div class="sh"><span class="n mono">§06</span><h2>Curriculum</h2><span class="aside mono">2019 — now</span></div>
+    <div class="cv">
+      <figure class="pf">
+        <div class="fr"><img src="./research/pfp.jpeg" alt="Adrià Molina Rodríguez presenting a master's thesis in a seminar room" width="1204" height="1600" loading="lazy"></div>
+        <figcaption class="mono"><span>Fig. 2</span> — Defending the master's thesis, 2023. Back when there was still light in my eyes.</figcaption>
+      </figure>
+      <div>
+        <div class="blk">
+          <h3 class="mono">Work</h3>
+          <div class="row"><span class="d mono">2023 — now</span><div><h4>Predoctoral researcher (FPI)</h4><div class="o">Computer Vision Center · Universitat Autònoma de Barcelona</div><p>Indexing historical photographs and documents with factual data, within the project <i>Graph Reasoning for Automatic Interpretation and Learning</i>. In collaboration with the Xarxa d'Arxius Comarcals and the Centre d'Estudis Demogràfics.</p></div></div>
+          <div class="row"><span class="d mono">2021 — 2023</span><div><h4>Research engineer</h4><div class="o">Document Analysis Group, CVC</div><p>Applied research and proofs of concept in image analysis for archives, under the agreement with the Xarxa d'Arxius Comarcals.</p></div></div>
+          <div class="row"><span class="d mono">2021</span><div><h4>Research &amp; development</h4><div class="o">BMAT · Charts</div><p>Metadata de-duplication for the music industry.</p></div></div>
+          <div class="row"><span class="d mono">2021</span><div><h4>Research engineer</h4><div class="o">CVC · FECYT</div><p>Science outreach: a (now defunct) Twitter bot that dated users' photographs.</p></div></div>
+          <div class="row"><span class="d mono">2019 — 2020</span><div><h4>Research assistant</h4><div class="o">CVC student grant</div><p>Retrieval through continuous approximations of discrete ranking functions.</p></div></div>
         </div>
-        <div class="project-dateline">2021</div>
-        <div class="project-excerpt">
-            Builds a pipeline to extract matrimonial advertisements from digitized newspapers, via identification, segmentation, classification and OCR.
+        <div class="blk">
+          <h3 class="mono">Education</h3>
+          <div class="row"><span class="d mono">2023 — now</span><div><h4>PhD in Computer Science</h4><div class="o">Universitat Autònoma de Barcelona · Computer Vision Center</div></div></div>
+          <div class="row"><span class="d mono">2022 — 2023</span><div><h4>MSc in Computer Vision</h4><div class="o">CVC-UAB · UPC · UPF · UOC</div></div></div>
+          <div class="row"><span class="d mono">2018 — 2022</span><div><h4>BSc in Data Engineering</h4><div class="o">Universitat Autònoma de Barcelona</div></div></div>
         </div>
-        <div class="project-tags">
-            <span class="project-tag">Signal Processing</span>
-            <span class="project-tag">Historical Data Extraction</span>
+        <div class="blk">
+          <h3 class="mono">Recognition &amp; other</h3>
+          <div class="row"><span class="d mono">Award</span><div><h4>2nd best paper, DAS 2024</h4><div class="o">Fetch-A-Set</div></div></div>
+          <div class="row"><span class="d mono">Award</span><div><h4>Best doctoral thesis proposal</h4><div class="o">International Conference on Document Analysis and Recognition</div></div></div>
+          <div class="row"><span class="d mono">Venture</span><div><h4><a href="https://urbview.com" target="_blank" rel="noopener">UrbView</a></h4><div class="o">Co-founder. Urban design analysis for building cities with a gender perspective.</div></div></div>
         </div>
+        <div class="blk">
+          <h3 class="mono">Supervised work</h3>
+          <div class="row"><span class="d mono">P. Font</span><div><h4>Conversational retrieval and knowledge modeling from historical documents</h4></div></div>
+          <div class="row"><span class="d mono">J. C. Montero</span><div><h4>An agentic perspective on graph-based RAG</h4></div></div>
+          <div class="row"><span class="d mono">È. Sànchez</span><div><h4>Catalan captioning of historical photography</h4></div></div>
+          <div class="row"><span class="d mono">A. Fernández</span><div><h4>Question answering over legislative documents (BOE)</h4></div></div>
+          <div class="row"><span class="d mono">M. Serra</span><div><h4>Word spotting for historical legislative documents</h4></div></div>
+          <div class="row"><span class="d mono">A. Fernández-Rascón</span><div><h4>TerritoCAT, a game to annotate historical photographs of Catalonia</h4></div></div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- Student Projects -->
-    <div class="project-article">
-        <div class="project-status">Student Project</div>
-        <div class="project-headline">Descripció de Fotografia Històrica en Català</div>
-        <div class="project-dateline">È. Sànchez</div>
-        <div class="project-excerpt">
-            Comparació de tècniques d’adaptació de domini històric i lingüístic per generar descripcions d’imatges d’arxiu en català, traslladant coneixement des de models preentrenats en altres idiomes i èpoques històriques.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Image Captioning</span>
-            <span class="project-tag">Catalan</span>
-            <span class="project-tag">Historical Images</span>
-        </div>
+  <!-- ===== 07 elsewhere ===== -->
+  <section id="elsewhere">
+    <div class="sh"><span class="n mono">§07</span><h2>Side projects</h2><span class="aside mono">Built for fun &amp; outreach</span></div>
+    <div class="side">
+      <a href="./locatlitza/equilibrat.html"><b>Locatlitza</b><span>Guess when and where a historical photo was taken. Same archive as Fig. 1.</span><i class="mono">↗</i></a>
+      <a href="./master/projectors/www.heritage.projector/map.html"><b>Heritage projector</b><span>Thousands of archival photographs laid out as an explorable map.</span><i class="mono">↗</i></a>
+      <a href="./gcivil/"><b>Gazeta → BOE</b><span>How the official gazette changed hands during the Spanish Civil War.</span><i class="mono">↗</i></a>
+      <a href="./generate_timeline/timeline.html"><b>Timeline</b><span>This CV, as an interactive timeline.</span><i class="mono">↗</i></a>
+      <a href="./la_meva_cronologia/"><b>La meva cronologia</b><span>Visualize your own Google location history.</span><i class="mono">↗</i></a>
+      <a href="./dgt/test.html"><b>Conduir</b><span>Driving theory exams, in Catalan.</span><i class="mono">↗</i></a>
     </div>
+  </section>
 
-    <div class="project-article">
-        <div class="project-status">Student Project</div>
-        <div class="project-headline">Sistema de 'Question Answering' en Documentació Legislativa Moderna</div>
-        <div class="project-dateline">A. Fernandez</div>
-        <div class="project-excerpt">
-            Desenvolupar un sistema de Question Answering que extregui informació precisa del BOE, integrant-lo amb RAG i models precursors adaptats al llenguatge legal.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Question Answering</span>
-            <span class="project-tag">Legal Documents</span>
-            <span class="project-tag">Retrieval-Augmented Generation</span>
-        </div>
+  <!-- ===== 08 contact ===== -->
+  <section id="contact">
+    <div class="sh"><span class="n mono">§08</span><h2>Contact</h2><span class="aside mono">Write, and doubt freely</span></div>
+    <div class="contact">
+      <a class="mail" href="mailto:amolina@cvc.uab.cat">amolina@cvc.uab.cat</a>
+      <div class="profiles mono">
+        <a href="https://scholar.google.com/citations?user=23JU52kAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar <span>↗</span></a>
+        <a href="https://github.com/EauDeData" target="_blank" rel="noopener">GitHub @EauDeData <span>↗</span></a>
+        <a href="https://www.linkedin.com/in/amolina505" target="_blank" rel="noopener">LinkedIn <span>↗</span></a>
+        <a href="https://orcid.org/0000-0003-0167-8756" target="_blank" rel="noopener">ORCID <span>↗</span></a>
+        <a href="./research/">Research index <span>→</span></a>
+      </div>
     </div>
+  </section>
+</main>
 
-    <div class="project-article">
-        <div class="project-status">Student Project</div>
-        <div class="project-headline">Sistema de Word Spotting per Documentació Legislativa Històrica</div>
-        <div class="project-dateline">M. Serra</div>
-        <div class="project-excerpt">
-            Desenvolupar un sistema automàtic per recuperar informació de documents històrics, cercant paraules en documents amb errors d’OCR i retornant documents rellevants igualment.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Word Spotting</span>
-            <span class="project-tag">Historical Documents</span>
-            <span class="project-tag">OCR Errors</span>
-        </div>
-    </div>
+<footer>
+  <div class="mark" aria-hidden="true"><span class="mk" id="mark">amolina<span class="dot">.</span>cat</span></div>
+  <div class="foot mono">
+    <span>“Truth is like a blanket that always leaves your feet cold.” — J. Keating</span>
+    <span>Fig. 1 photographs: Arxius en Línia, Generalitat de Catalunya</span>
+  </div>
+</footer>
 
-    <div class="project-article">
-        <div class="project-status">Student Project</div>
-        <div class="project-headline">TerritoCAT: Un joc per anotar fotografies històriques de Catalunya</div>
-        <div class="project-dateline">A. Fernandez-Rascón</div>
-        <div class="project-excerpt">
-            Desenvolupament d’una aplicació mòbil per fomentar la descoberta del patrimoni històric de Catalunya mitjançant gamificació, geolocalització i gestió de dades visuals col·laboratives.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Heritage</span>
-            <span class="project-tag">Mobile App</span>
-            <span class="project-tag">Gamification</span>
-        </div>
-    </div>
+<script src="./static/archive.js" defer></script>
+<script defer>
+window.addEventListener('DOMContentLoaded', () => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
 
-    <div class="project-article">
-        <div class="project-status">Student Project</div>
-        <div class="project-headline">Conversational Retrieval and Knowledge Modeling from Historical Documents</div>
-        <div class="project-dateline">P. Font</div>
-        <div class="project-excerpt">
-            Sistema de transcripció altament precís seguit de RAG i construcció gradual d’un Knowledge Graph per documents històrics, per permetre respostes contextuals i modelatge del coneixement a través d’interaccions d’usuari.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Conversational AI</span>
-            <span class="project-tag">Knowledge Graph</span>
-            <span class="project-tag">Historical Archives</span>
-        </div>
-    </div>
+  /* =================== FIG. 1 — ARCHIVE HISTOGRAM =================== */
+  (function archive() {
+    const A = window.ARCHIVE;
+    const plot = document.getElementById('plot');
+    const cv = document.getElementById('arch');
+    const ctx = cv.getContext('2d');
+    const card = document.getElementById('card');
+    const cImg = card.querySelector('img');
+    const cLd = card.querySelector('.ld');
+    const [cYr, cPl, cCp, cCl] = ['.yr', '.pl', '.cp', '.cl'].map(s => card.querySelector(s));
+    if (!A) { plot.style.display = 'none'; return; }
+    if (!finePointer) document.getElementById('hint').textContent = 'Tap a brick to retrieve';
 
-    <div class="project-article">
-        <div class="project-status">Student Project</div>
-        <div class="project-headline">Una perspectiva agèntica per a RAG basat en grafs</div>
-        <div class="project-dateline">J. C. Montero</div>
-        <div class="project-excerpt">
-            Proposta d’arquitectura agèntica basada en graf de coneixement per millorar la generació i recuperació de respostes en contextos amb relacions complexes entre entitats.
-        </div>
-        <div class="project-tags">
-            <span class="project-tag">Graph Agents</span>
-            <span class="project-tag">RAG</span>
-            <span class="project-tag">Information Retrieval</span>
-        </div>
-    </div>
+    const Y0 = 1880, Y1 = 2025, NC = Y1 - Y0 + 1;
+    const cols = Array.from({ length: NC }, () => []);
+    A.r.forEach(r => {
+      const y = Math.floor((r[1] + r[2]) / 2);
+      if (y >= Y0 && y <= Y1) cols[y - Y0].push({ u: A.p + r[0], y0: r[1], y1: r[2], pl: r[3], cp: r[4], cl: r[5], exact: r[1] === r[2] });
+    });
+    // exact dates at the base, uncertain ones on top: a solid foundation with a hazy crown
+    cols.forEach(c => c.sort((a, b) => (b.exact - a.exact) || ((a.y1 - a.y0) - (b.y1 - b.y0))));
+    const ME = { me: true, u: './research/pfp.jpeg', y0: 2023, y1: 2023, pl: 'Universitat Autònoma de Barcelona', cp: "Adrià Molina, defending the master's thesis. Not (yet) in any archive.", cl: 'Personal collection', exact: true };
+    cols[2023 - Y0].push(ME);
+    const MAX = Math.max(...cols.map(c => c.length));
+    const RED = getComputedStyle(document.documentElement).getPropertyValue('--red').trim() || '#ff3b2f';
+    const ease = t => 1 - Math.pow(1 - t, 3);
+    const STAG = 7, DUR = 650;
 
-</div>
+    let W = 0, H = 0, L = {}, hover = { col: -1, idx: -1 }, t0 = 0, introDone = reduce, shown = null;
 
+    function layout() {
+      const r = plot.getBoundingClientRect();
+      const dpr = Math.min(2, devicePixelRatio || 1);
+      W = r.width; H = r.height;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const pad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--g')) || 24;
+      const base = H - 26, top = 34;
+      L = { pad, colW: (W - pad * 2) / NC, base, top, step: (base - top) / MAX };
+      draw(performance.now());
+    }
 
+    function draw(now) {
+      if (!W) return;
+      ctx.clearRect(0, 0, W, H);
+      const { pad, colW, step, base, top } = L;
+      const gap = colW > 5 ? 1 : colW > 2.5 ? .5 : 0;
+      const bh = Math.max(.8, step - (step > 3 ? 1 : step > 1.6 ? .5 : 0));
+      let animating = false;
 
-
-        <!-- Skills & Education Page -->
-        <div class="newspaper-page skills-education-page inactive">
-            <div class="skills-section">
-                <div class="section-header">Les Meves Competencies</div>
-                
-                <div class="skills-category">
-                    <h3>Programming & Artificial Intelligence</h3>
-                    <ul class="skills-list">
-                        <li>Advanced Object-Oriented Programming</li>
-                        <li>Compentence in Bash</li>
-                        <li>Asyncronous, data-intensitive, infrastructures.</li>
-                        <li>Preffered Dtaabase Managers: MongoDB and Neo4J.</li>
-                        <li>Full proficiency on Relational Database dessign.</li>
-                        <li>Git Version Control Systems</li>
-                        <li>Computer Vision & Deep Learning</li>
-                        <li>Data Science & Visualization</li>
-                    </ul>
-                </div>
-
-                <div class="skills-category">
-                    <h3>Research & Scientific Analysis</h3>
-                    <ul class="skills-list">
-                        <li>Scientific Research Methodology</li>
-                        <li>Statistical Analysis & Modeling</li>
-                        <li>Architecture Development</li>
-                        <li>Technical Writing & Documentation</li>
-                        <li>Grant Writing & Proposal Development</li>
-                    </ul>
-                </div>
-
-                <div class="skills-category">
-                    <h3>Linguistic Proficiencies</h3>
-                    <ul class="skills-list">
-                        <li>Catalan (Native Speaker)</li>
-                        <li>Spanish (Native Speaker)</li>
-                        <li>English (Advanced)</li>
-                    </ul>
-                </div>
-
-                <div class="ornament">❦ ❦ ❦</div>
-            </div>
-
-            <div class="education-section">
-                <div class="section-header">Els Meus Estudis</div>
-                
-                <div class="education-item">
-                    <div class="degree-title">Doctorat en Informàtica</div>
-                    <div class="institution-name">Universitat Autònoma de Barcelona (UAB) - Centre de Visió per Computador (CVC)</div>
-                    <div class="graduation-year">2023 - Present</div>
-                    <div class="degree-description">
-Recerca predoctoral en indexació de fotografia i documents històrics amb aplicació en arxivística i demografia històrica.
-                    </div>
-                </div>
-
-                <div class="education-item">
-                    <div class="degree-title">Master Interuniversitari en Visió per Computador</div>
-                    <div class="institution-name">Centre de Visió per Computador (CVC-UAB) - UPC / UPF / UOC </div>
-                    <div class="graduation-year">2022 - 2023</div>
-                    <div class="degree-description">
-This master is designed to join the research expertise of 5 universities in Barcelona. It offers to the students an updated program of methods and foundations of Computer Vision. After most than a decade of experience we have proved the success of a project-based methodology to learn in this field.
-
-Computer vision is a technology within the Artificial Intelligence field, where acts as a fundamental component to perform smart tasks in systems such as assisting medical diagnosis and surgery, autonomous car driving, industry quality control, surveillance applications, or improving interfaces for multimedia data access. 
-                    </div>
-                </div>
-
-                <div class="education-item">
-                    <div class="degree-title"> Grau en Enginyeria de Dades</div>
-                    <div class="institution-name">Universitat Autònoma de Barcelona (UAB)</div>
-                    <div class="graduation-year">2018 - 2022</div>
-                    <div class="degree-description">
-El grau en Enginyeria de Dades de la UAB forma professionals capaços de gestionar tot el cicle de vida de les dades, des de l’obtenció i extracció fins a la seva representació, transmissió, emmagatzematge segur, processament eficient i anàlisi amb visualització. Respon a l’augment constant d’informació disponible i a la necessitat de tractar-la per millorar processos productius i la presa de decisions. </div>
-            </div>
-        </div>
-
-        <div class="education-item">
-                    <div class="degree-title"> Formació en Divulgació Científica (6h)</div>
-                    <div class="institution-name">Universitat Autònoma de Barcelona (UAB) - EDUSCOPI</div>
-                    <div class="graduation-year">2025</div>
-                    <div class="degree-description">
-Formació laboral en comunicació científica i divulgació.
-
-                    </div>
-        </div>
-
-                <div class="education-item">
-                    <div class="degree-title"> Formació en Salut Mental a l'Entorn Científic (+20h)</div>
-                    <div class="institution-name">Universitat Autònoma de Barcelona (UAB)</div>
-                    <div class="graduation-year">2024 - 2025</div>
-                    <div class="degree-description">
-Formació laboral en gestió de l'estrés, resiliència i salut mental.
-
-                    </div>
-                    
-                    <div class="contact-details">ORCiD</div>
-            <div class="ornament">◈</div>
-        </a>
-    </div>
-
-    <div class="contact-headline" style="margin-top: 40px;">Algunes pàgines</div>
-    <div class="contact-directory">
-        <a href="https://amolina.cat/locatlitza/equilibrat.html" target="_blank" class="contact-listing">
-            <div class="contact-type">locatlitza.amolina.cat</div>
-            <div class="contact-details">Joc de localització temporal i geogràfica de fotos històriques</div>
-            <div class="ornament">🗺</div>
-        </a>
-        
-        <a href="https://amolina.cat/master/projectors/www.heritage.projector/map.html" target="_blank" class="contact-listing">
-            <div class="contact-type">Visualitzador de fotografies històriques</div>
-            <div class="contact-details">Mapa interactiu amb imatges d’arxiu</div>
-            <div class="ornament">🖼</div>
-        </a>
-        
-        <a href="https://amolina.cat/gcivil" target="_blank" class="contact-listing">
-            <div class="contact-type">gcvil.amolina.cat</div>
-            <div class="contact-details">La transició de la Gazeta de Madrid al BOE durant la Guerra Civil</div>
-            <div class="ornament">📜</div>
-        </a>
-                <a href="https://amolina.cat/generate_timeline/timeline.html" target="_blank" class="contact-listing">
-            <div class="contact-type">Timeline</div>
-            <div class="contact-details">Visualitació Interactiva del meu CV</div>
-            <div class="ornament">🚗</div>
-        </a>
-
-        
-        <a href="https://amolina.cat/la_meva_cronologia/" target="_blank" class="contact-listing">
-            <div class="contact-type">La meva cronologia</div>
-            <div class="contact-details">Visualitza la teva cronologia de Google</div>
-            <div class="ornament">🕰</div>
-        </a>
-                <a href="https://amolina.cat/dgt/" target="_blank" class="contact-listing">
-            <div class="contact-type">conduir.amolina.cat</div>
-            <div class="contact-details">Exàmens de conduir en català</div>
-            <div class="ornament">🚗</div>
-        </a>
-    </div>
-
-                </div>
-        
-        </div>
-
-<div class="newspaper-page contact-page inactive"> <div class="contact-headline">Directori Professional</div> <div class="contact-subhead"> No dubteu en contactar-me: </div> <div class="contact-directory"> <a href="mailto:amolina@cvc.uab.cat" class="contact-listing"> <div class="contact-type">Official Correspondence</div> <div class="contact-details">amolina@cvc.uab.cat</div> <div class="ornament">✉</div> </a> <a href="www.linkedin.com/in/amolina505" target="_blank" class="contact-listing"> <div class="contact-type">Professional Network</div> <div class="contact-details">LinkedIn Professional Profile</div> <div class="ornament">◊</div> </a> <a href="https://github.com/EauDeData" target="_blank" class="contact-listing"> <div class="contact-type">Research Repository</div> <div class="contact-details">GitHub: @EauDeData</div> <div class="ornament">⚡</div> </a> <a href="https://orcid.org/0000-0003-0167-8756" target="_blank" class="contact-listing"> <div class="contact-type">Academic Citations</div> <div class="contact-details">ORCiD</div> <div class="ornament">◈</div> </a> </div> <div class="ornament" style="margin-top: 40px; font-size: 2rem;">❦ ❦ ❦</div> <div style="margin-top: 30px; font-style: italic; color: var(--dark-sepia); font-size: 1rem;"> “Truth is like a blanket that always leaves your feet cold. You push at it, stretch it, it will never be enough. You kick at it, beat at it, it will never cover any of us. From the moment we enter crying to the moment you leave dying". </div> </div> </div>
-
-
-    <!-- Page Navigation -->
-    <div class="page-nav">
-        <button class="nav-button" id="prev-page">‹</button>
-        <button class="nav-button" id="next-page">›</button>
-    </div>
-
-    <script>
-        // Custom Cursor
-        const cursor = document.querySelector('.cursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.pageX + 'px';
-            cursor.style.top = e.pageY + 'px';
-        });
-
-        document.querySelectorAll('a, button, .project-article, .contact-listing').forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-        });
-
-        // Page Navigation System
-        const pages = document.querySelectorAll('.newspaper-page');
-        const tabs = document.querySelectorAll('.section-tab');
-        let currentPageIndex = 0;
-
-        function updatePages() {
-            pages.forEach((page, i) => {
-                page.classList.remove('active', 'inactive', 'next', 'prev');
-                
-                if (i === currentPageIndex) {
-                    page.classList.add('active');
-                    page.classList.add('page-turning');
-                    setTimeout(() => page.classList.remove('page-turning'), 800);
-                } else if (i === currentPageIndex - 1) {
-                    page.classList.add('prev');
-                } else if (i === currentPageIndex + 1) {
-                    page.classList.add('next');
-                } else {
-                    page.classList.add('inactive');
-                }
-            });
-            
-            updateTabs();
-            updateNavButtons();
+      if (hover.col >= 0) {
+        ctx.fillStyle = 'rgba(255,255,255,.05)';
+        ctx.fillRect(pad + hover.col * colW, top - 8, colW, base - top + 8);
+      }
+      for (let c = 0; c < NC; c++) {
+        const list = cols[c];
+        if (!list.length) continue;
+        let n = list.length;
+        if (!introDone) {
+          const p = Math.min(1, Math.max(0, (now - t0 - c * STAG) / DUR));
+          if (p < 1) animating = true;
+          n = Math.round(list.length * ease(p));
         }
-
-        function updateTabs() {
-            tabs.forEach((tab, i) => {
-                tab.classList.toggle('active', i === currentPageIndex);
-            });
+        const x = pad + c * colW, hot = c === hover.col;
+        for (let j = 0; j < n; j++) {
+          const it = list[j];
+          if (it.me || (hot && j === hover.idx)) ctx.fillStyle = RED;
+          else if (it.exact) ctx.fillStyle = hot ? '#fff' : 'rgba(236,236,234,.78)';
+          else ctx.fillStyle = hot ? 'rgba(255,255,255,.5)' : 'rgba(236,236,234,.24)';
+          ctx.fillRect(x, base - (j + 1) * step, Math.max(.6, colW - gap), bh);
         }
+      }
 
-        function updateNavButtons() {
-            document.getElementById('prev-page').disabled = currentPageIndex === 0;
-            document.getElementById('next-page').disabled = currentPageIndex === pages.length - 1;
-        }
+      // axis
+      ctx.fillStyle = 'rgba(236,236,234,.18)';
+      ctx.fillRect(pad, base + 4, W - pad * 2, 1);
+      ctx.font = '400 10px "Martian Mono", ui-monospace, monospace';
+      ctx.textBaseline = 'top';
+      const every = W < 560 ? 40 : W < 900 ? 20 : 10;
+      for (let y = Y0; y <= Y1; y += 10) {
+        const x = pad + (y - Y0) * colW, major = y % every === 0;
+        ctx.fillStyle = 'rgba(236,236,234,.28)';
+        ctx.fillRect(x, base + 4, 1, major ? 6 : 3);
+        if (major) { ctx.fillStyle = 'rgba(236,236,234,.5)'; ctx.fillText(String(y), x + 3, base + 11); }
+      }
 
-        // Navigation Event Listeners
-        document.getElementById('next-page').addEventListener('click', () => {
-            if (currentPageIndex < pages.length - 1) {
-                currentPageIndex++;
-                updatePages();
-            }
+      // "you are here"
+      const meC = 2023 - Y0;
+      if (introDone || now - t0 > meC * STAG + DUR) {
+        const meX = pad + meC * colW + colW / 2, meY = base - cols[meC].length * step;
+        const lab = 'A. MOLINA, 2023', lw = ctx.measureText(lab).width, ly = top - 6;
+        ctx.fillStyle = RED;
+        ctx.fillRect(Math.round(meX), ly + 14, 1, Math.max(0, meY - ly - 16));
+        ctx.fillText(lab, Math.min(W - pad - lw, meX - lw + 4), ly);
+      }
+
+      // readout
+      if (hover.col >= 0) {
+        const yr = Y0 + hover.col, n = cols[hover.col].length - (yr === 2023 ? 1 : 0);
+        const label = `${yr} — ${n} photograph${n === 1 ? '' : 's'}`;
+        ctx.font = '500 10px "Martian Mono", ui-monospace, monospace';
+        const tw = ctx.measureText(label).width;
+        const lx = Math.max(pad, Math.min(W - pad - tw, pad + hover.col * colW + colW / 2 - tw / 2));
+        ctx.fillStyle = '#ececea';
+        ctx.fillText(label, lx, top - 26);
+      }
+
+      if (animating) requestAnimationFrame(draw);
+      else if (!introDone) { introDone = true; draw(now); }
+    }
+
+    function pick(e) {
+      const r = cv.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      const col = Math.floor((x - L.pad) / L.colW);
+      if (col < 0 || col >= NC || y < L.top - 12 || y > L.base + 6) return { col: -1, idx: -1, x, y };
+      const len = cols[col].length;
+      if (!len) return { col, idx: -1, x, y };
+      const raw = (L.base - y) / L.step;
+      let idx = Math.floor(raw);
+      if (idx >= len) idx = raw < len + 4 ? len - 1 : -1;   // forgiving over thin column tops
+      if (idx < 0) idx = raw > -1 ? 0 : -1;
+      return { col, idx, x, y };
+    }
+
+    function showCard(p) {
+      const it = p.idx >= 0 ? cols[p.col][p.idx] : null;
+      if (!it) { card.classList.remove('on'); shown = null; return; }
+      if (it !== shown) {
+        shown = it;
+        cImg.classList.remove('ok');
+        cLd.style.display = '';
+        cImg.onload = () => { if (shown === it) { cImg.classList.add('ok'); cLd.style.display = 'none'; } };
+        cImg.src = it.u;
+        cYr.textContent = it.y0 === it.y1 ? String(it.y0) : `${it.y0} – ${it.y1}`;
+        cPl.textContent = it.pl;
+        cCp.textContent = it.cp;
+        cCl.textContent = it.cl;
+      }
+      const cw = 272, ch = card.offsetHeight || 330;
+      const flip = p.x + 22 + cw > W - 8;
+      const x = flip ? p.x - 22 - cw : p.x + 22;
+      const y = Math.max(8, Math.min(H - ch - 8, p.y - ch * .55));
+      card.style.setProperty('--ox', flip ? '100%' : '0%');
+      card.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+      card.classList.add('on');
+    }
+    function clear() { hover = { col: -1, idx: -1 }; card.classList.remove('on'); shown = null; if (introDone) draw(performance.now()); }
+    function update(p) {
+      if (p.col !== hover.col || p.idx !== hover.idx) { hover = { col: p.col, idx: p.idx }; if (introDone) draw(performance.now()); }
+      showCard(p);
+    }
+
+    cv.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') update(pick(e)); });
+    cv.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') clear(); });
+    // touch: tap selects a brick, a horizontal drag scrubs through the years,
+    // a vertical drag is left to the browser (touch-action: pan-y) and scrolls the page
+    let touch = null;
+    cv.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'mouse') return;
+      touch = { id: e.pointerId, x: e.clientX, y: e.clientY, scrub: false };
+    });
+    cv.addEventListener('pointermove', e => {
+      if (!touch || e.pointerId !== touch.id) return;
+      const dx = e.clientX - touch.x, dy = e.clientY - touch.y;
+      if (!touch.scrub && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) touch.scrub = true;
+      if (touch.scrub) update(pick(e));
+    });
+    cv.addEventListener('pointerup', e => {
+      if (!touch || e.pointerId !== touch.id) return;
+      if (!touch.scrub && Math.hypot(e.clientX - touch.x, e.clientY - touch.y) < 8) update(pick(e));
+      touch = null;
+    });
+    cv.addEventListener('pointercancel', () => { touch = null; });
+    document.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'mouse' && !plot.contains(e.target)) clear();
+    });
+    cv.addEventListener('click', () => { if (finePointer && shown) window.open(shown.u, '_blank', 'noopener'); });
+    card.addEventListener('click', () => { if (shown) window.open(shown.u, '_blank', 'noopener'); });
+
+    new ResizeObserver(() => layout()).observe(plot);
+    fontsReady.then(() => {
+      t0 = performance.now() + 200;
+      layout();
+      if (!introDone) requestAnimationFrame(draw);
+    });
+  })();
+
+  /* =================== REDACTED STATEMENTS =================== */
+  (function redact() {
+    const blocks = document.querySelectorAll('.redact');
+    if (reduce || !('IntersectionObserver' in window)) { blocks.forEach(b => b.classList.add('on')); return; }
+    blocks.forEach(el => {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+      let i = 0;
+      nodes.forEach(n => {
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+          const s = document.createElement('span');
+          s.className = 'w'; s.textContent = part;
+          s.style.setProperty('--d', Math.min(i++ * 28, 700) + 'ms');
+          frag.appendChild(s);
         });
+        n.replaceWith(frag);
+      });
+    });
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+    }), { threshold: .4, rootMargin: '0px 0px -6% 0px' });
+    blocks.forEach(b => io.observe(b));
+  })();
 
-        document.getElementById('prev-page').addEventListener('click', () => {
-            if (currentPageIndex > 0) {
-                currentPageIndex--;
-                updatePages();
-            }
-        });
+  /* =================== INTERACTIVE PAPER REEL =================== */
+  (function reel() {
+    const reel = document.getElementById('reel');
+    const LOGICAL = 1280;
+    const size = shot => {
+      const f = shot.querySelector('iframe'); if (!f) return;
+      const w = shot.clientWidth, h = shot.clientHeight; if (!w) return;
+      const s = w / LOGICAL;
+      f.style.width = LOGICAL + 'px'; f.style.height = (h / s) + 'px'; f.style.transform = `scale(${s})`;
+    };
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const f = e.target.querySelector('iframe');
+      if (f && !f.src) { f.src = f.dataset.src; size(e.target); }
+      io.unobserve(e.target);
+    }), { rootMargin: '200px 600px' });
+    reel.querySelectorAll('.shot').forEach(s => { size(s); io.observe(s); });
+    new ResizeObserver(() => reel.querySelectorAll('.shot').forEach(size)).observe(reel);
+    const by = d => reel.scrollBy({ left: d * (reel.querySelector('a').offsetWidth + 18), behavior: reduce ? 'auto' : 'smooth' });
+    const rl = document.getElementById('rl'), rr = document.getElementById('rr');
+    rl.addEventListener('click', () => by(-1));
+    rr.addEventListener('click', () => by(1));
+    // arrows tell you where the ends are
+    const ends = () => {
+      rl.disabled = reel.scrollLeft < 4;
+      rr.disabled = reel.scrollLeft + reel.clientWidth > reel.scrollWidth - 4;
+    };
+    reel.addEventListener('scroll', ends, { passive: true });
+    new ResizeObserver(ends).observe(reel);
+  })();
 
-        // Tab Navigation
-        tabs.forEach((tab, i) => {
-            tab.addEventListener('click', () => {
-                currentPageIndex = i;
-                updatePages();
-            });
-        });
+  /* =================== PUBLICATIONS: A SMALL RETRIEVAL SYSTEM =================== */
+  (function pubs() {
+    const P = [
+      { y: 2026, t: 'Unapologetically Distributed: A Call for Decentralized Document Analysis', a: 'A. Molina, O. R. Terrades, J. Lladós', v: 'arXiv:2609.39684', live: 'dist', url: 'https://arxiv.org/abs/2609.39684' },
+      { y: 2026, t: 'Composed Historical Image Retrieval by Modeling Temporal Representations', a: 'A. Molina, O. R. Terrades, J. Lladós', v: 'arXiv:2608.18694', live: 'tdir', url: 'https://arxiv.org/abs/2608.18694' },
+      { y: 2026, t: 'Visual Model Checking: Graph-Based Inference of Visual Routines for Image Retrieval', a: 'A. Molina, O. R. Terrades, J. Lladós', v: 'ICPR 2026', live: 'checking' },
+      { y: 2026, t: 'Robust Interpretation of Historical Documents in Knowledge Graphs Through Query Inference and Execution', a: 'S. Nicolau, A. Molina, O. R. Terrades, J. Lladós', v: 'ICDAR 2026', live: 'graphrag' },
+      { y: 2026, t: 'ICDAR 2026 Competition on Long-Term Handwriting Author Identification', a: 'A. Molina, C. Boned Riera, P. Torras, O. Ramos Terrades, et al.', v: 'ICDAR 2026', tags: ['Competition'] },
+      { y: 2026, t: 'Revisiting How We Access Historical Archives: Auditing Gender Stereotypes and the Division of Labour in the Analysis of Historical Photography Collections', a: 'F. Net, A. Molina, S. Llacer-Caro, L. Gómez', v: 'ICDAR 2026' },
+      { y: 2026, t: 'Unveiling Alternative Quantitative Narratives of Gender and Employment in Southern Europe from 19th- and 20th-Century Photographs: From Pixels to Socioeconomic Insights Using Computer Vision Techniques', a: 'J. M. Pujadas-Mora, A. Molina', v: 'The History of the Family', url: 'https://doi.org/10.1080/1081602X.2026.2660747', journal: true },
+      { y: 2026, t: 'Conversational Retrieval and On-the-Fly Knowledge Modeling of Historical Penitentiary Repression Records', a: 'P. Font Solé, A. Molina, J. Lladós', v: 'arXiv:2607.08459', url: 'https://arxiv.org/abs/2607.08459' },
+      { y: 2025, t: 'The OCR Quest for Generalization: Learning to Recognize Low-Resource Alphabets with Model Editing', a: 'A. Molina, O. R. Terrades, J. Lladós', v: 'arXiv:2506.06761', url: 'https://arxiv.org/abs/2506.06761' },
+      { y: 2025, t: "Arxiu 44: la visió (per computador) de l'arxivística", a: 'J. Lladós, A. Molina', v: 'Lligall', journal: true, tags: ['Catalan'] },
+      { y: 2024, t: 'Fetch-A-Set: A Large-Scale OCR-Free Benchmark for Historical Document Retrieval', a: 'A. Molina, O. R. Terrades, J. Lladós', v: 'DAS 2024', live: 'fas', tags: ['2nd best paper'] },
+      { y: 2024, t: 'Faster Extraction of Matrimonial Advertisements from Digital Archives Using a Signal Processing Pipeline: A Case Study on a 20th-Century Spanish Newspaper', a: 'A. Molina, J. M. Pujadas-Mora, P. Puschmann, J. Lladós', v: 'The History of the Family', journal: true },
+      { y: 2024, t: 'A Transformer-Based Object-Centric Approach for Date Estimation of Historical Photographs', a: 'F. Net, N. Hernández, A. Molina, L. Gómez', v: 'ECIR 2024' },
+      { y: 2024, t: 'The Role of Generative Systems in Historical Photography Management: A Case Study on Catalan Archives', a: 'È. Sànchez, A. Molina, O. R. Terrades', v: 'ECCV 2024 Workshops' },
+      { y: 2024, t: 'Structured Analysis and Comparison of Alphabets in Historical Handwritten Ciphers', a: 'M. Méndez, P. Torras, A. Molina, J. Chen, O. Ramos-Terrades, A. Fornés', v: 'ECCV 2024 Workshops' },
+      { y: 2023, t: 'Bridging Cross-Modal Alignment for OCR-Free Content Retrieval in Scanned Historical Documents', a: 'A. Molina', v: 'MSc thesis, UAB', url: 'https://ddd.uab.cat/pub/trerecpro/2023/284333/MolinaAdria_TFM.pdf', tags: ['MSc thesis'] },
+      { y: 2022, t: 'A Generic Image Retrieval Method for Date Estimation of Historical Document Collections', a: 'A. Molina, L. Gómez, O. R. Terrades, J. Lladós', v: 'DAS 2022' },
+      { y: 2022, t: "HIST4XAC: una eina d'anàlisi de documents pel manteniment del patrimoni històric", a: 'A. Molina', v: 'BSc thesis, UAB', url: 'https://ddd.uab.cat/pub/tfg/2021/tfg_201721/_TFG_Informe_Final.pdf', tags: ['BSc thesis', 'Catalan'] },
+      { y: 2021, t: 'Date Estimation in the Wild of Scanned Historical Photos: An Image Retrieval Approach', a: 'A. Molina, P. Riba, L. Gómez, O. R. Terrades, J. Lladós', v: 'ICDAR 2021', live: 'date', url: 'https://arxiv.org/abs/2106.05618' },
+      { y: 2021, t: 'Learning to Rank Words: Optimizing Ranking Metrics for Word Spotting', a: 'P. Riba, A. Molina, L. Gómez, O. R. Terrades, J. Lladós', v: 'ICDAR 2021' },
+      { y: null, t: 'The Role of Model Editing in Word Recognition', a: 'A. Molina, J. Lladós, O. R. Terrades', v: 'SSRN preprint', url: 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6256547', tags: ['Preprint'] },
+    ];
+    const root = document.getElementById('pubs');
+    const none = document.getElementById('none');
+    const count = document.getElementById('count');
+    const q = document.getElementById('q');
+    const filters = document.getElementById('filters');
+    let mode = 'all';
 
-        // Keyboard Navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' && currentPageIndex < pages.length - 1) {
-                currentPageIndex++;
-                updatePages();
-            } else if (e.key === 'ArrowLeft' && currentPageIndex > 0) {
-                currentPageIndex--;
-                updatePages();
-            }
-        });
+    const strip = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    // accent-insensitive highlighting, mapped back onto the original characters
+    function hl(text, terms) {
+      if (!terms.length) return esc(text);
+      const chars = [...text];
+      let norm = ''; const map = [];
+      chars.forEach((ch, i) => { for (const c of strip(ch)) { norm += c; map.push(i); } });
+      const on = new Array(chars.length).fill(false);
+      terms.forEach(t => { let k = norm.indexOf(t); while (k !== -1) { for (let j = k; j < k + t.length; j++) on[map[j]] = true; k = norm.indexOf(t, k + 1); } });
+      let out = '', open = false;
+      chars.forEach((c, i) => {
+        if (on[i] !== open) { out += on[i] ? '<mark>' : '</mark>'; open = on[i]; }
+        out += esc(c);
+      });
+      return out + (open ? '</mark>' : '');
+    }
+    P.forEach(p => {
+      p.hay = strip([p.t, p.a, p.v, p.y || 'n.d.', ...(p.tags || []), p.live ? 'interactive' : '', p.journal ? 'journal' : ''].join(' '));
+      p.first = p.a.startsWith('A. Molina');
+    });
 
-        // Touch/Swipe Support for Mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
+    function render() {
+      const terms = strip(q.value.trim()).split(/\s+/).filter(Boolean);
+      const hits = P.filter(p =>
+        (mode === 'all' || (mode === 'live' && p.live) || (mode === 'first' && p.first) || (mode === 'journal' && p.journal)) &&
+        terms.every(t => p.hay.includes(t)));
+      root.innerHTML = hits.map(p => {
+        const href = p.live ? `./research/papers/${p.live}.html` : p.url;
+        const ext = !p.live && !!p.url;
+        const authors = p.a.split(', ').map(n => n === 'A. Molina' ? `<b>${hl(n, terms)}</b>` : hl(n, terms)).join(', ');
+        const tags = [p.live ? '<span class="live">● Interactive</span>' : '', ...(p.tags || []).map(t => `<span>${esc(t)}</span>`), p.journal ? '<span>Journal</span>' : ''].join('');
+        const title = hl(p.t, terms);
+        return `<article class="pub${href ? ' link' : ''}">
+          <span class="y mono">${p.y || 'n.d.'}</span>
+          <div><div class="t">${href ? `<a href="${href}"${ext ? ' target="_blank" rel="noopener"' : ''}>${title}</a>` : title}</div>
+          <div class="a">${authors}</div>${tags ? `<div class="tg">${tags}</div>` : ''}</div>
+          <span class="v mono">${hl(p.v, terms)}</span>
+          <span class="go mono">${href ? (ext ? '↗' : '→') : ''}</span>
+        </article>`;
+      }).join('');
+      none.hidden = hits.length > 0;
+      const z = n => String(n).padStart(2, '0');
+      count.innerHTML = `<b>${z(hits.length)}</b> / ${z(P.length)} retrieved · ${z(P.length - hits.length)} filtered · <span class="red">00 suppressed</span>`;
+    }
 
-        document.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        });
+    // the whole row opens its record, without nesting links
+    root.addEventListener('click', e => {
+      if (e.target.closest('a')) return;
+      const a = e.target.closest('.pub')?.querySelector('.t a');
+      if (a && !String(getSelection())) a.click();
+    });
+    q.addEventListener('input', render);
+    // "search" on a phone keyboard: put the keyboard away so the results are visible
+    q.addEventListener('keydown', e => { if (e.key === 'Enter') q.blur(); });
+    filters.addEventListener('click', e => {
+      const b = e.target.closest('.chip'); if (!b) return;
+      mode = b.dataset.f;
+      filters.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b)));
+      render();
+    });
+    document.addEventListener('keydown', e => {
+      const typing = /^(input|textarea|select)$/i.test(document.activeElement.tagName);
+      if (e.key === '/' && !typing) { e.preventDefault(); document.getElementById('publications').scrollIntoView(); q.focus({ preventScroll: true }); }
+      if (e.key === 'Escape' && document.activeElement === q) { q.value = ''; render(); q.blur(); }
+    });
+    render();
+  })();
 
-        document.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        });
-
-        function handleSwipe() {
-            const swipeThreshold = 50;
-            const swipeDistance = touchStartX - touchEndX;
-
-            if (Math.abs(swipeDistance) > swipeThreshold) {
-                if (swipeDistance > 0 && currentPageIndex < pages.length - 1) {
-                    // Swipe left - next page
-                    currentPageIndex++;
-                    updatePages();
-                } else if (swipeDistance < 0 && currentPageIndex > 0) {
-                    // Swipe right - previous page
-                    currentPageIndex--;
-                    updatePages();
-                }
-            }
-        }
-
-        // Initialize
-        updatePages();
-
-        // Add some newspaper-style interactions
-        document.querySelectorAll('.project-article, .contact-listing').forEach(article => {
-            article.addEventListener('click', () => {
-                // Add a subtle "paper crinkle" effect
-                article.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    article.style.transform = 'scale(1)';
-                }, 150);
-            });
-        });
-
-        // Simulate paper aging effect on scroll
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const rate = scrolled * -0.5;
-            document.body.style.backgroundPositionY = rate + 'px';
-        });
-    </script>
+  /* =================== FOOTER WORDMARK: FIT TO WIDTH =================== */
+  (function fit() {
+    const m = document.getElementById('mark'), box = m.parentElement;
+    const go = () => {
+      const cs = getComputedStyle(box);
+      const avail = box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      m.style.fontSize = '100px';
+      m.style.fontSize = (100 * avail / m.getBoundingClientRect().width) + 'px';
+    };
+    fontsReady.then(go);
+    let w = 0;
+    new ResizeObserver(() => { if (box.clientWidth !== w) { w = box.clientWidth; go(); } }).observe(box);
+  })();
+});
+</script>
 </body>
 </html>

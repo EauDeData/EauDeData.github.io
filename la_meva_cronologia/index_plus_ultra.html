@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronologia Plus Ultra · Google Maps Timeline</title>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <!-- Heatmap plugin -->
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <!-- Chart.js for analysis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --accent: #7c3aed;
+            --accent-2: #2563eb;
+            --accent-grad: linear-gradient(120deg, #7c3aed 0%, #2563eb 100%);
+            --bg: #f4f5fb;
+            --panel: #ffffff;
+            --panel-2: #f8f9fd;
+            --text: #1f2430;
+            --muted: #6b7280;
+            --border: #e6e8f0;
+            --shadow: 0 2px 14px rgba(40, 30, 90, 0.08);
+            --radius: 14px;
+            --walk: #2563eb;
+            --vehicle: #0f9d58;
+            --cycle: #f59e0b;
+            --transit: #9333ea;
+            --fly: #ef4444;
+            --unknown: #94a3b8;
+            --visit: #ec4899;
+            --path: #f97316;
+        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            overflow: hidden;
+        }
+        .app { display: flex; flex-direction: column; height: 100vh; }
+
+        /* ---------- Header ---------- */
+        .header {
+            background: var(--accent-grad);
+            color: #fff;
+            padding: 0.65rem 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 2px 10px rgba(60, 40, 120, 0.25);
+            z-index: 600;
+        }
+        .header h1 { font-size: 1.05rem; margin: 0; font-weight: 700; letter-spacing: .2px; }
+        .header .sub { font-size: .72rem; opacity: .85; font-weight: 400; }
+        .kpis { display: flex; gap: .55rem; margin-left: auto; flex-wrap: wrap; }
+        .kpi {
+            background: rgba(255,255,255,.16);
+            border: 1px solid rgba(255,255,255,.22);
+            border-radius: 10px;
+            padding: .3rem .6rem;
+            min-width: 78px;
+            text-align: center;
+            backdrop-filter: blur(4px);
+        }
+        .kpi .v { font-size: .98rem; font-weight: 700; line-height: 1.1; }
+        .kpi .l { font-size: .6rem; text-transform: uppercase; letter-spacing: .6px; opacity: .85; }
+
+        /* ---------- Layout ---------- */
+        .content { display: flex; flex: 1; min-height: 0; }
+        .sidebar {
+            width: 340px;
+            min-width: 340px;
+            background: var(--bg);
+            padding: .85rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: .8rem;
+        }
+        .sidebar::-webkit-scrollbar { width: 8px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #d3d6e4; border-radius: 4px; }
+        #map { flex: 1; height: 100%; background: #e9edf3; }
+
+        /* ---------- Cards ---------- */
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .card > h3 {
+            margin: 0;
+            padding: .7rem .9rem;
+            font-size: .82rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        .card > h3 .chev { margin-left: auto; transition: transform .2s; color: var(--muted); font-size: .8rem; }
+        .card.collapsed > h3 .chev { transform: rotate(-90deg); }
+        .card-body { padding: 0 .9rem .9rem; }
+        .card.collapsed .card-body { display: none; }
+        .ico { width: 18px; height: 18px; display: inline-flex; }
+
+        /* ---------- Upload ---------- */
+        .upload {
+            border: 2px dashed #cfd3e6;
+            border-radius: 12px;
+            padding: 1.1rem .8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: .18s;
+            background: var(--panel-2);
+        }
+        .upload:hover, .upload.drag { border-color: var(--accent); background: #f1edff; }
+        .upload p { margin: .25rem 0; font-size: .82rem; color: var(--muted); }
+        .upload .big { font-size: 1.6rem; }
+
+        /* ---------- Buttons / controls ---------- */
+        button {
+            font-family: inherit;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: .5rem .85rem;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: .8rem;
+            font-weight: 600;
+            transition: .15s;
+        }
+        button:hover { filter: brightness(1.08); }
+        button.ghost { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+        button.ghost:hover { background: #eef0f8; }
+        .row { display: flex; gap: .5rem; align-items: center; }
+        .row.wrap { flex-wrap: wrap; }
+        label { font-size: .78rem; color: var(--muted); }
+
+        .seg { display: flex; background: var(--panel-2); border: 1px solid var(--border); border-radius: 9px; padding: 3px; gap: 3px; }
+        .seg button {
+            flex: 1; background: transparent; color: var(--muted); padding: .35rem .2rem;
+            font-size: .72rem; border-radius: 6px;
+        }
+        .seg button.active { background: var(--accent); color: #fff; }
+
+        .toggle { display: flex; align-items: center; gap: .55rem; padding: .3rem 0; font-size: .82rem; color: var(--text); cursor: pointer; }
+        .toggle input { display: none; }
+        .toggle .sw { width: 34px; height: 19px; border-radius: 20px; background: #cdd1e3; position: relative; transition: .18s; flex: none; }
+        .toggle .sw::after { content: ""; position: absolute; width: 15px; height: 15px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: .18s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+        .toggle input:checked + .sw { background: var(--accent); }
+        .toggle input:checked + .sw::after { left: 17px; }
+        .toggle .dot { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+        .toggle .dot.round { border-radius: 50%; }
+
+        input[type=range] { width: 100%; accent-color: var(--accent); }
+        select, input[type=date] {
+            width: 100%; padding: .45rem .5rem; border: 1px solid var(--border);
+            border-radius: 8px; font-family: inherit; font-size: .8rem; background: var(--panel-2); color: var(--text);
+        }
+
+        .field { margin-bottom: .6rem; }
+        .field > label { display: block; margin-bottom: .25rem; font-weight: 600; }
+        .hint { font-size: .7rem; color: var(--muted); }
+
+        /* ---------- Dual range slider ---------- */
+        .range-wrap { position: relative; height: 34px; margin-top: .3rem; }
+        .range-wrap input[type=range] {
+            position: absolute; top: 8px; left: 0; width: 100%; margin: 0; background: none; pointer-events: none; -webkit-appearance: none; height: 0;
+        }
+        .range-wrap input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; pointer-events: auto; width: 16px; height: 16px; border-radius: 50%;
+            background: var(--accent); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3); cursor: pointer;
+        }
+        .range-wrap input[type=range]::-moz-range-thumb {
+            pointer-events: auto; width: 16px; height: 16px; border-radius: 50%;
+            background: var(--accent); border: 2px solid #fff; cursor: pointer;
+        }
+        .range-track { position: absolute; top: 14px; left: 0; right: 0; height: 5px; border-radius: 4px; background: #d8dbeb; }
+        .range-fill { position: absolute; top: 14px; height: 5px; border-radius: 4px; background: var(--accent-grad); }
+        .range-labels { display: flex; justify-content: space-between; font-size: .72rem; color: var(--muted); margin-top: .15rem; font-variant-numeric: tabular-nums; }
+
+        /* ---------- Stats list ---------- */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+        .stat {
+            background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: .5rem .6rem;
+        }
+        .stat .v { font-size: 1.05rem; font-weight: 700; }
+        .stat .l { font-size: .66rem; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+
+        .place {
+            display: flex; align-items: center; gap: .55rem; padding: .45rem .5rem; border-radius: 9px; cursor: pointer; transition: .12s;
+        }
+        .place:hover { background: #f1edff; }
+        .place .rank { width: 20px; height: 20px; border-radius: 6px; background: var(--accent); color: #fff; font-size: .68rem; display: flex; align-items: center; justify-content: center; font-weight: 700; flex: none; }
+        .place .info { flex: 1; min-width: 0; }
+        .place .info .n { font-size: .78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .place .info .m { font-size: .68rem; color: var(--muted); }
+
+        canvas.chart { width: 100% !important; }
+
+        .legend-item { display: flex; align-items: center; gap: .5rem; font-size: .76rem; padding: .15rem 0; }
+        .legend-color { width: 16px; height: 8px; border-radius: 2px; }
+        .legend-color.round { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* ---------- Floating overlays ---------- */
+        .map-wrap { position: relative; flex: 1; min-height: 0; }
+        .badge {
+            position: absolute; bottom: 14px; left: 14px; z-index: 500;
+            background: rgba(20,22,34,.82); color: #fff; font-size: .72rem; padding: .4rem .65rem;
+            border-radius: 9px; backdrop-filter: blur(6px); line-height: 1.5; pointer-events: none;
+        }
+        .badge b { color: #c4b5fd; }
+        .play-bar {
+            position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 500;
+            background: rgba(20,22,34,.86); color: #fff; padding: .4rem .6rem; border-radius: 11px;
+            display: none; align-items: center; gap: .6rem; backdrop-filter: blur(6px); box-shadow: 0 4px 18px rgba(0,0,0,.3);
+        }
+        .play-bar.on { display: flex; }
+        .play-bar .t { font-size: .76rem; font-variant-numeric: tabular-nums; min-width: 150px; text-align: center; }
+        .play-bar button { padding: .3rem .55rem; }
+
+        /* ---------- Loading ---------- */
+        .loading {
+            position: fixed; inset: 0; background: rgba(244,245,251,.92); z-index: 2000;
+            display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+        }
+        .loading.on { display: flex; }
+        .spinner { width: 52px; height: 52px; border: 5px solid #e1e3ef; border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .progress { width: 240px; height: 8px; background: #e1e3ef; border-radius: 4px; overflow: hidden; }
+        .progress > div { height: 100%; width: 0; background: var(--accent-grad); transition: width .1s; }
+        .loading .lbl { font-size: .85rem; color: var(--muted); }
+
+        .empty { font-size: .8rem; color: var(--muted); text-align: center; padding: .6rem; }
+        .pill { font-size: .68rem; background: var(--panel-2); border: 1px solid var(--border); padding: .12rem .45rem; border-radius: 20px; color: var(--muted); }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="header">
+        <div>
+            <h1>⚡ Cronologia <span style="opacity:.8">Plus Ultra</span></h1>
+            <div class="sub">Visualitzador i analitzador de Google Maps Timeline</div>
+        </div>
+        <div class="kpis" id="kpis"></div>
+    </div>
+
+    <div class="content">
+        <div class="sidebar">
+
+            <!-- Upload -->
+            <div class="card" id="uploadCard">
+                <div class="card-body" style="padding:.9rem">
+                    <div class="upload" id="uploadZone">
+                        <div class="big">📁</div>
+                        <p><strong>Arrossega el teu fitxer JSON</strong></p>
+                        <p>de Google Maps Timeline aquí</p>
+                        <input type="file" id="fileInput" accept=".json" hidden>
+                        <button id="selectBtn" style="margin-top:.4rem">Seleccionar fitxer</button>
+                    </div>
+                    <div class="hint" style="margin-top:.55rem;text-align:center">Tot es processa al teu navegador — cap dada s'envia enlloc.</div>
+                </div>
+            </div>
+
+            <!-- Time filter -->
+            <div class="card" id="timeCard" style="display:none">
+                <h3 data-toggle>🕑 Filtre temporal <span class="chev">▾</span></h3>
+                <div class="card-body">
+                    <div class="field">
+                        <label>Any</label>
+                        <select id="yearSelect"><option value="all">Tots els anys</option></select>
+                    </div>
+                    <div class="range-wrap" id="rangeWrap">
+                        <div class="range-track"></div>
+                        <div class="range-fill" id="rangeFill"></div>
+                        <input type="range" id="rangeMin" min="0" max="1000" value="0">
+                        <input type="range" id="rangeMax" min="0" max="1000" value="1000">
+                    </div>
+                    <div class="range-labels"><span id="lblMin">—</span><span id="lblMax">—</span></div>
+                    <div class="row" style="margin-top:.6rem">
+                        <button id="playBtn" class="ghost" style="flex:1">▶ Reproduir recorregut</button>
+                        <button id="resetTimeBtn" class="ghost">Tot</button>
+                    </div>
+                    <div class="field" style="margin-top:.5rem">
+                        <label>Velocitat de reproducció</label>
+                        <input type="range" id="speed" min="1" max="12" step="1" value="5">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layers -->
+            <div class="card" id="layersCard" style="display:none">
+                <h3 data-toggle>🗺️ Capes i visualització <span class="chev">▾</span></h3>
+                <div class="card-body">
+                    <label class="toggle"><input type="checkbox" id="tActivities" checked><span class="sw"></span><span class="dot" style="background:var(--walk)"></span>Activitats (camins)</label>
+                    <label class="toggle"><input type="checkbox" id="tVisits" checked><span class="sw"></span><span class="dot round" style="background:var(--visit)"></span>Visites (llocs)</label>
+                    <label class="toggle"><input type="checkbox" id="tPaths" checked><span class="sw"></span><span class="dot" style="background:var(--path)"></span>Camins de cronologia</label>
+                    <label class="toggle"><input type="checkbox" id="tPoints"><span class="sw"></span><span class="dot round" style="background:var(--path)"></span>Punts individuals</label>
+                    <label class="toggle"><input type="checkbox" id="tHeat"><span class="sw"></span><span class="dot round" style="background:#ef4444"></span>Mapa de calor</label>
+
+                    <div class="field" style="margin-top:.7rem">
+                        <label>Mapa base</label>
+                        <select id="baseSelect">
+                            <option value="light">Clar (CartoDB)</option>
+                            <option value="dark">Fosc (CartoDB)</option>
+                            <option value="osm">OpenStreetMap</option>
+                            <option value="sat">Satèl·lit (Esri)</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Gruix dels camins: <span id="weightVal" class="pill">4</span></label>
+                        <input type="range" id="lineWeight" min="1" max="10" step="1" value="4">
+                    </div>
+                    <div class="field" style="margin-bottom:0">
+                        <label>Opacitat: <span id="opacityVal" class="pill">0.7</span></label>
+                        <input type="range" id="lineOpacity" min="0.1" max="1" step="0.05" value="0.7">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="card" id="statsCard" style="display:none">
+                <h3 data-toggle>📊 Resum (selecció actual) <span class="chev">▾</span></h3>
+                <div class="card-body">
+                    <div class="stat-grid" id="statGrid"></div>
+                </div>
+            </div>
+
+            <!-- Analysis -->
+            <div class="card" id="analysisCard" style="display:none">
+                <h3 data-toggle>📈 Anàlisi <span class="chev">▾</span></h3>
+                <div class="card-body">
+                    <div class="hint" style="margin-bottom:.3rem">Mitjans de transport</div>
+                    <canvas class="chart" id="chartTypes" height="150"></canvas>
+                    <div class="hint" style="margin:.7rem 0 .3rem">Distància per mes (km)</div>
+                    <canvas class="chart" id="chartMonthly" height="130"></canvas>
+                    <div class="hint" style="margin:.7rem 0 .3rem">Activitat per hora del dia</div>
+                    <canvas class="chart" id="chartHours" height="130"></canvas>
+                </div>
+            </div>
+
+            <!-- Top places -->
+            <div class="card" id="placesCard" style="display:none">
+                <h3 data-toggle>📍 Llocs més visitats <span class="chev">▾</span></h3>
+                <div class="card-body" id="placesList"></div>
+            </div>
+
+            <!-- Legend -->
+            <div class="card collapsed" id="legendCard" style="display:none">
+                <h3 data-toggle>🎨 Llegenda <span class="chev">▾</span></h3>
+                <div class="card-body">
+                    <div class="legend-item"><span class="legend-color" style="background:var(--walk)"></span>A peu</div>
+                    <div class="legend-item"><span class="legend-color" style="background:var(--vehicle)"></span>Vehicle</div>
+                    <div class="legend-item"><span class="legend-color" style="background:var(--cycle)"></span>Bicicleta</div>
+                    <div class="legend-item"><span class="legend-color" style="background:var(--transit)"></span>Transport públic</div>
+                    <div class="legend-item"><span class="legend-color" style="background:var(--fly)"></span>Vol</div>
+                    <div class="legend-item"><span class="legend-color" style="background:var(--unknown)"></span>Desconegut</div>
+                    <div class="legend-item"><span class="legend-color round" style="background:var(--visit)"></span>Visita / lloc</div>
+                    <div class="legend-item"><span class="legend-color" style="background:var(--path)"></span>Camí de cronologia</div>
+                </div>
+            </div>
+
+            <button id="exportBtn" class="ghost" style="display:none">⬇ Exportar selecció (JSON)</button>
+        </div>
+
+        <div class="map-wrap">
+            <div id="map"></div>
+            <div class="play-bar" id="playBar">
+                <button id="playPause">⏸</button>
+                <span class="t" id="playTime">—</span>
+                <button id="playStop" class="ghost">✕</button>
+            </div>
+            <div class="badge" id="badge" style="display:none"></div>
+        </div>
+    </div>
+</div>
+
+<div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div class="lbl" id="loadingLbl">Processant…</div>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    // ============================================================ Map setup
+    const map = L.map('map', { preferCanvas: true, zoomControl: true }).setView([41.5, 2.1], 11);
+    const renderer = L.canvas({ padding: 0.5 }); // single shared canvas — huge perf win
+
+    const baseLayers = {
+        light: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20, attribution: '&copy; OSM &copy; CartoDB' }),
+        dark:  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20, attribution: '&copy; OSM &copy; CartoDB' }),
+        osm:   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OSM' }),
+        sat:   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: '&copy; Esri' })
+    };
+    let currentBase = baseLayers.light.addTo(map);
+
+    // Layer groups (re-populated on every render via viewport culling)
+    const actLayer = L.layerGroup().addTo(map);
+    const pathLayer = L.layerGroup().addTo(map);
+    const visitLayer = L.layerGroup().addTo(map);
+    const pointLayer = L.layerGroup().addTo(map);
+    let heatLayer = null;
+
+    // ============================================================ State
+    const state = {
+        loaded: false,
+        activities: [],   // {sLat,sLng,eLat,eLng,type,color,dist,t0,t1,minLat,minLng,maxLat,maxLng}
+        visits: [],       // {lat,lng,placeId,semanticType,prob,t0,t1,dur}
+        pathSegs: [],     // {coords:[[lat,lng]..],t0,t1,n,minLat,minLng,maxLat,maxLng}
+        points: [],       // {lat,lng,t}
+        tMin: Infinity, tMax: -Infinity,
+        bounds: L.latLngBounds([]),
+        grids: {}         // spatial grid indexes
+    };
+    const filter = { t0: -Infinity, t1: Infinity };
+    const ui = {
+        showAct: true, showVisits: true, showPaths: true, showPoints: false, showHeat: false,
+        weight: 4, opacity: 0.7
+    };
+    const CELL = 0.01;          // ~1 km grid cells for spatial index
+    const MAX_POINTS = 6000;    // safety cap for individual point markers
+    const MAX_VISITS = 4000;
+
+    // ============================================================ DOM
+    const $ = id => document.getElementById(id);
+    const loading = $('loading'), progressBar = $('progressBar'), loadingLbl = $('loadingLbl');
+
+    // ============================================================ Parsing helpers
+    function parseLatLng(s) {
+        if (!s) return null;
+        const p = s.split(',');
+        if (p.length !== 2) return null;
+        const lat = parseFloat(p[0].replace('°', '').trim());
+        const lng = parseFloat(p[1].replace('°', '').trim());
+        if (isNaN(lat) || isNaN(lng)) return null;
+        return [lat, lng];
+    }
+    const ms = s => { const t = s ? Date.parse(s) : NaN; return isNaN(t) ? null : t; };
+
+    const TYPE_COLORS = {
+        WALKING: getCss('--walk'), RUNNING: getCss('--walk'), ON_FOOT: getCss('--walk'), HIKING: getCss('--walk'),
+        IN_PASSENGER_VEHICLE: getCss('--vehicle'), IN_VEHICLE: getCss('--vehicle'), DRIVING: getCss('--vehicle'), MOTORCYCLING: getCss('--vehicle'),
+        CYCLING: getCss('--cycle'), IN_BICYCLE: getCss('--cycle'),
+        IN_BUS: getCss('--transit'), IN_TRAIN: getCss('--transit'), IN_SUBWAY: getCss('--transit'), IN_TRAM: getCss('--transit'), IN_FERRY: getCss('--transit'), IN_PUBLIC_TRANSPORT: getCss('--transit'),
+        FLYING: getCss('--fly')
+    };
+    function getCss(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+    function colorFor(type) { return TYPE_COLORS[type] || getCss('--unknown'); }
+
+    // ============================================================ File handling
+    const uploadZone = $('uploadZone');
+    ['dragenter', 'dragover'].forEach(e => uploadZone.addEventListener(e, ev => { ev.preventDefault(); uploadZone.classList.add('drag'); }));
+    ['dragleave', 'drop'].forEach(e => uploadZone.addEventListener(e, ev => { ev.preventDefault(); uploadZone.classList.remove('drag'); }));
+    uploadZone.addEventListener('drop', ev => { if (ev.dataTransfer.files[0]) handleFile(ev.dataTransfer.files[0]); });
+    $('selectBtn').addEventListener('click', () => $('fileInput').click());
+    $('fileInput').addEventListener('change', ev => { if (ev.target.files[0]) handleFile(ev.target.files[0]); });
+
+    function handleFile(file) {
+        if (!file.name.endsWith('.json') && file.type !== 'application/json') { alert('Selecciona un fitxer JSON.'); return; }
+        loading.classList.add('on'); loadingLbl.textContent = 'Llegint el fitxer…'; progressBar.style.width = '0%';
+        const reader = new FileReader();
+        reader.onload = e => {
+            let data;
+            try { data = JSON.parse(e.target.result); }
+            catch (err) { loading.classList.remove('on'); alert('JSON no vàlid: ' + err.message); return; }
+            const segs = data.semanticSegments || (data.semanticSegments = pickSegments(data));
+            if (!Array.isArray(segs)) { loading.classList.remove('on'); alert("No s'ha trobat cap 'semanticSegments'."); return; }
+            processChunked(segs);
+        };
+        reader.onerror = () => { loading.classList.remove('on'); alert('Error llegint el fitxer.'); };
+        reader.readAsText(file);
+    }
+    // tolerate slight format variations
+    function pickSegments(data) {
+        if (Array.isArray(data)) return data;
+        for (const k of Object.keys(data)) if (Array.isArray(data[k]) && data[k].length && (data[k][0].activity || data[k][0].visit || data[k][0].timelinePath)) return data[k];
+        return null;
+    }
+
+    // ---- Chunked, non-blocking parse with progress bar ----
+    function processChunked(segs) {
+        resetState();
+        const N = segs.length, CHUNK = 1500;
+        let i = 0;
+        loadingLbl.textContent = `Processant ${N.toLocaleString()} segments…`;
+        function step() {
+            const end = Math.min(i + CHUNK, N);
+            for (; i < end; i++) parseSegment(segs[i]);
+            progressBar.style.width = Math.round(i / N * 100) + '%';
+            if (i < N) { (window.requestIdleCallback || setTimeout)(step, 0); }
+            else finalize();
+        }
+        step();
+    }
+
+    function resetState() {
+        state.activities = []; state.visits = []; state.pathSegs = []; state.points = [];
+        state.tMin = Infinity; state.tMax = -Infinity; state.bounds = L.latLngBounds([]); state.grids = {};
+    }
+
+    function bumpTime(t) { if (t == null) return; if (t < state.tMin) state.tMin = t; if (t > state.tMax) state.tMax = t; }
+    function bumpBounds(lat, lng) { state.bounds.extend([lat, lng]); }
+
+    function parseSegment(seg) {
+        const t0 = ms(seg.startTime), t1 = ms(seg.endTime) || t0;
+        bumpTime(t0); bumpTime(t1);
+        if (seg.activity) {
+            const a = seg.activity;
+            const s = parseLatLng(a.start && a.start.latLng), e = parseLatLng(a.end && a.end.latLng);
+            if (!s || !e) return;
+            const type = (a.topCandidate && a.topCandidate.type) || 'UNKNOWN';
+            state.activities.push({
+                sLat: s[0], sLng: s[1], eLat: e[0], eLng: e[1], type, color: colorFor(type),
+                dist: +a.distanceMeters || 0, t0, t1,
+                minLat: Math.min(s[0], e[0]), maxLat: Math.max(s[0], e[0]),
+                minLng: Math.min(s[1], e[1]), maxLng: Math.max(s[1], e[1])
+            });
+            bumpBounds(s[0], s[1]); bumpBounds(e[0], e[1]);
+        } else if (seg.visit && seg.visit.topCandidate && seg.visit.topCandidate.placeLocation) {
+            const ll = parseLatLng(seg.visit.topCandidate.placeLocation.latLng);
+            if (!ll) return;
+            state.visits.push({
+                lat: ll[0], lng: ll[1],
+                placeId: seg.visit.topCandidate.placeId || '',
+                semanticType: seg.visit.topCandidate.semanticType || '',
+                prob: +seg.visit.probability || 0,
+                t0, t1, dur: (t0 != null && t1 != null) ? t1 - t0 : 0
+            });
+            bumpBounds(ll[0], ll[1]);
+        } else if (Array.isArray(seg.timelinePath) && seg.timelinePath.length) {
+            const coords = [];
+            let mnLat = 90, mxLat = -90, mnLng = 180, mxLng = -180;
+            for (const pt of seg.timelinePath) {
+                const ll = parseLatLng(pt.point);
+                if (!ll) continue;
+                coords.push(ll);
+                const pt0 = ms(pt.time);
+                state.points.push({ lat: ll[0], lng: ll[1], t: pt0 != null ? pt0 : t0 });
+                bumpTime(pt0); bumpBounds(ll[0], ll[1]);
+                if (ll[0] < mnLat) mnLat = ll[0]; if (ll[0] > mxLat) mxLat = ll[0];
+                if (ll[1] < mnLng) mnLng = ll[1]; if (ll[1] > mxLng) mxLng = ll[1];
+            }
+            if (coords.length >= 2) state.pathSegs.push({ coords, t0, t1, n: coords.length, minLat: mnLat, maxLat: mxLat, minLng: mnLng, maxLng: mxLng });
+        }
+    }
+
+    // ---- Spatial grid index: prune candidates by map region before drawing ----
+    function buildGrid(items) {
+        const g = new Map();
+        for (let i = 0; i < items.length; i++) {
+            const key = Math.floor(items[i].lat / CELL) + '_' + Math.floor(items[i].lng / CELL);
+            let arr = g.get(key); if (!arr) g.set(key, arr = []); arr.push(i);
+        }
+        return g;
+    }
+    function queryGrid(g, b) {
+        const out = [];
+        const x0 = Math.floor(b.getWest() / CELL), x1 = Math.floor(b.getEast() / CELL);
+        const y0 = Math.floor(b.getSouth() / CELL), y1 = Math.floor(b.getNorth() / CELL);
+        for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+            const arr = g.get(y + '_' + x); if (arr) for (let k = 0; k < arr.length; k++) out.push(arr[k]);
+        }
+        return out;
+    }
+
+    function finalize() {
+        state.loaded = true;
+        state.grids.visits = buildGrid(state.visits);
+        state.grids.points = buildGrid(state.points);
+
+        // reveal UI
+        ['timeCard', 'layersCard', 'statsCard', 'analysisCard', 'placesCard', 'legendCard'].forEach(id => $(id).style.display = '');
+        $('exportBtn').style.display = ''; $('badge').style.display = '';
+        $('uploadCard').querySelector('.upload .big').textContent = '✅';
+
+        setupTimeDomain();
+        if (state.bounds.isValid()) map.fitBounds(state.bounds.pad(0.05));
+        applyFilter(true);
+        loading.classList.remove('on');
+    }
+
+    // ============================================================ Time domain / slider
+    const rangeMin = $('rangeMin'), rangeMax = $('rangeMax'), rangeFill = $('rangeFill');
+    const STEPS = 1000;
+    function sliderToTime(v) { return state.tMin + (state.tMax - state.tMin) * (v / STEPS); }
+    function timeToSlider(t) { return Math.round((t - state.tMin) / (state.tMax - state.tMin) * STEPS); }
+
+    function setupTimeDomain() {
+        if (!isFinite(state.tMin)) { state.tMin = Date.parse('2020-01-01'); state.tMax = Date.parse('2024-01-01'); }
+        rangeMin.value = 0; rangeMax.value = STEPS;
+        filter.t0 = state.tMin; filter.t1 = state.tMax;
+        // year dropdown
+        const sel = $('yearSelect'); sel.innerHTML = '<option value="all">Tots els anys</option>';
+        const y0 = new Date(state.tMin).getFullYear(), y1 = new Date(state.tMax).getFullYear();
+        for (let y = y0; y <= y1; y++) sel.insertAdjacentHTML('beforeend', `<option value="${y}">${y}</option>`);
+        updateSliderUI();
+    }
+    function updateSliderUI() {
+        const a = Math.min(+rangeMin.value, +rangeMax.value), b = Math.max(+rangeMin.value, +rangeMax.value);
+        rangeFill.style.left = (a / STEPS * 100) + '%';
+        rangeFill.style.width = ((b - a) / STEPS * 100) + '%';
+        $('lblMin').textContent = fmtDate(filter.t0);
+        $('lblMax').textContent = fmtDate(filter.t1);
+    }
+    function onSlider() {
+        const a = Math.min(+rangeMin.value, +rangeMax.value), b = Math.max(+rangeMin.value, +rangeMax.value);
+        filter.t0 = sliderToTime(a); filter.t1 = sliderToTime(b);
+        $('yearSelect').value = 'all';
+        updateSliderUI(); applyFilter();
+    }
+    rangeMin.addEventListener('input', onSlider);
+    rangeMax.addEventListener('input', onSlider);
+    $('yearSelect').addEventListener('change', e => {
+        const v = e.target.value;
+        if (v === 'all') { filter.t0 = state.tMin; filter.t1 = state.tMax; }
+        else { filter.t0 = Date.parse(v + '-01-01T00:00:00'); filter.t1 = Date.parse((+v + 1) + '-01-01T00:00:00'); }
+        rangeMin.value = Math.max(0, timeToSlider(filter.t0));
+        rangeMax.value = Math.min(STEPS, timeToSlider(filter.t1));
+        updateSliderUI(); applyFilter();
+    });
+    $('resetTimeBtn').addEventListener('click', () => {
+        rangeMin.value = 0; rangeMax.value = STEPS; $('yearSelect').value = 'all';
+        filter.t0 = state.tMin; filter.t1 = state.tMax; updateSliderUI(); applyFilter();
+    });
+
+    // ============================================================ Filtering + render pipeline
+    // applyFilter -> recompute analysis/stats over time window, then render() (viewport cull)
+    let filtered = { activities: [], visits: [], pathSegs: [], points: [] };
+    function inTime(o) { return o.t1 >= filter.t0 && o.t0 <= filter.t1; }
+    function inTimePt(p) { return p.t >= filter.t0 && p.t <= filter.t1; }
+
+    function applyFilter(fit) {
+        filtered.activities = state.activities.filter(inTime);
+        filtered.visits = state.visits.filter(inTime);
+        filtered.pathSegs = state.pathSegs.filter(inTime);
+        // points filtered lazily during render via grid; precompute filtered for heat/stats count
+        filtered.points = state.points; // keep ref; render & heat apply time test
+        updateStats(); updateCharts(); updatePlaces(); updateKpis();
+        render();
+    }
+
+    function bboxHit(b, o) {
+        return !(o.maxLat < b.getSouth() || o.minLat > b.getNorth() || o.maxLng < b.getWest() || o.minLng > b.getEast());
+    }
+
+    let renderScheduled = false;
+    function scheduleRender() { if (!renderScheduled) { renderScheduled = true; requestAnimationFrame(() => { renderScheduled = false; render(); }); } }
+    map.on('moveend zoomend', scheduleRender);
+
+    function render() {
+        if (!state.loaded) return;
+        actLayer.clearLayers(); pathLayer.clearLayers(); visitLayer.clearLayers(); pointLayer.clearLayers();
+        const b = map.getBounds().pad(0.15);
+        const w = ui.weight, op = ui.opacity;
+        let cAct = 0, cPath = 0, cVisit = 0, cPoint = 0;
+
+        // Activities (lines) — small set, bbox cull
+        if (ui.showAct) {
+            for (const a of filtered.activities) {
+                if (!bboxHit(b, a)) continue;
+                const pl = L.polyline([[a.sLat, a.sLng], [a.eLat, a.eLng]], { renderer, color: a.color, weight: w, opacity: op });
+                pl.bindPopup(popupActivity(a));
+                actLayer.addLayer(pl); cAct++;
+            }
+        }
+        // Timeline path lines — bbox cull
+        if (ui.showPaths) {
+            for (const s of filtered.pathSegs) {
+                if (!bboxHit(b, s)) continue;
+                const pl = L.polyline(s.coords, { renderer, color: getCss('--path'), weight: Math.max(2, w - 1), opacity: op * 0.85, dashArray: '4,7' });
+                pl.bindPopup(`<b>Camí de cronologia</b><br>${fmtDateTime(s.t0)} → ${fmtDateTime(s.t1)}<br>${s.n} punts`);
+                pathLayer.addLayer(pl); cPath++;
+            }
+        }
+        // Visits — grid cull
+        if (ui.showVisits) {
+            const cand = queryGrid(state.grids.visits, b);
+            for (let k = 0; k < cand.length && cVisit < MAX_VISITS; k++) {
+                const v = state.visits[cand[k]];
+                if (!inTime(v)) continue;
+                const m = L.circleMarker([v.lat, v.lng], { renderer, radius: 6, fillColor: getCss('--visit'), color: '#fff', weight: 1.5, fillOpacity: 0.9 });
+                m.bindPopup(popupVisit(v));
+                visitLayer.addLayer(m); cVisit++;
+            }
+        }
+        // Individual points — grid cull + cap
+        if (ui.showPoints) {
+            const cand = queryGrid(state.grids.points, b);
+            const stride = cand.length > MAX_POINTS ? Math.ceil(cand.length / MAX_POINTS) : 1;
+            for (let k = 0; k < cand.length; k += stride) {
+                const p = state.points[cand[k]];
+                if (!inTimePt(p)) continue;
+                const m = L.circleMarker([p.lat, p.lng], { renderer, radius: 2.5, fillColor: getCss('--path'), color: getCss('--path'), weight: 0, fillOpacity: 0.7 });
+                m.bindPopup(`<b>Punt</b><br>${fmtDateTime(p.t)}`);
+                pointLayer.addLayer(m); cPoint++;
+            }
+        }
+        // Heatmap
+        updateHeat();
+
+        $('badge').innerHTML =
+            `Regió visible · <b>${cAct}</b> camins · <b>${cVisit}</b> visites · <b>${cPath}</b> rutes` +
+            (ui.showPoints ? ` · <b>${cPoint}</b> punts` : '');
+    }
+
+    function updateHeat() {
+        if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
+        if (!ui.showHeat) return;
+        const b = map.getBounds().pad(0.15);
+        const cand = queryGrid(state.grids.points, b);
+        const src = cand.length ? cand.map(i => state.points[i]) : [];
+        const base = src.length ? src : state.visits;
+        const pts = [];
+        const stride = base.length > 15000 ? Math.ceil(base.length / 15000) : 1;
+        for (let k = 0; k < base.length; k += stride) {
+            const p = base[k];
+            const t = p.t != null ? p.t : p.t0;
+            if (t != null && (t < filter.t0 || t > filter.t1)) continue;
+            pts.push([p.lat, p.lng, 0.6]);
+        }
+        if (pts.length) heatLayer = L.heatLayer(pts, { radius: 18, blur: 22, maxZoom: 17 }).addTo(map);
+    }
+
+    // ============================================================ Popups
+    function popupActivity(a) {
+        return `<div><b>${fmtType(a.type)}</b><br>${fmtDateTime(a.t0)} → ${fmtDateTime(a.t1)}<br>` +
+            (a.dist ? `Distància: ${fmtDist(a.dist)}<br>` : '') +
+            `Durada: ${fmtDur(a.t0, a.t1)}</div>`;
+    }
+    function popupVisit(v) {
+        return `<div><b>Visita</b>${v.semanticType ? ' · ' + v.semanticType : ''}<br>${fmtDateTime(v.t0)}<br>` +
+            `Durada: ${fmtDur(v.t0, v.t1)}<br>` +
+            (v.prob ? `Probabilitat: ${(v.prob * 100).toFixed(0)}%<br>` : '') +
+            (v.placeId ? `<span class="hint">${v.placeId}</span>` : '') + `</div>`;
+    }
+
+    // ============================================================ Stats / KPIs
+    function updateStats() {
+        let dist = 0, durMove = 0;
+        for (const a of filtered.activities) { dist += a.dist; if (a.t0 && a.t1) durMove += (a.t1 - a.t0); }
+        let visitDur = 0; for (const v of filtered.visits) visitDur += v.dur;
+        const days = new Set();
+        filtered.activities.forEach(a => days.add(new Date(a.t0).toDateString()));
+        filtered.visits.forEach(v => days.add(new Date(v.t0).toDateString()));
+        const html = [
+            stat(fmtDist(dist), 'Distància'),
+            stat(filtered.activities.length.toLocaleString(), 'Activitats'),
+            stat(filtered.visits.length.toLocaleString(), 'Visites'),
+            stat(filtered.pathSegs.length.toLocaleString(), 'Rutes'),
+            stat(days.size.toLocaleString(), 'Dies registrats'),
+            stat(fmtDurMs(durMove), 'Temps en moviment')
+        ].join('');
+        $('statGrid').innerHTML = html;
+    }
+    const stat = (v, l) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`;
+
+    function updateKpis() {
+        let dist = 0; for (const a of filtered.activities) dist += a.dist;
+        const kpis = [
+            ['Distància', fmtDist(dist)],
+            ['Llocs', new Set(state.visits.filter(inTime).map(v => v.placeId || v.lat.toFixed(3) + v.lng.toFixed(3))).size.toLocaleString()],
+            ['Segments', (filtered.activities.length + filtered.visits.length + filtered.pathSegs.length).toLocaleString()]
+        ];
+        $('kpis').innerHTML = kpis.map(k => `<div class="kpi"><div class="v">${k[1]}</div><div class="l">${k[0]}</div></div>`).join('');
+    }
+
+    // ============================================================ Charts
+    let chartTypes, chartMonthly, chartHours;
+    Chart.defaults.font.size = 10;
+    Chart.defaults.plugins.legend.labels.boxWidth = 10;
+    function updateCharts() {
+        // transport types
+        const typeCount = {};
+        for (const a of filtered.activities) typeCount[a.type] = (typeCount[a.type] || 0) + 1;
+        const tEntries = Object.entries(typeCount).sort((x, y) => y[1] - x[1]);
+        drawDoughnut('chartTypes', tEntries.map(e => fmtType(e[0])), tEntries.map(e => e[1]), tEntries.map(e => colorFor(e[0])));
+
+        // monthly distance
+        const monthly = {};
+        for (const a of filtered.activities) { const d = new Date(a.t0); const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); monthly[key] = (monthly[key] || 0) + a.dist; }
+        const mKeys = Object.keys(monthly).sort();
+        drawBar('chartMonthly', mKeys, mKeys.map(k => +(monthly[k] / 1000).toFixed(1)), getCss('--accent-2'));
+
+        // hours of day
+        const hours = new Array(24).fill(0);
+        filtered.activities.forEach(a => hours[new Date(a.t0).getHours()]++);
+        filtered.visits.forEach(v => hours[new Date(v.t0).getHours()]++);
+        drawBar('chartHours', hours.map((_, i) => i + 'h'), hours, getCss('--accent'));
+    }
+    function drawDoughnut(id, labels, data, colors) {
+        if (chartTypes) chartTypes.destroy();
+        chartTypes = new Chart($(id), { type: 'doughnut',
+            data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0 }] },
+            options: { plugins: { legend: { position: 'right' } }, cutout: '58%' } });
+    }
+    function drawBar(id, labels, data, color) {
+        const ref = id === 'chartMonthly' ? 'chartMonthly' : 'chartHours';
+        if (ref === 'chartMonthly' && chartMonthly) chartMonthly.destroy();
+        if (ref === 'chartHours' && chartHours) chartHours.destroy();
+        const c = new Chart($(id), { type: 'bar',
+            data: { labels, datasets: [{ data, backgroundColor: color, borderRadius: 3 }] },
+            options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 8 }, grid: { display: false } }, y: { beginAtZero: true, grid: { color: '#eee' } } } } });
+        if (ref === 'chartMonthly') chartMonthly = c; else chartHours = c;
+    }
+
+    // ============================================================ Top places
+    function updatePlaces() {
+        const agg = new Map();
+        for (const v of filtered.visits) {
+            const key = v.placeId || (v.lat.toFixed(4) + ',' + v.lng.toFixed(4));
+            let o = agg.get(key);
+            if (!o) agg.set(key, o = { count: 0, dur: 0, lat: v.lat, lng: v.lng, type: v.semanticType });
+            o.count++; o.dur += v.dur; if (v.semanticType && !o.type) o.type = v.semanticType;
+        }
+        const top = [...agg.values()].sort((a, b) => b.count - a.count).slice(0, 8);
+        const el = $('placesList');
+        if (!top.length) { el.innerHTML = '<div class="empty">Cap visita en aquesta selecció.</div>'; return; }
+        el.innerHTML = top.map((p, i) =>
+            `<div class="place" data-lat="${p.lat}" data-lng="${p.lng}">
+                <div class="rank">${i + 1}</div>
+                <div class="info">
+                    <div class="n">${p.type || 'Lloc sense nom'}</div>
+                    <div class="m">${p.count} visites · ${fmtDurMs(p.dur)}</div>
+                </div>
+            </div>`).join('');
+        el.querySelectorAll('.place').forEach(d => d.addEventListener('click', () => {
+            map.flyTo([+d.dataset.lat, +d.dataset.lng], 16, { duration: 0.8 });
+        }));
+    }
+
+    // ============================================================ Layer toggles & display
+    function bindToggle(id, key, extra) {
+        $(id).addEventListener('change', e => { ui[key] = e.target.checked; if (extra) extra(); render(); });
+    }
+    bindToggle('tActivities', 'showAct');
+    bindToggle('tVisits', 'showVisits');
+    bindToggle('tPaths', 'showPaths');
+    bindToggle('tPoints', 'showPoints');
+    bindToggle('tHeat', 'showHeat');
+    $('lineWeight').addEventListener('input', e => { ui.weight = +e.target.value; $('weightVal').textContent = e.target.value; render(); });
+    $('lineOpacity').addEventListener('input', e => { ui.opacity = +e.target.value; $('opacityVal').textContent = e.target.value; render(); });
+    $('baseSelect').addEventListener('change', e => {
+        map.removeLayer(currentBase); currentBase = baseLayers[e.target.value].addTo(map); currentBase.bringToBack();
+    });
+
+    // ============================================================ Playback
+    let playing = false, playRAF = null, playCursor = 0, lastFrame = 0;
+    const WINDOW_FRAC = 0.06; // sliding window = 6% of total span
+    $('playBtn').addEventListener('click', startPlay);
+    $('playPause').addEventListener('click', togglePlay);
+    $('playStop').addEventListener('click', stopPlay);
+    function startPlay() {
+        if (!state.loaded) return;
+        $('playBar').classList.add('on');
+        playCursor = state.tMin; playing = true; $('playPause').textContent = '⏸';
+        lastFrame = performance.now(); playRAF = requestAnimationFrame(playStep);
+    }
+    function togglePlay() {
+        playing = !playing; $('playPause').textContent = playing ? '⏸' : '▶';
+        if (playing) { lastFrame = performance.now(); playRAF = requestAnimationFrame(playStep); }
+    }
+    function stopPlay() {
+        playing = false; $('playBar').classList.remove('on'); if (playRAF) cancelAnimationFrame(playRAF);
+        filter.t0 = state.tMin; filter.t1 = state.tMax; rangeMin.value = 0; rangeMax.value = STEPS; updateSliderUI(); applyFilter();
+    }
+    function playStep(now) {
+        if (!playing) return;
+        const dt = (now - lastFrame) / 1000; lastFrame = now;
+        const span = state.tMax - state.tMin;
+        const speed = +$('speed').value;
+        playCursor += dt * span * 0.02 * speed; // advance proportional to total span
+        if (playCursor > state.tMax) { stopPlay(); return; }
+        const win = span * WINDOW_FRAC;
+        filter.t0 = Math.max(state.tMin, playCursor - win); filter.t1 = playCursor;
+        rangeMin.value = timeToSlider(filter.t0); rangeMax.value = timeToSlider(filter.t1); updateSliderUI();
+        $('playTime').textContent = fmtDateTime(playCursor);
+        applyFilter();
+        // gently follow the most recent visible point
+        followLatest(filter.t1);
+        playRAF = requestAnimationFrame(playStep);
+    }
+    function followLatest(t) {
+        // find a path point near current cursor to pan towards (cheap: scan last matched)
+        let best = null, bestDt = Infinity;
+        const sample = state.points.length > 5000 ? Math.ceil(state.points.length / 5000) : 1;
+        for (let i = 0; i < state.points.length; i += sample) {
+            const p = state.points[i]; if (p.t == null) continue;
+            const d = Math.abs(p.t - t); if (d < bestDt) { bestDt = d; best = p; }
+        }
+        if (best && !map.getBounds().pad(-0.25).contains([best.lat, best.lng])) map.panTo([best.lat, best.lng], { animate: true, duration: 0.6 });
+    }
+
+    // ============================================================ Export
+    $('exportBtn').addEventListener('click', () => {
+        const out = {
+            meta: { exported: new Date().toISOString(), from: fmtDate(filter.t0), to: fmtDate(filter.t1) },
+            activities: filtered.activities, visits: filtered.visits,
+            pathSegments: filtered.pathSegs.map(s => ({ t0: s.t0, t1: s.t1, points: s.coords }))
+        };
+        const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = 'cronologia_seleccio.json'; a.click();
+        URL.revokeObjectURL(a.href);
+    });
+
+    // ============================================================ Collapsible cards
+    document.querySelectorAll('[data-toggle]').forEach(h => h.addEventListener('click', () => h.parentElement.classList.toggle('collapsed')));
+
+    // ============================================================ Formatting
+    function fmtDate(t) { if (t == null || !isFinite(t)) return '—'; return new Date(t).toLocaleDateString('ca-ES', { day: '2-digit', month: 'short', year: 'numeric' }); }
+    function fmtDateTime(t) { if (t == null || !isFinite(t)) return '—'; return new Date(t).toLocaleString('ca-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+    function fmtDist(m) { if (!m) return '0 m'; return m < 1000 ? Math.round(m) + ' m' : (m / 1000).toFixed(m < 10000 ? 1 : 0) + ' km'; }
+    function fmtDur(t0, t1) { if (t0 == null || t1 == null) return '—'; return fmtDurMs(t1 - t0); }
+    function fmtDurMs(d) {
+        if (!d || d < 0) return '—';
+        const s = d / 1000;
+        if (s < 60) return Math.round(s) + ' s';
+        if (s < 3600) return Math.round(s / 60) + ' min';
+        if (s < 86400) { const h = Math.floor(s / 3600); return h + ' h ' + Math.floor((s % 3600) / 60) + ' min'; }
+        const days = Math.floor(s / 86400); return days + ' d ' + Math.floor((s % 86400) / 3600) + ' h';
+    }
+    function fmtType(t) {
+        const map = { WALKING: 'A peu', RUNNING: 'Corrent', ON_FOOT: 'A peu', HIKING: 'Excursió',
+            IN_PASSENGER_VEHICLE: 'Cotxe', IN_VEHICLE: 'Vehicle', DRIVING: 'Conduint', MOTORCYCLING: 'Moto',
+            CYCLING: 'Bicicleta', IN_BICYCLE: 'Bicicleta',
+            IN_BUS: 'Autobús', IN_TRAIN: 'Tren', IN_SUBWAY: 'Metro', IN_TRAM: 'Tramvia', IN_FERRY: 'Ferri', IN_PUBLIC_TRANSPORT: 'Transport públic',
+            FLYING: 'Vol', UNKNOWN: 'Desconegut' };
+        return map[t] || (t || 'Desconegut').replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+    }
+})();
+</script>
+</body>
+</html>
