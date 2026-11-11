@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Genealogia visual de les idees artístiques</title>
+<style>
+  :root { --ink:#1d1d1f; --muted:#6e6e73; --line:#d2d2d7; --bg:#fafafa; --card:#fff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--ink); background:var(--bg); }
+  header { position:sticky; top:0; left:0; background:var(--card); border-bottom:1px solid var(--line); padding:10px 16px; z-index:2; }
+  .bar { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; }
+  header h1 { font-size:16px; margin:0 12px 0 0; }
+  label.c { display:inline-flex; align-items:center; gap:5px; cursor:pointer; user-select:none; }
+  label.c span.sw { width:12px; height:12px; border-radius:3px; display:inline-block; }
+  #rule { margin:8px 0 0; color:var(--muted); font-size:12.5px; max-width:110ch; }
+  #rule b { color:var(--ink); font-weight:600; }
+  #stats { color:var(--muted); font-size:12px; }
+  #msg { padding:24px 16px; color:var(--muted); }
+  #wrap { overflow-x:auto; }
+  svg text { font-size:11px; fill:var(--muted); }
+  .arc { fill:none; stroke-width:2; opacity:.75; pointer-events:none; }
+  .hit { fill:none; stroke:transparent; stroke-width:9; cursor:help; }
+  .arc.on { stroke-width:4; opacity:1; }
+  .dim { opacity:.08; }
+  .node { cursor:pointer; }
+  #tip { position:fixed; pointer-events:none; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px 12px; max-width:380px; box-shadow:0 6px 24px rgba(0,0,0,.12); display:none; z-index:3; font-size:13px; }
+  #tip img { max-width:128px; max-height:128px; display:block; margin-bottom:6px; border-radius:3px; }
+  #tip .meta { color:var(--muted); font-size:12px; }
+  #tip ul { margin:6px 0 0 16px; padding:0; font-size:12px; }
+  #tip p { margin:4px 0 0; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <h1>Genealogia visual de les idees artístiques</h1>
+    <span id="concepts"></span>
+  </div>
+  <div class="bar" style="margin-top:6px">
+    <label>Relació <select id="relation">
+      <option value="concept">per concepte</option>
+      <option value="article">per article</option></select></label>
+    <label>Escala <select id="scale">
+      <option value="rank">ordre cronològic</option>
+      <option value="log">temps (log)</option></select></label>
+    <label><input type="checkbox" id="onlyLinked"> només obres enllaçades</label>
+    <span id="stats"></span>
+  </div>
+  <p id="rule"></p>
+</header>
+<div id="msg">Carregant dades…</div>
+<div id="wrap"><svg id="svg"></svg></div>
+<div id="tip"></div>
+<script>
+// ---------------------------------------------------------------------------
+// Data location. Default: data/ next to this page (GitHub Pages, or a local
+// server). Override with ?data=<folder URL>, e.g. a permanent jsDelivr link:
+//   index.html?data=https://cdn.jsdelivr.net/gh/<user>/<repo>@<tag>/site/data/
+// Image paths in the CSV are relative to the folder that holds data/.
+// ---------------------------------------------------------------------------
+const DATA_DIR = new URL(new URLSearchParams(location.search).get("data") || "data/", location.href);
+const SITE_ROOT = new URL("../", DATA_DIR);
+
+const RULE = {
+  concept: `<b>Criteri d'enllaç.</b> Dues obres s'uneixen amb el color d'un concepte quan totes dues
+    apareixen (com a imatge o enllaç) en algun article de Wikipedia d'aquell concepte i són
+    <b>consecutives en el temps</b>: si una tercera obra del mateix concepte cau entremig, l'enllaç passa
+    per ella. Els conceptes diferents no es bloquegen entre si. Passa el ratolí per un arc o una obra per veure'n el motiu.`,
+  article: `<b>Criteri d'enllaç (per article).</b> Dues obres s'uneixen quan apareixen <b>al mateix article</b>
+    de Wikipedia i són consecutives en el temps dins d'aquell article: si una altra obra del mateix article
+    cau entremig, l'enllaç passa per ella. Passa el ratolí per un arc o una obra per veure'n el motiu.`,
+};
+
+const NS = "http://www.w3.org/2000/svg";
+let C = {}, NODES = [], UNDATED = 0, EDGES = [];
+const active = new Set();
+let focus = null;
+
+function parseCSV(text) {
+  text = text.replace(/^﻿/, "");
+  const rows = []; let row = [], f = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true;
+    else if (c === ",") { row.push(f); f = ""; }
+    else if (c === "\n") { row.push(f); rows.push(row); row = []; f = ""; }
+    else if (c !== "\r") f += c;
+  }
+  if (f || row.length) { row.push(f); rows.push(row); }
+  const head = rows.shift();
+  return rows.filter(r => r.length > 1).map(r => Object.fromEntries(head.map((k, i) => [k, r[i] ?? ""])));
+}
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const list = s => s ? s.split("; ").filter(Boolean) : [];
+const fmtYear = n => n.date_label || (n.sort_year < 0 ? `${-n.sort_year} aC` : String(n.sort_year));
+
+async function load() {
+  const get = async f => { const r = await fetch(new URL(f, DATA_DIR)); if (!r.ok) throw new Error(`${f}: HTTP ${r.status}`); return parseCSV(await r.text()); };
+  const [concepts, rows] = await Promise.all([get("concepts.csv"), get("artworks.csv")]);
+  for (const c of concepts) { C[c.key] = c; active.add(c.key); }
+  const byQ = new Map();
+  for (const r of rows) {
+    if (!C[r.concept]) continue;
+    let n = byQ.get(r.qid);
+    if (!n) {
+      n = { id: r.qid, label: r.label, date_label: r.date_label,
+            sort_year: r.sort_year === "" ? null : +r.sort_year, precision: +r.precision || 0,
+            creators: list(r.creators), types: list(r.types),
+            thumb: r.thumb ? new URL(r.thumb, SITE_ROOT).href : "",
+            wikipedia: r.wikipedia || r.wikidata, occ: {} };
+      byQ.set(r.qid, n);
+    }
+    (n.occ[r.concept] ||= []).push({ source: r.source, title: r.source_title, url: r.source_url, section: r.section });
+  }
+  const all = [...byQ.values()];
+  NODES = all.filter(n => n.sort_year !== null)
+             .sort((a, b) => a.sort_year - b.sort_year || b.precision - a.precision || (a.id < b.id ? -1 : 1));
+  UNDATED = all.length - NODES.length;
+  for (const n of NODES) n.concepts = Object.keys(n.occ);
+}
+
+// Same rule as graph.py: per relation, sort by date and link each work to the next only.
+function buildEdges(mode) {
+  const groups = new Map();
+  for (const n of NODES) for (const [c, os] of Object.entries(n.occ)) {
+    const keys = mode === "concept" ? [c] : [...new Set(os.map(o => `${c}|${o.source}`))];
+    for (const k of keys) { if (!groups.has(k)) groups.set(k, []); groups.get(k).push(n); }
+  }
+  const edges = [];
+  for (const [rel, seq] of groups) {          // NODES is already in date order
+    const concept = rel.split("|")[0];
+    for (let i = 0; i + 1 < seq.length; i++) {
+      const a = seq[i], b = seq[i + 1];
+      const sa = new Set(a.occ[concept].map(o => o.source));
+      const shared = [...new Map(b.occ[concept].filter(o => sa.has(o.source)).map(o => [o.source, o])).values()];
+      edges.push({ source: a.id, target: b.id, concept, rel, a, b, shared });
+    }
+  }
+  return edges;
+}
+
+function titles(os) { return [...new Set(os.map(o => `«${o.title}»`))].slice(0, 3).join(", "); }
+
+function edgeSentence(e) {
+  const c = C[e.concept].label, A = `«${e.a.label}» (${fmtYear(e.a)})`, B = `«${e.b.label}» (${fmtYear(e.b)})`;
+  if (e.rel.includes("|")) {
+    const art = e.shared[0]?.title || e.rel.split("|")[1];
+    return `${esc(A)} i ${esc(B)} apareixen totes dues a l'article «${esc(art)}» (${esc(c)}) i són consecutives en el temps: cap altra obra d'aquest article queda entremig.`;
+  }
+  const de = s => (/^[aeiouhàèéíòóú]/i.test(s) ? "d'" : "de ") + s;   // de Bellesa, d'Estil
+  const why = e.shared.length
+    ? `Totes dues apareixen a ${esc(titles(e.shared))}.`
+    : `${esc(e.a.label)} apareix a ${esc(titles(e.a.occ[e.concept]))}; ${esc(e.b.label)}, a ${esc(titles(e.b.occ[e.concept]))}.`;
+  return `${esc(A)} → ${esc(B)}: obres consecutives en el temps entre les citades als articles ${esc(de(c)).replace(/(d'|de )(.*)/, "$1<b>$2</b>")}; cap altra obra ${esc(de(c))} queda entremig. ${why}`;
+}
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+function draw() {
+  const mode = document.getElementById("relation").value;
+  document.getElementById("rule").innerHTML = RULE[mode];
+  EDGES = buildEdges(mode).filter(e => active.has(e.concept));
+  const svg = document.getElementById("svg"); svg.innerHTML = "";
+  let nodes = NODES.filter(n => n.concepts.some(c => active.has(c)));
+  if (document.getElementById("onlyLinked").checked) {
+    const s = new Set(EDGES.flatMap(e => [e.source, e.target]));
+    nodes = nodes.filter(n => s.has(n.id));
+  }
+  const ids = new Set(nodes.map(n => n.id));
+  const scale = document.getElementById("scale").value;
+  const m = 60, slot = 46;
+  const W = scale === "rank" ? Math.max(1200, 2 * m + nodes.length * slot) : Math.max(1600, nodes.length * 18);
+  const H = Math.min(960, Math.max(600, W / 6));
+  const axisY = H - 210;
+  svg.setAttribute("width", W); svg.setAttribute("height", H);
+
+  const x = {};
+  if (scale === "rank") nodes.forEach((n, i) => x[n.id] = m + i * slot + slot / 2);
+  else {
+    const T = 2100, ys = nodes.map(n => n.sort_year);
+    const lo = Math.log10(T - Math.max(...ys)), hi = Math.log10(T - Math.min(...ys));
+    nodes.forEach(n => x[n.id] = W - m - (Math.log10(T - n.sort_year) - lo) / ((hi - lo) || 1) * (W - 2 * m));
+  }
+
+  el("line", {x1: m / 2, x2: W - m / 2, y1: axisY, y2: axisY, stroke: "#c7c7cc"}, svg);
+  const order = Object.keys(C);
+  const gA = el("g", {}, svg);
+  for (const e of EDGES) {
+    if (!ids.has(e.source) || !ids.has(e.target)) continue;
+    const x1 = x[e.source], x2 = x[e.target], dx = Math.abs(x2 - x1);
+    const y0 = axisY - 14 - order.indexOf(e.concept) * 3;
+    const d = `M${x1},${y0} A${dx / 2},${Math.min(dx / 2, axisY - 30)} 0 0,1 ${x2},${y0}`;
+    const p = el("path", {class: "arc", d, stroke: C[e.concept].color, "data-c": e.concept}, gA);
+    const h = el("path", {class: "hit", d}, gA);
+    h.onmouseenter = ev => { p.classList.add("on"); showTip(ev, `<p>${edgeSentence(e)}</p>`); };
+    h.onmousemove = moveTip;
+    h.onmouseleave = () => { p.classList.remove("on"); hideTip(); };
+  }
+  const prevNext = {};
+  for (const e of EDGES) {
+    ((prevNext[e.target] ||= {})[e.rel] ||= {}).prev = e.a;
+    ((prevNext[e.source] ||= {})[e.rel] ||= {}).next = e.b;
+  }
+  const gN = el("g", {}, svg);
+  for (const n of nodes) {
+    const g = el("g", {class: "node", transform: `translate(${x[n.id]},${axisY})`, "data-cs": n.concepts.join(" ")}, gN);
+    if (n.thumb) {
+      el("image", {href: n.thumb, x: -18, y: -18, width: 36, height: 36, preserveAspectRatio: "xMidYMid slice"}, g);
+      el("rect", {x: -18, y: -18, width: 36, height: 36, fill: "none", stroke: "#fff", "stroke-width": 2}, g);
+    } else {
+      const c = n.concepts.find(c => active.has(c));
+      el("circle", {r: 7, fill: C[c].color, stroke: "#fff", "stroke-width": 2}, g);
+    }
+    if (scale === "rank") {
+      const t = el("text", {transform: "translate(4,28) rotate(55)"}, g);
+      t.textContent = `${n.date_label ?? ""} · ${n.label}`.slice(0, 42);
+    }
+    g.onmouseenter = ev => showTip(ev, nodeHtml(n, prevNext[n.id] || {}));
+    g.onmousemove = moveTip;
+    g.onmouseleave = hideTip;
+    g.onclick = () => window.open(n.wikipedia, "_blank", "noopener");
+  }
+  document.getElementById("stats").textContent =
+    `${nodes.length} obres · ${EDGES.length} enllaços · ${UNDATED} sense data (no surten a la línia)`;
+  highlight();
+}
+
+function nodeHtml(n, pn) {
+  const img = n.thumb ? `<img src="${esc(n.thumb)}" alt="">` : "";
+  const lines = Object.entries(n.occ).filter(([c]) => active.has(c)).map(([c, os]) => {
+    const links = Object.entries(pn).filter(([rel]) => rel.split("|")[0] === c).map(([, v]) =>
+      [v.prev && `després de «${esc(v.prev.label)}» (${esc(fmtYear(v.prev))})`,
+       v.next && `abans de «${esc(v.next.label)}» (${esc(fmtYear(v.next))})`].filter(Boolean).join(" · ")).filter(Boolean);
+    const src = [...new Set(os.map(o => o.title + (o.section && o.section !== "(lead)" ? " › " + o.section : "")))].slice(0, 3).map(esc).join("; ");
+    return `<li><b style="color:${C[c].color}">${esc(C[c].label)}</b>: ${src}${links.length ? `<br><i>${links.slice(0, 2).join("<br>")}</i>` : ""}</li>`;
+  }).join("");
+  return `${img}<b>${esc(n.label)}</b><div class="meta">${esc(fmtYear(n))}${n.creators.length ? " · " + esc(n.creators.join(", ")) : ""}<br>${esc(n.types.slice(0, 2).join(", "))}</div><ul>${lines}</ul>`;
+}
+
+function highlight() {
+  document.querySelectorAll(".arc").forEach(a => a.classList.toggle("dim", !!focus && a.dataset.c !== focus));
+  document.querySelectorAll(".node").forEach(g => g.classList.toggle("dim", !!focus && !g.dataset.cs.split(" ").includes(focus)));
+}
+
+const tip = document.getElementById("tip");
+function showTip(ev, html) { tip.innerHTML = html; tip.style.display = "block"; moveTip(ev); }
+function hideTip() { tip.style.display = "none"; }
+function moveTip(ev) {
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.max(10, Math.min(ev.clientX + 14, innerWidth - w - 10)) + "px";
+  tip.style.top = Math.max(10, Math.min(ev.clientY - h - 14, innerHeight - h - 10)) + "px";
+}
+
+load().then(() => {
+  document.getElementById("msg").remove();
+  const cbox = document.getElementById("concepts");
+  for (const [k, c] of Object.entries(C)) {
+    const l = document.createElement("label"); l.className = "c";
+    l.innerHTML = `<input type="checkbox" checked><span class="sw" style="background:${esc(c.color)}"></span>${esc(c.label)}`;
+    l.querySelector("input").onchange = e => { e.target.checked ? active.add(k) : active.delete(k); draw(); };
+    l.onmouseenter = () => { focus = k; highlight(); };
+    l.onmouseleave = () => { focus = null; highlight(); };
+    cbox.appendChild(l);
+  }
+  for (const id of ["relation", "scale", "onlyLinked"]) document.getElementById(id).onchange = draw;
+  draw();
+}).catch(err => {
+  document.getElementById("msg").innerHTML = `No s'han pogut carregar les dades (${esc(err.message)}).<br>
+    Si has obert el fitxer directament des del disc, el navegador bloqueja la lectura del CSV:
+    obre-la amb un servidor (<code>python -m http.server</code> dins de la carpeta <code>site/</code>) o des de GitHub Pages.`;
+});
+</script>
+</body>
+</html>
