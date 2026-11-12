@@ -454,7 +454,7 @@ function affinityOrder(keys) {
 
 /* ---------------- state ---------------- */
 const state = {
-  visible: new Set(KEYS), affinity: true, onlyShared: false, trace: "relleu",
+  visible: new Set(KEYS), affinity: true, onlyShared: false, connectors: true, trace: "relleu",
   hov: null, sel: null, laneHover: null, laneFocus: null,
   search: null, mxSet: null, mxLock: null, mouse: null,
 };
@@ -662,7 +662,7 @@ function draw() {
   // crossing connectors
   const sz = s > .3 ? 4 : s > .06 ? 5 : 6;
   c.lineWidth = 1;
-  for (const n of MULTI) {
+  if (state.connectors) for (const n of MULTI) {   // hidden with the "Línies verticals" chip
     const x = px(n.u); if (x < L - 2 || x > R + 2) continue;
     const ys = n.concepts.filter(k => lanes[k].a > .01).map(k => lanes[k].y);
     if (ys.length < 2) continue;
@@ -1104,6 +1104,7 @@ let setTrace = () => {};
 const ctlV = fV.querySelector(".ctl"), addV = el => fV.insertBefore(el, ctlV);
 addV(toggleChip("Idees afins juntes", true, v => { state.affinity = v; layout(false); buildMatrix(); }));
 addV(toggleChip("Només obres compartides", false, v => { state.onlyShared = v; kick(); }));
+addV(toggleChip("Línies verticals", true, v => { state.connectors = v; kick(); }));
 {
   const sp = document.createElement("span"); sp.className = "gap"; addV(sp);
   const opts = [["relleu", "On hi ha més obres"], ["arcs", "Arcs"]], bs = [];
